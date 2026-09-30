@@ -111,6 +111,13 @@
     font-size:10.5px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
     padding:3px 8px; border-radius:20px; background:var(--accent-soft); color:var(--accent);
   }
+  .level-badge{
+    font-size:10.5px; font-weight:700; letter-spacing:0.03em; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px; border:1px solid;
+  }
+  .level-Mudah{ background:var(--good-soft); color:var(--good); border-color:var(--good); }
+  .level-Menengah{ background:var(--accent-soft); color:var(--accent); border-color:var(--accent); }
+  .level-Sulit{ background:var(--bad-soft); color:var(--bad); border-color:var(--bad); }
   .qnum{ font-size:12px; color:var(--ink-faint); font-family:'IBM Plex Mono',monospace; }
 
   .story{
@@ -129,6 +136,15 @@
   pre.code.bug{ border-color:var(--bad); border-width:1.5px; }
   pre.code .kw{ color:var(--accent); font-weight:600; }
   pre.code .cm{ color:var(--ink-faint); font-style:italic; }
+  .output-label{
+    font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--key);
+    display:flex; align-items:center; gap:6px;
+  }
+  pre.output-block{
+    background:var(--key-soft); border:1px solid var(--key); border-radius:8px;
+    padding:12px 14px; font-size:13.5px; line-height:1.6; overflow-x:auto; white-space:pre-wrap; margin:0; color:var(--ink);
+    font-family:'IBM Plex Mono',monospace;
+  }
 
   .ask{ font-size:14.5px; font-weight:600; color:var(--ink); }
 
@@ -174,7 +190,7 @@
   <header class="page">
     <span class="eyebrow">Latihan · Cari &amp; Benerin Bug</span>
     <h1>Latihan Cari &amp; Benerin Bug</h1>
-    <p class="sub">8 fungsi PHP yang SENGAJA ada bug-nya. Baca kodenya, cari letak salahnya, ketik versi perbaikanmu, baru klik "Cek Jawaban" buat cocokin. Ini tipe soal beda dari nulis kode dari nol — di sini fokus ke KETELITIAN membaca kode orang lain.</p>
+    <p class="sub">15 fungsi PHP/Laravel yang SENGAJA ada bug-nya, diurutkan dari Mudah ke Sulit. Baca kodenya, cari letak salahnya, ketik versi perbaikanmu, baru klik "Cek Jawaban" buat cocokin. Ini tipe soal beda dari nulis kode dari nol — di sini fokus ke KETELITIAN membaca kode orang lain.</p>
   </header>
 
   <div class="info-box">
@@ -183,7 +199,7 @@
 
   <div class="score-strip">
     <span>Progres kamu tersimpan otomatis di browser ini.</span>
-    <span>Sudah dicoba: <b id="progress-count">0</b> / 8</span>
+    <span>Sudah dicoba: <b id="progress-count">0</b> / 15</span>
   </div>
 
   <div id="deck"></div>
@@ -204,76 +220,169 @@
 
   var CASES = [
     {
+      level:"Mudah",
       tags:["Bug: Accumulator"],
       story:'Fungsi ini seharusnya menjumlahkan semua qty dalam array transaksi, tapi hasilnya selalu sama dengan qty item terakhir saja.',
-      buggy:"function totalQty(\$transaksi) {\n    foreach (\$transaksi as \$item) {\n        \$total = \$item['qty'];\n    }\n    return \$total;\n}",
+      buggy:"function totalQty($transaksi) {\n    foreach ($transaksi as $item) {\n        $total = $item['qty'];\n    }\n    return $total;\n}",
       ask:'Cari dan perbaiki bug-nya.',
-      fixed:"function totalQty(\$transaksi) {\n    \$total = 0;\n    foreach (\$transaksi as \$item) {\n        \$total += \$item['qty'];\n    }\n    return \$total;\n}",
-      bugExplain:'Bug: <code>$total = $item[\'qty\']</code> pakai tanda sama dengan (assignment) yang MENIMPA nilai tiap iterasi, bukan menjumlahkan. Jadi nilai akhir cuma qty dari item paling terakhir di loop.',
-      why:'Perbaikan: ganti jadi <code>$total += $item[\'qty\']</code> supaya nilai diakumulasi, dan inisialisasi <code>$total = 0</code> di LUAR loop supaya tidak ke-reset tiap iterasi.'
+      fixed:"function totalQty($transaksi) {\n    $total = 0;\n    foreach ($transaksi as $item) {\n        $total += $item['qty'];\n    }\n    return $total;\n}\n\necho totalQty([['qty'=>2],['qty'=>3],['qty'=>5]]);",
+      output:"Kode buggy: hasilnya 5 (cuma qty item terakhir).\nSetelah diperbaiki: hasilnya 10 (2 + 3 + 5 dijumlahkan semua).",
+      bugExplain:'Bug: baris di dalam loop pakai tanda sama dengan yang MENIMPA nilai tiap iterasi, bukan menjumlahkan. Jadi nilai akhir cuma qty dari item paling terakhir di loop.',
+      why:'Perbaikan: ganti jadi operator tambah-sama-dengan supaya nilai diakumulasi, dan inisialisasi total = 0 di LUAR loop supaya tidak ke-reset tiap iterasi.'
     },
     {
+      level:"Mudah",
       tags:["Bug: Operator Perbandingan"],
       story:'Fungsi ini seharusnya mengecek apakah stok produk habis (0), tapi kode ini selalu meng-update stok jadi 0 setiap kali dipanggil, bahkan kalau stoknya sebenarnya bukan 0.',
-      buggy:"function cekStokHabis(&\$produk) {\n    if (\$produk['stok'] = 0) {\n        return true;\n    }\n    return false;\n}",
+      buggy:"function cekStokHabis(&$produk) {\n    if ($produk['stok'] = 0) {\n        return true;\n    }\n    return false;\n}",
       ask:'Cari dan perbaiki bug-nya.',
-      fixed:"function cekStokHabis(&\$produk) {\n    if (\$produk['stok'] == 0) {\n        return true;\n    }\n    return false;\n}",
-      bugExplain:'Bug: <code>$produk[\'stok\'] = 0</code> pakai SATU tanda sama dengan, itu operator ASSIGNMENT (mengisi nilai), bukan PERBANDINGAN. Jadi tiap fungsi ini dipanggil, stok produk beneran diubah jadi 0, dan kondisi if selalu bernilai true.',
-      why:'Perbaikan: ganti jadi <code>==</code> (atau lebih aman <code>===</code>) untuk perbandingan. Ini salah satu bug paling klasik dan paling berbahaya di banyak bahasa pemrograman, termasuk PHP.'
+      fixed:"function cekStokHabis(&$produk) {\n    if ($produk['stok'] == 0) {\n        return true;\n    }\n    return false;\n}\n\n$produk = ['stok' => 5];\nvar_dump(cekStokHabis($produk));\necho $produk['stok'];",
+      output:"Kode buggy: cekStokHabis() selalu return true, dan $produk['stok'] jadi ke-timpa 0 walau aslinya 5.\nSetelah diperbaiki: return false (karena 5 != 0), dan $produk['stok'] tetap 5 (tidak berubah).",
+      bugExplain:'Bug: kondisi if pakai SATU tanda sama dengan, itu operator ASSIGNMENT (mengisi nilai), bukan PERBANDINGAN. Jadi tiap fungsi ini dipanggil, stok produk beneran diubah jadi 0, dan kondisi if selalu bernilai true.',
+      why:'Perbaikan: ganti jadi operator perbandingan dua-sama-dengan (atau lebih aman tiga-sama-dengan) untuk perbandingan. Ini salah satu bug paling klasik dan paling berbahaya di banyak bahasa pemrograman, termasuk PHP.'
     },
     {
+      level:"Mudah",
       tags:["Bug: Lupa Return"],
       story:'Fungsi ini seharusnya mengembalikan harga setelah diskon, tapi kalau dipanggil dan hasilnya di-echo, yang muncul selalu kosong/NULL.',
-      buggy:"function hargaSetelahDiskon(\$harga, \$persenDiskon) {\n    \$diskon = \$harga * (\$persenDiskon / 100);\n    \$hasil = \$harga - \$diskon;\n}",
+      buggy:"function hargaSetelahDiskon($harga, $persenDiskon) {\n    $diskon = $harga * ($persenDiskon / 100);\n    $hasil = $harga - $diskon;\n}",
       ask:'Cari dan perbaiki bug-nya.',
-      fixed:"function hargaSetelahDiskon(\$harga, \$persenDiskon) {\n    \$diskon = \$harga * (\$persenDiskon / 100);\n    \$hasil = \$harga - \$diskon;\n    return \$hasil;\n}",
-      bugExplain:'Bug: fungsi menghitung <code>$hasil</code> tapi tidak pernah menge-return nilainya. Secara default, fungsi PHP tanpa <code>return</code> eksplisit akan mengembalikan NULL.',
-      why:'Perbaikan: tambahkan <code>return $hasil;</code> di baris terakhir. Ini bug yang gampang lolos saat nulis cepat karena kodenya "kelihatan lengkap" padahal belum benar-benar mengeluarkan hasil.'
+      fixed:"function hargaSetelahDiskon($harga, $persenDiskon) {\n    $diskon = $harga * ($persenDiskon / 100);\n    $hasil = $harga - $diskon;\n    return $hasil;\n}\n\nvar_dump(hargaSetelahDiskon(100000, 10));",
+      output:"Kode buggy: var_dump menampilkan NULL.\nSetelah diperbaiki: var_dump menampilkan float(90000).",
+      bugExplain:'Bug: fungsi menghitung hasil tapi tidak pernah menge-return nilainya. Secara default, fungsi PHP tanpa return eksplisit akan mengembalikan NULL.',
+      why:'Perbaikan: tambahkan return di baris terakhir. Ini bug yang gampang lolos saat nulis cepat karena kodenya "kelihatan lengkap" padahal belum benar-benar mengeluarkan hasil.'
     },
     {
+      level:"Mudah",
+      tags:["Bug: Nama Variabel"],
+      story:'Fungsi ini dipakai untuk sapaan di dashboard karyawan, tapi setiap dipanggil selalu muncul warning "Undefined variable" dan sapaan yang tampil kosong.',
+      buggy:"function sapaKaryawan($nama) {\n    $sapaan = 'Halo, ' . $nma . '!';\n    return $sapaan;\n}",
+      ask:'Cari dan perbaiki bug-nya.',
+      fixed:"function sapaKaryawan($nama) {\n    $sapaan = 'Halo, ' . $nama . '!';\n    return $sapaan;\n}\n\necho sapaKaryawan('Budi');",
+      output:"Kode buggy: Warning: Undefined variable $nma, hasilnya 'Halo, !'\nSetelah diperbaiki: 'Halo, Budi!'",
+      bugExplain:'Bug: typo nama variabel — parameter fungsinya bernama $nama, tapi di dalam fungsi yang dipakai $nma (kurang huruf a). PHP menganggap $nma sebagai variabel BARU yang belum diisi, hasilnya kosong dan muncul warning.',
+      why:'Perbaikan: samakan penulisan jadi $nama sesuai nama parameter. Bug typo seperti ini sering lolos saat ngetik cepat — teliti membaca nama variabel satu-satu adalah skill yang dites di sesi baca-kode seperti ini.'
+    },
+    {
+      level:"Mudah",
+      tags:["Bug: Operator String"],
+      story:'Fungsi ini seharusnya menggabungkan nama depan dan nama belakang karyawan jadi satu string, tapi malah menghasilkan angka 0 setiap dipanggil.',
+      buggy:"function namaLengkap($depan, $belakang) {\n    return $depan + ' ' + $belakang;\n}",
+      ask:'Cari dan perbaiki bug-nya.',
+      fixed:"function namaLengkap($depan, $belakang) {\n    return $depan . ' ' . $belakang;\n}\n\necho namaLengkap('Agung', 'Ramadhan');",
+      output:"Kode buggy: hasilnya 0.\nSetelah diperbaiki: 'Agung Ramadhan'.",
+      bugExplain:'Bug: di PHP, operator + dipakai untuk PENJUMLAHAN ANGKA, bukan penggabungan string. Karena $depan dan $belakang berisi teks, PHP mengubahnya jadi 0 dulu (tidak bisa dikonversi ke angka), lalu 0 + 0 = 0.',
+      why:'Perbaikan: pakai titik (.) sebagai operator penggabungan string di PHP, bukan tanda plus. Ini beda dengan beberapa bahasa lain (JavaScript, Java) yang memang pakai + untuk gabung string — jangan tertukar kalau biasa pindah-pindah bahasa.'
+    },
+    {
+      level:"Menengah",
       tags:["Bug: Index Array"],
       story:'Fungsi ini seharusnya menampilkan produk PERTAMA dari daftar, tapi malah selalu error "Undefined array key" ketika array-nya kosong.',
-      buggy:"function produkPertama(\$daftarProduk) {\n    return \$daftarProduk[0]['nama_produk'];\n}",
+      buggy:"function produkPertama($daftarProduk) {\n    return $daftarProduk[0]['nama_produk'];\n}",
       ask:'Cari dan perbaiki bug-nya supaya tidak error kalau array kosong (kembalikan null kalau kosong).',
-      fixed:"function produkPertama(\$daftarProduk) {\n    if (empty(\$daftarProduk)) {\n        return null;\n    }\n    return \$daftarProduk[0]['nama_produk'];\n}",
-      bugExplain:'Bug: kode langsung mengakses <code>$daftarProduk[0]</code> tanpa mengecek dulu apakah array-nya punya isi. Kalau array kosong, index 0 tidak ada dan PHP melempar warning/error "Undefined array key".',
-      why:'Perbaikan: tambahkan pengecekan <code>empty($daftarProduk)</code> di awal fungsi sebelum mengakses index manapun — pola defensif ini penting tiap kali kode mengakses data dari luar (input user, hasil query database, dll) yang bisa saja kosong.'
+      fixed:"function produkPertama($daftarProduk) {\n    if (empty($daftarProduk)) {\n        return null;\n    }\n    return $daftarProduk[0]['nama_produk'];\n}\n\nvar_dump(produkPertama([]));\nvar_dump(produkPertama([['nama_produk' => 'Kursi']]));",
+      output:"Kode buggy: array kosong -> Warning: Undefined array key 0.\nSetelah diperbaiki: array kosong -> NULL. Array berisi -> string(5) \"Kursi\".",
+      bugExplain:'Bug: kode langsung mengakses index ke-0 tanpa mengecek dulu apakah array-nya punya isi. Kalau array kosong, index 0 tidak ada dan PHP melempar warning/error "Undefined array key".',
+      why:'Perbaikan: tambahkan pengecekan empty() di awal fungsi sebelum mengakses index manapun — pola defensif ini penting tiap kali kode mengakses data dari luar (input user, hasil query database, dll) yang bisa saja kosong.'
     },
     {
+      level:"Menengah",
       tags:["Bug: Kondisi Loop"],
       story:'Fungsi ini seharusnya menampilkan nomor urut 1 sampai 5, tapi outputnya cuma 1 sampai 4 — angka 5 tidak pernah muncul.',
-      buggy:"function tampilkanNomor() {\n    \$hasil = [];\n    for (\$i = 1; \$i < 5; \$i++) {\n        \$hasil[] = \$i;\n    }\n    return \$hasil;\n}",
+      buggy:"function tampilkanNomor() {\n    $hasil = [];\n    for ($i = 1; $i < 5; $i++) {\n        $hasil[] = $i;\n    }\n    return $hasil;\n}",
       ask:'Cari dan perbaiki bug-nya.',
-      fixed:"function tampilkanNomor() {\n    \$hasil = [];\n    for (\$i = 1; \$i <= 5; \$i++) {\n        \$hasil[] = \$i;\n    }\n    return \$hasil;\n}",
-      bugExplain:'Bug: kondisi <code>$i < 5</code> membuat loop BERHENTI sebelum $i mencapai 5 (loop berhenti begitu $i = 5, karena 5 < 5 itu false). Ini disebut off-by-one error — kesalahan selisih satu yang sangat umum.',
-      why:'Perbaikan: ganti jadi <code>$i <= 5</code> supaya angka 5 ikut diproses sebelum loop berhenti. Selalu double-check batas loop: apakah batas atas/bawahnya termasuk (inclusive) atau tidak (exclusive) sesuai kebutuhan soal.'
+      fixed:"function tampilkanNomor() {\n    $hasil = [];\n    for ($i = 1; $i <= 5; $i++) {\n        $hasil[] = $i;\n    }\n    return $hasil;\n}\n\nprint_r(tampilkanNomor());",
+      output:"Kode buggy: [1, 2, 3, 4]\nSetelah diperbaiki: [1, 2, 3, 4, 5]",
+      bugExplain:'Bug: kondisi loop membuat perulangan BERHENTI sebelum $i mencapai 5 (loop berhenti begitu $i = 5, karena 5 tidak lebih kecil dari 5). Ini disebut off-by-one error — kesalahan selisih satu yang sangat umum.',
+      why:'Perbaikan: ganti kondisinya supaya 5 tetap termasuk (pakai kurang-dari-sama-dengan). Selalu double-check batas loop: apakah batas atas/bawahnya termasuk (inclusive) atau tidak (exclusive) sesuai kebutuhan soal.'
     },
     {
+      level:"Menengah",
       tags:["Bug: Scope Variabel"],
       story:'Fungsi ini seharusnya menambah nilai counter global setiap dipanggil, tapi nilainya nggak pernah berubah dari luar fungsi.',
-      buggy:"\$counter = 0;\n\nfunction tambahCounter() {\n    \$counter++;\n}\n\ntambahCounter();\ntambahCounter();\necho \$counter; // seharusnya 2, tapi hasilnya 0",
+      buggy:"$counter = 0;\n\nfunction tambahCounter() {\n    $counter++;\n}\n\ntambahCounter();\ntambahCounter();\necho $counter;",
       ask:'Cari dan perbaiki bug-nya (boleh pakai parameter reference atau ubah jadi return value).',
-      fixed:"\$counter = 0;\n\nfunction tambahCounter(&\$counter) {\n    \$counter++;\n}\n\ntambahCounter(\$counter);\ntambahCounter(\$counter);\necho \$counter; // 2",
-      bugExplain:'Bug: variabel di dalam fungsi PHP punya scope LOKAL sendiri secara default — <code>$counter</code> di dalam fungsi adalah variabel yang BEDA dari <code>$counter</code> di luar, meski namanya sama.',
-      why:'Perbaikan: tambahkan tanda <code>&</code> di parameter (<code>&$counter</code>) supaya fungsi menerima REFERENCE ke variabel asli, bukan salinannya, sehingga perubahan di dalam fungsi ikut mempengaruhi variabel di luar.'
+      fixed:"$counter = 0;\n\nfunction tambahCounter(&$counter) {\n    $counter++;\n}\n\ntambahCounter($counter);\ntambahCounter($counter);\necho $counter;",
+      output:"Kode buggy: 0 (tidak pernah berubah).\nSetelah diperbaiki: 2.",
+      bugExplain:'Bug: variabel di dalam fungsi PHP punya scope LOKAL sendiri secara default — counter di dalam fungsi adalah variabel yang BEDA dari counter di luar, meski namanya sama.',
+      why:'Perbaikan: tambahkan tanda ampersand di parameter supaya fungsi menerima REFERENCE ke variabel asli, bukan salinannya, sehingga perubahan di dalam fungsi ikut mempengaruhi variabel di luar.'
     },
     {
+      level:"Menengah",
+      tags:["Bug: Perbandingan Longgar"],
+      story:'Sistem pencarian karyawan berdasarkan kode unik pernah salah menampilkan data karyawan yang berbeda ketika kode yang dicari adalah string "0".',
+      buggy:"function cariByKode($daftar, $kode) {\n    foreach ($daftar as $item) {\n        if ($item['kode'] == $kode) {\n            return $item;\n        }\n    }\n    return null;\n}",
+      ask:'Cari dan perbaiki bug-nya supaya perbandingan lebih ketat dan tidak salah cocok.',
+      fixed:"function cariByKode($daftar, $kode) {\n    foreach ($daftar as $item) {\n        if ($item['kode'] === $kode) {\n            return $item;\n        }\n    }\n    return null;\n}\n\n$data = [['kode' => false, 'nama' => 'Data Rusak'], ['kode' => '0', 'nama' => 'Budi']];\nvar_dump(cariByKode($data, '0'));",
+      output:"Kode buggy: bisa salah mengembalikan {kode: false, nama: 'Data Rusak'} karena false == '0' bernilai true di PHP.\nSetelah diperbaiki: benar mengembalikan {kode: '0', nama: 'Budi'} karena === membandingkan tipe data juga.",
+      bugExplain:'Bug: operator dua-sama-dengan di PHP melakukan "type juggling" — otomatis mengubah tipe data sebelum membandingkan. Nilai seperti 0, "0", null, dan false bisa dianggap SAMA oleh dua-sama-dengan, padahal secara data itu berbeda.',
+      why:'Perbaikan: pakai tiga-sama-dengan (strict comparison) yang membandingkan NILAI dan TIPE DATA sekaligus, tidak melakukan konversi otomatis. Aturan praktis: default-kan pakai perbandingan ketat, kecuali memang butuh longgar.'
+    },
+    {
+      level:"Menengah",
+      tags:["Bug: Laravel Mass Assignment"],
+      story:'Form tambah karyawan baru selalu gagal disimpan dengan error MassAssignmentException, padahal semua field sudah diisi dengan benar di controller.',
+      buggy:"// app/Models/Karyawan.php\nclass Karyawan extends Model\n{\n    // tidak ada properti $fillable atau $guarded\n}\n\n// Controller:\nKaryawan::create($request->all());",
+      ask:'Cari dan perbaiki bug-nya di model Karyawan.',
+      fixed:"// app/Models/Karyawan.php\nclass Karyawan extends Model\n{\n    protected $fillable = ['nama', 'email', 'divisi_id', 'gaji'];\n}",
+      output:"Kode buggy: Illuminate\\Database\\Eloquent\\MassAssignmentException: Add [nama] to fillable property.\nSetelah diperbaiki: data baru tersimpan normal ke tabel karyawan, tidak ada exception.",
+      bugExplain:'Bug: Laravel secara default MEMBLOKIR mass assignment (mengisi banyak kolom sekaligus lewat create()/fill()) demi keamanan, kecuali kolom-kolomnya didaftarkan eksplisit di $fillable (whitelist) atau $guarded (blacklist).',
+      why:'Perbaikan: tambahkan properti $fillable berisi daftar kolom yang boleh diisi lewat mass assignment. Ini fitur keamanan Laravel, bukan bug Laravel-nya — tapi sering bikin bingung pemula karena errornya baru muncul saat create()/update() dipanggil.'
+    },
+    {
+      level:"Sulit",
       tags:["Bug: Keamanan (SQL Injection)"],
       story:'Kode ini berfungsi normal saat testing, tapi tim security bilang ini rawan disusupi lewat input pencarian nama karyawan.',
-      buggy:"function cariKaryawan(\$pdo, \$nama) {\n    \$query = \"SELECT * FROM karyawan WHERE nama = '\" . \$nama . \"'\";\n    return \$pdo->query(\$query)->fetchAll();\n}",
+      buggy:"function cariKaryawan($pdo, $nama) {\n    $query = \"SELECT * FROM karyawan WHERE nama = '\" . $nama . \"'\";\n    return $pdo->query($query)->fetchAll();\n}",
       ask:'Cari dan perbaiki celah keamanannya menggunakan prepared statement.',
-      fixed:"function cariKaryawan(\$pdo, \$nama) {\n    \$stmt = \$pdo->prepare(\"SELECT * FROM karyawan WHERE nama = :nama\");\n    \$stmt->execute(['nama' => \$nama]);\n    return \$stmt->fetchAll();\n}",
-      bugExplain:'Bug: <code>$nama</code> dari input user langsung disambung (concatenate) ke dalam string query SQL. Kalau user memasukkan nilai yang mengandung tanda kutip dan kata kunci SQL, query bisa dimanipulasi untuk membocorkan SEMUA data karyawan (SQL Injection).',
-      why:'Perbaikan: pakai prepared statement (<code>$pdo->prepare()</code> + placeholder <code>:nama</code>). Nilai input dikirim TERPISAH dari struktur query, jadi tidak bisa dipakai untuk mengubah logika SQL-nya. Di Laravel Eloquent/Query Builder, ini otomatis aman selama tidak pakai raw query dengan concatenation manual.'
+      fixed:"function cariKaryawan($pdo, $nama) {\n    $stmt = $pdo->prepare(\"SELECT * FROM karyawan WHERE nama = :nama\");\n    $stmt->execute(['nama' => $nama]);\n    return $stmt->fetchAll();\n}",
+      output:"Kode buggy: kalau input pencarian berisi karakter/kata kunci SQL tertentu, query bisa 'dibengkokkan' untuk mengembalikan SEMUA baris karyawan, bukan cuma yang namanya cocok.\nSetelah diperbaiki: input SELALU diperlakukan sebagai NILAI biasa, tidak peduli apa isinya, tidak bisa mengubah struktur query — pencarian dengan nama aneh cuma menghasilkan 0 baris, bukan membocorkan data.",
+      bugExplain:'Bug: nilai input user langsung disambung (concatenate) ke dalam string query SQL. Kalau user memasukkan nilai yang mengandung tanda kutip dan kata kunci SQL, query bisa dimanipulasi untuk membocorkan SEMUA data karyawan (SQL Injection).',
+      why:'Perbaikan: pakai prepared statement (prepare + placeholder bernama). Nilai input dikirim TERPISAH dari struktur query, jadi tidak bisa dipakai untuk mengubah logika SQL-nya. Di Laravel Eloquent/Query Builder, ini otomatis aman selama tidak pakai raw query dengan concatenation manual.'
     },
     {
+      level:"Sulit",
       tags:["Bug: Laravel N+1 Query"],
       story:'Halaman daftar karyawan berjalan, tapi tim monitoring lapor query database yang jalan jumlahnya ratusan padahal cuma tampilkan 50 karyawan — halaman jadi lambat.',
-      buggy:"public function index()\n{\n    \$karyawan = Karyawan::all();\n    return view('karyawan.index', compact('karyawan'));\n}\n\n// Di file Blade:\n// @foreach ($karyawan as $item)\n//     {{ $item->divisi->nama_divisi }}\n// @endforeach",
+      buggy:"public function index()\n{\n    $karyawan = Karyawan::all();\n    return view('karyawan.index', compact('karyawan'));\n}\n\n// Di file Blade:\n// @foreach ($karyawan as $item)\n//     {{ $item->divisi->nama_divisi }}\n// @endforeach",
       ask:'Cari dan perbaiki bug performa di controller-nya.',
-      fixed:"public function index()\n{\n    \$karyawan = Karyawan::with('divisi')->get();\n    return view('karyawan.index', compact('karyawan'));\n}",
-      bugExplain:'Bug: <code>Karyawan::all()</code> cuma ambil data karyawan, TANPA data divisinya. Begitu Blade mengakses <code>$item->divisi</code> di dalam loop, Eloquent menjalankan query BARU ke database untuk SETIAP karyawan satu-satu — kalau ada 50 karyawan, jadi 50 query tambahan (disebut masalah N+1 query).',
-      why:'Perbaikan: pakai <code>Karyawan::with(\'divisi\')->get()</code> — ini disebut eager loading, mengambil semua data divisi terkait dalam SATU query tambahan saja (bukan satu-satu per karyawan), jauh lebih efisien untuk data banyak.'
+      fixed:"public function index()\n{\n    $karyawan = Karyawan::with('divisi')->get();\n    return view('karyawan.index', compact('karyawan'));\n}",
+      output:"Kode buggy: 1 query ambil karyawan + 50 query TERPISAH (satu per karyawan) untuk ambil divisinya = 51 query total.\nSetelah diperbaiki: cuma 2 query total (1 untuk karyawan, 1 untuk semua divisi terkait sekaligus) — halaman jauh lebih cepat.",
+      bugExplain:'Bug: query pertama cuma ambil data karyawan, TANPA data divisinya. Begitu Blade mengakses relasi divisi di dalam loop, Eloquent menjalankan query BARU ke database untuk SETIAP karyawan satu-satu — kalau ada 50 karyawan, jadi 50 query tambahan (disebut masalah N+1 query).',
+      why:'Perbaikan: pakai eager loading (with) — ini mengambil semua data divisi terkait dalam SATU query tambahan saja (bukan satu-satu per karyawan), jauh lebih efisien untuk data banyak.'
+    },
+    {
+      level:"Sulit",
+      tags:["Bug: Laravel Validasi Update"],
+      story:'Fitur edit data karyawan selalu gagal disimpan dengan pesan "email sudah digunakan", padahal email yang diinput sama persis dengan email karyawan itu sendiri sebelum diedit.',
+      buggy:"public function update(Request $request, $id)\n{\n    $request->validate([\n        'email' => 'required|email|unique:karyawan,email',\n    ]);\n\n    $karyawan = Karyawan::findOrFail($id);\n    $karyawan->update($request->all());\n\n    return redirect('/karyawan');\n}",
+      ask:'Cari dan perbaiki bug validasinya supaya email milik karyawan yang sedang diedit tidak dianggap "sudah dipakai".',
+      fixed:"public function update(Request $request, $id)\n{\n    $request->validate([\n        'email' => 'required|email|unique:karyawan,email,' . $id,\n    ]);\n\n    $karyawan = Karyawan::findOrFail($id);\n    $karyawan->update($request->all());\n\n    return redirect('/karyawan');\n}",
+      output:"Kode buggy: edit karyawan id=5 dengan email yang SAMA seperti sebelumnya tetap ditolak, pesan 'The email has already been taken.'\nSetelah diperbaiki: edit berhasil disimpan karena baris id=5 dikecualikan dari pengecekan unique.",
+      bugExplain:'Bug: aturan unique mengecek SEMUA baris di tabel karyawan tanpa mengecualikan baris milik karyawan yang sedang diedit sendiri. Jadi email karyawan itu sendiri selalu terhitung "sudah dipakai" oleh dirinya sendiri.',
+      why:'Perbaikan: tambahkan parameter ketiga pada aturan unique berupa id baris yang sedang diedit, supaya baris itu DIKECUALIKAN dari pengecekan. Bug ini sering lolos saat testing awal (fitur create) karena baru kelihatan pas fitur update/edit dipakai.'
+    },
+    {
+      level:"Sulit",
+      tags:["Bug: Kondisi Balapan (Race Condition)"],
+      story:'Saat traffic tinggi (banyak pembeli checkout bersamaan), stok produk kadang jadi MINUS di database, padahal ada pengecekan stok sebelum kurangi.',
+      buggy:"function kurangiStok($pdo, $produkId, $qty)\n{\n    $stmt = $pdo->prepare('SELECT stok FROM produk WHERE id = ?');\n    $stmt->execute([$produkId]);\n    $stok = $stmt->fetchColumn();\n\n    if ($stok >= $qty) {\n        $update = $pdo->prepare('UPDATE produk SET stok = stok - ? WHERE id = ?');\n        $update->execute([$qty, $produkId]);\n        return true;\n    }\n    return false;\n}",
+      ask:'Jelaskan kenapa kode ini bisa menyebabkan stok minus saat banyak request bersamaan, dan perbaiki menggunakan pengecekan di level query.',
+      fixed:"function kurangiStok($pdo, $produkId, $qty)\n{\n    $update = $pdo->prepare('UPDATE produk SET stok = stok - ? WHERE id = ? AND stok >= ?');\n    $update->execute([$qty, $produkId, $qty]);\n    return $update->rowCount() > 0;\n}",
+      output:"Kode buggy: stok 5, dua request checkout qty 5 datang bersamaan -> keduanya lolos pengecekan 'stok >= qty' sebelum salah satu sempat update -> stok akhir bisa jadi -5.\nSetelah diperbaiki: kondisi 'stok >= qty' ikut jadi bagian query UPDATE itu sendiri -> request kedua otomatis gagal (rowCount 0) karena stok sudah berkurang duluan oleh request pertama, stok tidak pernah minus.",
+      bugExplain:'Bug: ada jeda waktu antara SELECT (cek stok) dan UPDATE (kurangi stok). Kalau dua request datang hampir bersamaan, keduanya bisa sama-sama membaca stok masih cukup SEBELUM salah satu sempat meng-update — akibatnya stok bisa dikurangi dua kali dan jadi minus.',
+      why:'Perbaikan: pindahkan syarat "stok cukup" langsung ke dalam kondisi WHERE pada query UPDATE, supaya pengecekan dan pengurangan terjadi sebagai SATU operasi atomik di level database, tidak bisa disela request lain di tengah-tengah.'
+    },
+    {
+      level:"Sulit",
+      tags:["Bug: Rekursi Tanpa Batas"],
+      story:'Fungsi ini dipakai untuk menghitung total gaji seluruh bawahan (termasuk bawahan dari bawahan) dalam struktur organisasi, tapi selalu crash dengan error "Maximum function nesting level reached" pada data tertentu.',
+      buggy:"function totalGajiTim($karyawanId, $semuaKaryawan)\n{\n    $total = 0;\n    foreach ($semuaKaryawan as $k) {\n        if ($k['atasan_id'] == $karyawanId) {\n            $total += $k['gaji'];\n            $total += totalGajiTim($k['id'], $semuaKaryawan);\n        }\n    }\n    return $total;\n}",
+      ask:'Jelaskan penyebab rekursi tak berhenti ini dan tambahkan pengaman supaya fungsi tidak crash meski datanya rusak (ada lingkaran).',
+      fixed:"function totalGajiTim($karyawanId, $semuaKaryawan, $sudahDikunjungi = [])\n{\n    if (in_array($karyawanId, $sudahDikunjungi)) {\n        return 0;\n    }\n    $sudahDikunjungi[] = $karyawanId;\n\n    $total = 0;\n    foreach ($semuaKaryawan as $k) {\n        if ($k['atasan_id'] == $karyawanId) {\n            $total += $k['gaji'];\n            $total += totalGajiTim($k['id'], $semuaKaryawan, $sudahDikunjungi);\n        }\n    }\n    return $total;\n}",
+      output:"Kode buggy pada data normal (pohon organisasi wajar): hasilnya benar. Tapi pada data rusak (A punya atasan_id = id milik B, B punya atasan_id = id milik A): PHP Fatal error: Maximum function nesting level reached, program crash.\nSetelah diperbaiki: pada data rusak yang sama, fungsi tetap selesai jalan (mengembalikan hasil parsial) tanpa crash, karena lingkaran terdeteksi dan dihentikan.",
+      bugExplain:'Bug: fungsi ini benar untuk data pohon organisasi yang normal (bawahan tidak pernah jadi atasan dari atasannya sendiri), tapi kalau data rusak membentuk LINGKARAN (A bawahan B, B ternyata bawahan A), fungsi akan terus memanggil dirinya sendiri tanpa henti sampai PHP kehabisan batas kedalaman rekursi dan crash.',
+      why:'Perbaikan: tambahkan parameter "sudah dikunjungi" yang melacak id mana saja yang sudah pernah diproses dalam satu pemanggilan. Kalau id yang sama muncul lagi, hentikan (berarti ada lingkaran) alih-alih terus rekursi. Ini pola umum untuk mengamankan fungsi rekursif dari data yang tidak terjamin bersih.'
     }
   ];
 
@@ -303,6 +412,10 @@
     top.className = 'case-top';
     var tagRow = document.createElement('div');
     tagRow.className = 'tag-row';
+    var levelBadge = document.createElement('span');
+    levelBadge.className = 'level-badge level-' + c.level;
+    levelBadge.textContent = c.level;
+    tagRow.appendChild(levelBadge);
     c.tags.forEach(function(t){
       var tag = document.createElement('span');
       tag.className = 'tag';
@@ -381,6 +494,15 @@
     pre.className = 'code';
     pre.innerHTML = hl(c.fixed);
     reveal.appendChild(pre);
+
+    var outputLabel = document.createElement('div');
+    outputLabel.className = 'output-label';
+    outputLabel.textContent = 'Output';
+    reveal.appendChild(outputLabel);
+    var outputPre = document.createElement('pre');
+    outputPre.className = 'output-block';
+    outputPre.textContent = c.output;
+    reveal.appendChild(outputPre);
 
     var why = document.createElement('div');
     why.className = 'why';

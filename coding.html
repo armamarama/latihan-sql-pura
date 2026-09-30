@@ -20,6 +20,8 @@
     --accent-soft:#efdcce;
     --good:#4d7d58;
     --good-soft:#dfeae1;
+    --bad:#b0402f;
+    --bad-soft:#f3ddd6;
     --key:#3c6a8f;
     --key-soft:#e0e9f0;
     color-scheme: light;
@@ -38,6 +40,8 @@
       --accent-soft:#3c2618;
       --good:#83c095;
       --good-soft:#1e2f24;
+      --bad:#e08a72;
+      --bad-soft:#3a2119;
       --key:#8fbadf;
       --key-soft:#1c2a35;
       color-scheme: dark;
@@ -56,6 +60,8 @@
     --accent-soft:#3c2618;
     --good:#83c095;
     --good-soft:#1e2f24;
+    --bad:#e08a72;
+    --bad-soft:#3a2119;
     --key:#8fbadf;
     --key-soft:#1c2a35;
     color-scheme: dark;
@@ -105,6 +111,13 @@
     font-size:10.5px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
     padding:3px 8px; border-radius:20px; background:var(--accent-soft); color:var(--accent);
   }
+  .level-badge{
+    font-size:10.5px; font-weight:700; letter-spacing:0.03em; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px; border:1px solid;
+  }
+  .level-Mudah{ background:var(--good-soft); color:var(--good); border-color:var(--good); }
+  .level-Menengah{ background:var(--accent-soft); color:var(--accent); border-color:var(--accent); }
+  .level-Sulit{ background:var(--bad-soft); color:var(--bad); border-color:var(--bad); }
   .qnum{ font-size:12px; color:var(--ink-faint); font-family:'IBM Plex Mono',monospace; }
 
   .story{
@@ -139,6 +152,15 @@
   }
   pre.code .kw{ color:var(--accent); font-weight:600; }
   pre.code .cm{ color:var(--ink-faint); font-style:italic; }
+  .output-label{
+    font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--key);
+    display:flex; align-items:center; gap:6px;
+  }
+  pre.output-block{
+    background:var(--key-soft); border:1px solid var(--key); border-radius:8px;
+    padding:12px 14px; font-size:13.5px; line-height:1.6; overflow-x:auto; white-space:pre-wrap; margin:0; color:var(--ink);
+    font-family:'IBM Plex Mono',monospace;
+  }
   .why{ font-size:14.5px; line-height:1.6; color:var(--ink-soft); background:var(--good-soft); border-left:3px solid var(--good); border-radius:0 6px 6px 0; padding:11px 14px; }
   .trap{ font-size:13.5px; line-height:1.6; color:var(--ink-soft); }
   .trap b{ color:var(--ink); }
@@ -161,7 +183,7 @@
   <header class="page">
     <span class="eyebrow">Latihan · Studi Kasus Coding</span>
     <h1>Latihan Studi Kasus Coding</h1>
-    <p class="sub">10 studi kasus PHP/Laravel ala tes teknis programmer. Baca kasusnya, ketik kode kamu sendiri, baru klik "Cek Jawaban" buat cocokin ke kunci jawaban + penjelasan. Fokus ke pola yang sering keluar: validasi, looping/array, OOP dasar, dan Eloquent (Laravel).</p>
+    <p class="sub">16 studi kasus PHP/Laravel ala tes teknis programmer, diurutkan dari Mudah ke Sulit. Baca kasusnya, ketik kode kamu sendiri, baru klik "Cek Jawaban" buat cocokin ke kunci jawaban + output + penjelasan.</p>
   </header>
 
   <div class="info-box">
@@ -170,7 +192,7 @@
 
   <div class="score-strip">
     <span>Progres kamu tersimpan otomatis di browser ini.</span>
-    <span>Sudah dicoba: <b id="progress-count">0</b> / 10</span>
+    <span>Sudah dicoba: <b id="progress-count">0</b> / 16</span>
   </div>
 
   <div id="deck"></div>
@@ -191,84 +213,164 @@
 
   var CASES = [
     {
+      level:"Mudah",
       tags:["Validasi Dasar"],
       story:'Ada form input data karyawan baru. Sebelum disimpan, sistem harus memastikan nama tidak boleh kosong dan email harus format yang valid.',
       ask:'Tulis fungsi PHP validasiKaryawan($nama, $email) yang mengembalikan array pesan error (kosong kalau valid).',
       code:"function validasiKaryawan($nama, $email) {\n    $errors = [];\n\n    if (empty(trim($nama))) {\n        $errors[] = 'Nama tidak boleh kosong';\n    }\n\n    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {\n        $errors[] = 'Format email tidak valid';\n    }\n\n    return $errors;\n}",
+      output:"validasiKaryawan('', 'bukan-email') menghasilkan:\n['Nama tidak boleh kosong', 'Format email tidak valid']\n\nvalidasiKaryawan('Budi', 'budi@sbs.co.id') menghasilkan:\n[] (array kosong, artinya valid)",
       why:'trim() membuang spasi di awal/akhir sebelum dicek empty(), supaya input " " (spasi doang) juga ketangkep sebagai kosong. filter_var dengan FILTER_VALIDATE_EMAIL adalah cara standar PHP untuk validasi format email.',
       trap:'Jangan cuma cek $nama == "" — kalau usernya cuma isi spasi, itu lolos validasi padahal seharusnya dianggap kosong. Selalu trim() dulu.'
     },
     {
+      level:"Mudah",
       tags:["Array & Looping"],
       story:'Kamu punya array data transaksi harian (tiap item ada qty dan harga_satuan). Manajer minta total nilai semua transaksi hari ini.',
       ask:'Tulis fungsi hitungTotalTransaksi($transaksi) yang menerima array transaksi dan mengembalikan total nilai (qty * harga_satuan dijumlahkan semua).',
-      code:"function hitungTotalTransaksi($transaksi) {\n    $total = 0;\n    foreach ($transaksi as $item) {\n        $total += $item['qty'] * $item['harga_satuan'];\n    }\n    return $total;\n}\n\n// Contoh pemakaian:\n$data = [\n    ['qty' => 2, 'harga_satuan' => 15000],\n    ['qty' => 5, 'harga_satuan' => 8000],\n];\necho hitungTotalTransaksi($data); // 70000",
+      code:"function hitungTotalTransaksi($transaksi) {\n    $total = 0;\n    foreach ($transaksi as $item) {\n        $total += $item['qty'] * $item['harga_satuan'];\n    }\n    return $total;\n}\n\n$data = [\n    ['qty' => 2, 'harga_satuan' => 15000],\n    ['qty' => 5, 'harga_satuan' => 8000],\n];\necho hitungTotalTransaksi($data);",
+      output:"70000\n\n(perhitungan: 2 x 15000 = 30000, ditambah 5 x 8000 = 40000, total 70000)",
       why:'Loop foreach mengakses tiap baris transaksi, kalikan qty dengan harga_satuan, dan akumulasi ke variabel $total.',
       trap:'Pastikan inisialisasi $total = 0 di LUAR loop, bukan di dalam — kalau di dalam, $total akan direset tiap iterasi dan hasil akhirnya salah.'
     },
     {
-      tags:["Array — Cari Duplikat"],
-      story:'Tim gudang curiga ada kode produk yang ke-input dobel di sistem lama. Kamu diminta bikin fungsi pengecekan cepat.',
-      ask:'Tulis fungsi cariDuplikat($kodeProduk) yang menerima array kode produk dan mengembalikan array berisi kode yang muncul lebih dari sekali.',
-      code:"function cariDuplikat($kodeProduk) {\n    $jumlah = array_count_values($kodeProduk);\n    $duplikat = [];\n\n    foreach ($jumlah as $kode => $count) {\n        if ($count > 1) {\n            $duplikat[] = $kode;\n        }\n    }\n\n    return $duplikat;\n}",
-      why:'array_count_values() adalah fungsi bawaan PHP yang menghitung berapa kali tiap nilai muncul dalam array, hasilnya array asosiatif [nilai => jumlah_muncul]. Tinggal filter yang jumlahnya lebih dari 1.',
-      trap:'Alternatif manual (nested loop bandingkan tiap elemen ke elemen lain) juga benar, tapi lebih lambat (O(n^2)) dibanding array_count_values (O(n)) — sebutkan ini kalau ditanya soal efisiensi di interview.'
-    },
-    {
+      level:"Mudah",
       tags:["Logika Bisnis Bertingkat"],
       story:'Perusahaan mau kasih diskon bertingkat buat pembelian dalam jumlah besar: di bawah 10 unit tidak ada diskon, 10-49 unit diskon 5%, 50 unit ke atas diskon 10%.',
       ask:'Tulis fungsi hitungHargaSetelahDiskon($qty, $hargaSatuan) yang mengembalikan total harga setelah diskon sesuai aturan itu.',
-      code:"function hitungHargaSetelahDiskon($qty, $hargaSatuan) {\n    $subtotal = $qty * $hargaSatuan;\n\n    if ($qty >= 50) {\n        $diskon = 0.10;\n    } elseif ($qty >= 10) {\n        $diskon = 0.05;\n    } else {\n        $diskon = 0;\n    }\n\n    return $subtotal - ($subtotal * $diskon);\n}",
+      code:"function hitungHargaSetelahDiskon($qty, $hargaSatuan) {\n    $subtotal = $qty * $hargaSatuan;\n\n    if ($qty >= 50) {\n        $diskon = 0.10;\n    } elseif ($qty >= 10) {\n        $diskon = 0.05;\n    } else {\n        $diskon = 0;\n    }\n\n    return $subtotal - ($subtotal * $diskon);\n}\n\necho hitungHargaSetelahDiskon(60, 10000);",
+      output:"540000\n\n(perhitungan: subtotal 60 x 10000 = 600000, qty 60 kena diskon 10% karena >= 50, jadi 600000 - 60000 = 540000)",
       why:'Urutan pengecekan penting: cek dari batas TERBESAR dulu (>= 50), baru batas lebih kecil (>= 10). Kalau dibalik, qty 60 akan salah kena diskon 5% karena kondisi >= 10 sudah dulu ketemu.',
       trap:'Ini pola yang sama persis dengan CASE WHEN di SQL (dicek berurutan, berhenti di kondisi pertama yang cocok) — kalau kamu sudah paham CASE WHEN, logika if/elseif ini seharusnya kerasa familiar.'
     },
     {
-      tags:["OOP Dasar"],
-      story:'Sistem butuh representasi data Produk sebagai object, lengkap dengan method untuk hitung harga termasuk pajak 11%.',
-      ask:'Buat class Produk dengan properti nama dan harga, serta method hitungHargaDenganPajak().',
-      code:"class Produk {\n    public $nama;\n    public $harga;\n\n    public function __construct($nama, $harga) {\n        $this->nama = $nama;\n        $this->harga = $harga;\n    }\n\n    public function hitungHargaDenganPajak() {\n        $pajak = 0.11;\n        return $this->harga + ($this->harga * $pajak);\n    }\n}\n\n// Contoh pemakaian:\n$produk = new Produk('Meja Kayu', 500000);\necho $produk->hitungHargaDenganPajak(); // 555000",
-      why:'__construct() adalah method spesial yang otomatis jalan saat object dibuat (new Produk(...)), dipakai untuk mengisi properti awal. $this-> dipakai untuk mengakses properti/method milik object itu sendiri.',
-      trap:'Jangan lupa $this-> di dalam method — kalau ditulis $harga saja (tanpa $this->), PHP akan mencari variabel lokal $harga yang tidak ada, bukan properti object.'
+      level:"Mudah",
+      tags:["Array Filter"],
+      story:'Bagian gudang mau daftar nama produk yang stoknya masih tersedia saja (stok lebih dari 0), buat ditampilkan di katalog online.',
+      ask:'Tulis fungsi produkTersedia($produk) yang menerima array produk (tiap item ada nama_produk dan stok) dan mengembalikan array nama produk yang stoknya di atas 0.',
+      code:"function produkTersedia($produk) {\n    $tersedia = array_filter($produk, function ($item) {\n        return $item['stok'] > 0;\n    });\n\n    return array_values(array_map(function ($item) {\n        return $item['nama_produk'];\n    }, $tersedia));\n}\n\n$data = [\n    ['nama_produk' => 'Kursi', 'stok' => 15],\n    ['nama_produk' => 'Meja', 'stok' => 0],\n    ['nama_produk' => 'Lemari', 'stok' => 3],\n];\nprint_r(produkTersedia($data));",
+      output:"Array\n(\n    [0] => Kursi\n    [1] => Lemari\n)\n\n('Meja' hilang dari hasil karena stoknya 0)",
+      why:'array_filter() menyaring array berdasarkan kondisi (cuma menyisakan item yang stoknya > 0). array_map() lalu mengubah tiap item yang lolos jadi cuma nama_produk-nya saja, bukan seluruh datanya.',
+      trap:'array_filter() mempertahankan key/index asli dari array (di contoh ini, "Lemari" tetap ber-index 2 setelah "Meja" dibuang) — makanya dibungkus array_values() supaya index-nya reset urut dari 0.'
     },
     {
+      level:"Mudah",
       tags:["Laravel — Route & Controller"],
       story:'Butuh halaman yang menampilkan daftar semua karyawan dari database, diakses lewat URL /karyawan.',
       ask:'Tulis route dan method controller sederhana (pakai Eloquent) untuk menampilkan semua data karyawan.',
       code:"// routes/web.php\nRoute::get('/karyawan', [KaryawanController::class, 'index']);\n\n// app/Http/Controllers/KaryawanController.php\nclass KaryawanController extends Controller\n{\n    public function index()\n    {\n        $karyawan = Karyawan::all();\n        return view('karyawan.index', compact('karyawan'));\n    }\n}",
+      output:"Bukan nilai balik seperti fungsi biasa — ini menghasilkan HALAMAN WEB. Saat browser membuka /karyawan, server merespons dengan HTML hasil render karyawan.index.blade.php, yang isinya daftar semua baris tabel karyawan (nama, dll) sesuai apa yang ditulis di file Blade tersebut.",
       why:'Route::get() mendaftarkan URL /karyawan supaya dilayani oleh method index() di KaryawanController. Karyawan::all() adalah Eloquent, mengambil SEMUA baris dari tabel karyawan (setara SELECT * FROM karyawan). compact(\'karyawan\') mengirim variabel $karyawan ke file view.',
       trap:'Karyawan::all() memuat SEMUA baris sekaligus ke memori — untuk tabel besar biasanya dipakai ->paginate(20) sebagai gantinya supaya tidak berat.'
     },
     {
+      level:"Menengah",
+      tags:["Array — Cari Duplikat"],
+      story:'Tim gudang curiga ada kode produk yang ke-input dobel di sistem lama. Kamu diminta bikin fungsi pengecekan cepat.',
+      ask:'Tulis fungsi cariDuplikat($kodeProduk) yang menerima array kode produk dan mengembalikan array berisi kode yang muncul lebih dari sekali.',
+      code:"function cariDuplikat($kodeProduk) {\n    $jumlah = array_count_values($kodeProduk);\n    $duplikat = [];\n\n    foreach ($jumlah as $kode => $count) {\n        if ($count > 1) {\n            $duplikat[] = $kode;\n        }\n    }\n\n    return $duplikat;\n}\n\nprint_r(cariDuplikat(['A01', 'B02', 'A01', 'C03', 'B02', 'B02']));",
+      output:"Array\n(\n    [0] => A01\n    [1] => B02\n)\n\n(A01 muncul 2 kali, B02 muncul 3 kali, C03 cuma 1 kali jadi tidak ikut)",
+      why:'array_count_values() adalah fungsi bawaan PHP yang menghitung berapa kali tiap nilai muncul dalam array, hasilnya array asosiatif [nilai => jumlah_muncul]. Tinggal filter yang jumlahnya lebih dari 1.',
+      trap:'Alternatif manual (nested loop bandingkan tiap elemen ke elemen lain) juga benar, tapi lebih lambat (O(n^2)) dibanding array_count_values (O(n)) — sebutkan ini kalau ditanya soal efisiensi di interview.'
+    },
+    {
+      level:"Menengah",
+      tags:["OOP Dasar"],
+      story:'Sistem butuh representasi data Produk sebagai object, lengkap dengan method untuk hitung harga termasuk pajak 11%.',
+      ask:'Buat class Produk dengan properti nama dan harga, serta method hitungHargaDenganPajak().',
+      code:"class Produk {\n    public $nama;\n    public $harga;\n\n    public function __construct($nama, $harga) {\n        $this->nama = $nama;\n        $this->harga = $harga;\n    }\n\n    public function hitungHargaDenganPajak() {\n        $pajak = 0.11;\n        return $this->harga + ($this->harga * $pajak);\n    }\n}\n\n$produk = new Produk('Meja Kayu', 500000);\necho $produk->hitungHargaDenganPajak();",
+      output:"555000\n\n(perhitungan: 500000 + (500000 x 0.11) = 500000 + 55000 = 555000)",
+      why:'__construct() adalah method spesial yang otomatis jalan saat object dibuat (new Produk(...)), dipakai untuk mengisi properti awal. $this-> dipakai untuk mengakses properti/method milik object itu sendiri.',
+      trap:'Jangan lupa $this-> di dalam method — kalau ditulis $harga saja (tanpa $this->), PHP akan mencari variabel lokal $harga yang tidak ada, bukan properti object.'
+    },
+    {
+      level:"Menengah",
+      tags:["Rekursi"],
+      story:'Sistem butuh fungsi untuk menghitung faktorial (dipakai di salah satu rumus kalkulasi kombinasi produk paket), dan diminta pakai pendekatan rekursif.',
+      ask:'Tulis fungsi rekursif faktorial($n) yang menghitung n! (n faktorial).',
+      code:"function faktorial($n) {\n    if ($n <= 1) {\n        return 1; // base case\n    }\n    return $n * faktorial($n - 1);\n}\n\necho faktorial(5);",
+      output:"120\n\n(alur rekursi: faktorial(5) = 5 x faktorial(4) = 5 x 4 x faktorial(3) = ... = 5 x 4 x 3 x 2 x 1 = 120)",
+      why:'Fungsi rekursif selalu butuh dua bagian: base case (kondisi berhenti, di sini n <= 1) dan recursive case (memanggil dirinya sendiri dengan input yang makin mengecil, di sini n-1). Tanpa base case, fungsi akan memanggil dirinya selamanya.',
+      trap:'Selalu pastikan input di recursive case BERGERAK MENDEKATI base case (di sini $n - 1 mendekati $n <= 1). Kalau salah arah atau lupa base case, terjadi infinite recursion sampai program crash.'
+    },
+    {
+      level:"Menengah",
       tags:["Laravel Eloquent — Relasi (mirip JOIN)"],
       story:'Halaman daftar karyawan tadi juga harus menampilkan nama divisi tiap karyawan — data divisi ada di tabel terpisah, terhubung lewat divisi_id.',
       ask:'Tulis definisi relasi Eloquent di model Karyawan, dan cara mengambil data karyawan beserta nama divisinya sekaligus.',
       code:"// app/Models/Karyawan.php\nclass Karyawan extends Model\n{\n    public function divisi()\n    {\n        return $this->belongsTo(Divisi::class);\n    }\n}\n\n// Di controller:\n$karyawan = Karyawan::with('divisi')->get();\n\n// Di view (Blade):\n// {{ $item->divisi->nama_divisi }}",
+      output:"Kalau di-dump, $karyawan berisi koleksi object karyawan, tiap object punya properti tambahan 'divisi' berisi object Divisi lengkap. Contoh satu baris:\nKaryawan { nama: 'Budi', divisi: Divisi { nama_divisi: 'Produksi' } }\n\nDi halaman Blade, {{ $item->divisi->nama_divisi }} akan mencetak teks 'Produksi'.",
       why:'belongsTo() mendefinisikan bahwa satu karyawan "milik" satu divisi (mirip JOIN pakai divisi_id = id). with(\'divisi\') melakukan eager loading — mengambil data divisi sekaligus dalam query yang efisien, bukan query terpisah per karyawan.',
       trap:'Kalau lupa pakai with(\'divisi\') dan langsung akses $item->divisi->nama_divisi di loop view, Eloquent akan menjalankan query BARU untuk tiap karyawan (disebut masalah N+1 query) — sangat lambat untuk data banyak.'
     },
     {
+      level:"Menengah",
       tags:["Laravel — Validasi Request"],
       story:'Form tambah karyawan baru perlu validasi sebelum data masuk database: nama wajib diisi, email wajib format valid dan belum terdaftar, gaji wajib angka.',
       ask:'Tulis kode validasi di method store() controller Laravel menggunakan $request->validate().',
-      code:"public function store(Request \$request)\n{\n    \$validated = \$request->validate([\n        'nama' => 'required|string|max:255',\n        'email' => 'required|email|unique:karyawan,email',\n        'gaji' => 'required|numeric|min:0',\n    ]);\n\n    Karyawan::create(\$validated);\n\n    return redirect('/karyawan');\n}",
+      code:"public function store(Request $request)\n{\n    $validated = $request->validate([\n        'nama' => 'required|string|max:255',\n        'email' => 'required|email|unique:karyawan,email',\n        'gaji' => 'required|numeric|min:0',\n    ]);\n\n    Karyawan::create($validated);\n\n    return redirect('/karyawan');\n}",
+      output:"Kalau semua data valid: user di-redirect ke /karyawan, dan baris baru muncul di database.\n\nKalau email kosong misalnya: request DIBATALKAN, user diarahkan balik ke form dengan pesan error otomatis seperti 'The email field is required.' ditampilkan di halaman (lewat session flash data $errors yang Laravel siapkan otomatis).",
       why:'$request->validate() otomatis memeriksa tiap aturan; kalau ada yang gagal, Laravel otomatis redirect balik dengan pesan error (tidak perlu ditulis manual). unique:karyawan,email mengecek email belum ada di tabel karyawan.',
       trap:'Karyawan::create() cuma jalan kalau seluruh field yang dipakai ada di $fillable pada model Karyawan — kalau lupa set $fillable, Laravel akan menolak mass assignment demi keamanan.'
     },
     {
+      level:"Menengah",
       tags:["String Manipulation"],
       story:'Data nomor telepon karyawan disimpan tanpa format konsisten (ada yang pakai spasi, strip, dll). Bagian admin mau tampilan yang rapi: 0877-6757-9000.',
       ask:'Tulis fungsi formatNomorTelepon($nomor) yang membersihkan nomor dari karakter non-angka lalu format ulang jadi pola XXXX-XXXX-XXXX.',
-      code:"function formatNomorTelepon(\$nomor) {\n    // Buang semua karakter selain angka\n    \$bersih = preg_replace('/[^0-9]/', '', \$nomor);\n\n    // Format ulang jadi XXXX-XXXX-XXXX\n    return substr(\$bersih, 0, 4) . '-' . substr(\$bersih, 4, 4) . '-' . substr(\$bersih, 8);\n}\n\necho formatNomorTelepon('0877 6757 9000'); // 0877-6757-9000",
+      code:"function formatNomorTelepon($nomor) {\n    $bersih = preg_replace('/[^0-9]/', '', $nomor);\n    return substr($bersih, 0, 4) . '-' . substr($bersih, 4, 4) . '-' . substr($bersih, 8);\n}\n\necho formatNomorTelepon('0877 6757 9000');",
+      output:"0877-6757-9000",
       why:'preg_replace dengan pola /[^0-9]/ membuang semua karakter yang BUKAN angka (spasi, strip, dll), menyisakan angka murni. substr() lalu memotong string itu jadi 3 bagian dan disambung pakai strip.',
       trap:'Fungsi ini asumsi nomor selalu 12 digit — kalau nomor bisa beda panjang (11 atau 13 digit), perlu penanganan tambahan atau validasi panjang dulu sebelum format.'
     },
     {
+      level:"Menengah",
       tags:["Sorting Array Asosiatif"],
       story:'Manajer mau daftar produk diurutkan berdasarkan stok, dari yang paling sedikit (paling perlu segera di-restock) ke yang paling banyak.',
       ask:'Tulis fungsi urutkanBerdasarkanStok($produk) yang mengurutkan array asosiatif produk berdasarkan key stok, ascending.',
-      code:"function urutkanBerdasarkanStok(\$produk) {\n    usort(\$produk, function (\$a, \$b) {\n        return \$a['stok'] <=> \$b['stok'];\n    });\n    return \$produk;\n}\n\n// Contoh:\n\$data = [\n    ['nama' => 'Kursi', 'stok' => 15],\n    ['nama' => 'Meja', 'stok' => 3],\n];\n\$hasil = urutkanBerdasarkanStok(\$data);\n// Meja (stok 3) akan muncul duluan",
+      code:"function urutkanBerdasarkanStok($produk) {\n    usort($produk, function ($a, $b) {\n        return $a['stok'] <=> $b['stok'];\n    });\n    return $produk;\n}\n\n$data = [\n    ['nama' => 'Kursi', 'stok' => 15],\n    ['nama' => 'Meja', 'stok' => 3],\n    ['nama' => 'Lemari', 'stok' => 8],\n];\nprint_r(urutkanBerdasarkanStok($data));",
+      output:"Array\n(\n    [0] => Array ( [nama] => Meja [stok] => 3 )\n    [1] => Array ( [nama] => Lemari [stok] => 8 )\n    [2] => Array ( [nama] => Kursi [stok] => 15 )\n)",
       why:'usort() mengurutkan array pakai fungsi pembanding custom. Operator <=> (spaceship operator) mengembalikan -1, 0, atau 1 tergantung mana yang lebih kecil — cara ringkas untuk sorting ascending.',
       trap:'usort() mengubah array asli (pass by reference secara internal) dan me-reset key numeriknya jadi urut ulang dari 0 — kalau butuh key asli tetap, pakai uasort() sebagai gantinya.'
+    },
+    {
+      level:"Sulit",
+      tags:["Laravel Migration"],
+      story:'Butuh bikin tabel baru di database untuk fitur pemesanan produk: tabel pesanan yang menyimpan referensi ke karyawan pemesan dan produk yang dipesan, plus jumlah dan tanggal pesan.',
+      ask:'Tulis Laravel migration untuk membuat tabel pesanan dengan kolom yang sesuai, termasuk foreign key.',
+      code:"public function up()\n{\n    Schema::create('pesanan', function (Blueprint $table) {\n        $table->id();\n        $table->foreignId('karyawan_id')->constrained('karyawan');\n        $table->foreignId('produk_id')->constrained('produk');\n        $table->integer('qty');\n        $table->timestamp('tgl_pesan');\n        $table->timestamps();\n    });\n}\n\npublic function down()\n{\n    Schema::dropIfExists('pesanan');\n}",
+      output:"Setelah php artisan migrate dijalankan, tabel 'pesanan' terbentuk di database dengan struktur:\nid (PK), karyawan_id (FK -> karyawan.id), produk_id (FK -> produk.id), qty, tgl_pesan, created_at, updated_at",
+      why:'foreignId(...)->constrained(...) membuat kolom foreign key sekaligus relasi constraint-nya ke tabel lain secara otomatis (Laravel menebak nama kolom referensinya adalah id). timestamps() otomatis menambahkan kolom created_at dan updated_at.',
+      trap:'Urutan migration penting — tabel pesanan yang punya foreign key ke karyawan dan produk harus dibuat SETELAH kedua tabel itu ada, kalau tidak constrained() akan gagal karena tabel referensinya belum ada.'
+    },
+    {
+      level:"Sulit",
+      tags:["Logika Bisnis Kompleks"],
+      story:'HRD butuh fungsi hitung gaji bersih karyawan: gaji pokok dikurangi BPJS Kesehatan (1% dari gaji pokok, maksimal dari gaji Rp12.000.000), lalu dikurangi PPh 21 sederhana (5% untuk gaji di atas Rp5.000.000, 0% untuk di bawahnya).',
+      ask:'Tulis fungsi hitungGajiBersih($gajiPokok) yang menerapkan kedua potongan itu secara berurutan.',
+      code:"function hitungGajiBersih($gajiPokok) {\n    $dasarBpjs = min($gajiPokok, 12000000);\n    $bpjs = $dasarBpjs * 0.01;\n\n    $setelahBpjs = $gajiPokok - $bpjs;\n\n    $pph = $gajiPokok > 5000000 ? $setelahBpjs * 0.05 : 0;\n\n    return $setelahBpjs - $pph;\n}\n\necho hitungGajiBersih(7000000);",
+      output:"6583500\n\n(rincian: BPJS = 1% x 7.000.000 = 70.000, gaji setelah BPJS = 6.930.000, karena gaji pokok 7 juta > 5 juta maka PPh = 5% x 6.930.000 = 346.500, gaji bersih = 6.930.000 - 346.500 = 6.583.500)",
+      why:'min($gajiPokok, 12000000) memastikan dasar perhitungan BPJS tidak pernah melebihi batas maksimal, meski gaji karyawan lebih besar dari itu. PPh dihitung dari gaji SETELAH dipotong BPJS, sesuai urutan potongan yang diminta soal.',
+      trap:'Perhatikan syarat "gaji pokok di atas 5 juta" untuk PPh memakai $gajiPokok (gaji ASLI), bukan $setelahBpjs — beda dasar pengecekan dengan dasar perhitungan potongannya adalah jebakan umum di soal kalkulasi bertingkat seperti ini.'
+    },
+    {
+      level:"Sulit",
+      tags:["Laravel API Resource"],
+      story:'Tim mobile app butuh endpoint API yang mengembalikan daftar karyawan dalam format JSON yang rapi (cuma field tertentu, tidak semua kolom database), lengkap dengan pagination.',
+      ask:'Tulis Laravel API Resource untuk Karyawan dan method controller yang memakainya dengan pagination.',
+      code:"// app/Http/Resources/KaryawanResource.php\nclass KaryawanResource extends JsonResource\n{\n    public function toArray($request)\n    {\n        return [\n            'id' => $this->id,\n            'nama' => $this->nama,\n            'divisi' => $this->divisi->nama_divisi,\n        ];\n    }\n}\n\n// Controller:\npublic function index()\n{\n    $karyawan = Karyawan::with('divisi')->paginate(20);\n    return KaryawanResource::collection($karyawan);\n}",
+      output:"Response JSON kurang lebih:\n{\n  \"data\": [\n    { \"id\": 1, \"nama\": \"Budi\", \"divisi\": \"Produksi\" },\n    { \"id\": 2, \"nama\": \"Sari\", \"divisi\": \"Gudang\" }\n  ],\n  \"links\": { \"first\": \"...\", \"last\": \"...\", \"next\": \"...\" },\n  \"meta\": { \"current_page\": 1, \"total\": 45, \"per_page\": 20 }\n}",
+      why:'API Resource mengontrol PERSIS field apa saja yang dikirim ke response JSON, menyembunyikan kolom sensitif (misal password_hash) dan membentuk ulang data (misal ambil nama_divisi dari relasi, bukan divisi_id mentah). paginate(20) otomatis menambahkan meta info halaman ke response.',
+      trap:'with(\'divisi\') tetap wajib dipakai di query, meski sudah pakai Resource — kalau lupa, mengakses $this->divisi di dalam Resource akan memicu N+1 query yang sama seperti kasus Eloquent biasa.'
+    },
+    {
+      level:"Sulit",
+      tags:["OOP Lanjut — Interface"],
+      story:'Tim ingin kode pengambilan data karyawan lebih fleksibel — suatu saat bisa ganti sumber data (dari database ke API eksternal) tanpa mengubah kode yang memakainya. Diminta pakai pola Repository dengan interface.',
+      ask:'Buat interface KaryawanRepositoryInterface dengan method cariSemua(), lalu class EloquentKaryawanRepository yang mengimplementasikannya.',
+      code:"interface KaryawanRepositoryInterface\n{\n    public function cariSemua();\n}\n\nclass EloquentKaryawanRepository implements KaryawanRepositoryInterface\n{\n    public function cariSemua()\n    {\n        return Karyawan::with('divisi')->get();\n    }\n}\n\nclass KaryawanController extends Controller\n{\n    protected $repo;\n\n    public function __construct(KaryawanRepositoryInterface $repo)\n    {\n        $this->repo = $repo;\n    }\n\n    public function index()\n    {\n        return view('karyawan.index', ['karyawan' => $this->repo->cariSemua()]);\n    }\n}",
+      output:"Secara fungsional, output halamannya SAMA PERSIS dengan versi tanpa interface (daftar karyawan tetap tampil). Bedanya cuma di STRUKTUR kode: kalau nanti dibuat class baru misalnya ApiKaryawanRepository yang juga implements KaryawanRepositoryInterface, KaryawanController tidak perlu diubah SATU BARIS PUN — cukup ganti binding interface-nya di service container.",
+      why:'Interface mendefinisikan KONTRAK method yang wajib ada (cariSemua()), tanpa peduli implementasinya dari mana. Controller cuma bergantung pada interface, bukan class konkretnya — kalau nanti sumber data ganti ke API eksternal, tinggal buat class baru yang implements interface yang sama, controller tidak perlu diubah sama sekali.',
+      trap:'Pola ini sering ditanya sebatas konsep di interview level menengah ("apa itu dependency injection / interface segregation"), bukan diminta ditulis lengkap dari nol — cukup paham KENAPA ini berguna: memisahkan "apa yang dilakukan" dari "bagaimana caranya".'
     }
   ];
 
@@ -298,6 +400,10 @@
     top.className = 'case-top';
     var tagRow = document.createElement('div');
     tagRow.className = 'tag-row';
+    var levelBadge = document.createElement('span');
+    levelBadge.className = 'level-badge level-' + c.level;
+    levelBadge.textContent = c.level;
+    tagRow.appendChild(levelBadge);
     c.tags.forEach(function(t){
       var tag = document.createElement('span');
       tag.className = 'tag';
@@ -362,6 +468,15 @@
     pre.className = 'code';
     pre.innerHTML = hl(c.code);
     reveal.appendChild(pre);
+
+    var outputLabel = document.createElement('div');
+    outputLabel.className = 'output-label';
+    outputLabel.textContent = 'Output';
+    reveal.appendChild(outputLabel);
+    var outputPre = document.createElement('pre');
+    outputPre.className = 'output-block';
+    outputPre.textContent = c.output;
+    reveal.appendChild(outputPre);
 
     var why = document.createElement('div');
     why.className = 'why';
