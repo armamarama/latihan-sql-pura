@@ -91,6 +91,23 @@
     background:var(--key-soft); padding:5px 10px; border-radius:20px;
   }
 
+  .schema{
+    background:var(--surface); border:1px solid var(--rule); border-radius:12px;
+    padding:14px 16px;
+  }
+  .schema summary{ cursor:pointer; font-size:13px; font-weight:600; color:var(--key); list-style:none; display:flex; align-items:center; gap:6px; }
+  .schema summary::-webkit-details-marker{ display:none; }
+  .schema summary::before{ content:"▸"; transition:transform .15s; }
+  .schema[open] summary::before{ transform:rotate(90deg); }
+  .schema-note{ font-size:12.5px; color:var(--ink-soft); margin:10px 0 0; line-height:1.5; }
+  .tables{ display:flex; flex-direction:column; gap:12px; margin-top:12px; }
+  .tbl{ background:var(--surface-2); border-radius:8px; padding:10px 12px; overflow-x:auto; }
+  .tbl .name{ font-weight:600; font-size:13px; color:var(--key); margin-bottom:6px; }
+  pre.data-table{
+    margin:0; font-family:'IBM Plex Mono',monospace; font-size:12px; line-height:1.6;
+    color:var(--ink-soft); white-space:pre; overflow-x:auto;
+  }
+
   section.lesson{
     background:var(--surface); border:1px solid var(--rule); border-radius:14px;
     padding:20px 20px 18px; scroll-margin-top:16px;
@@ -190,6 +207,57 @@
     <a href="#l14">14. Query Gabungan</a>
   </nav>
 
+  <details class="schema">
+    <summary>Lihat data sampel (dipakai di semua Output di halaman ini)</summary>
+    <p class="schema-note">Semua "Output" di tiap Contoh Soal dihitung dari data persis di bawah ini — sama dengan data di file Latihan Soal.</p>
+    <div class="tables">
+      <div class="tbl">
+        <div class="name">divisi</div>
+        <pre class="data-table">id | nama_divisi
+---+------------
+1  | Produksi
+2  | Gudang
+3  | Marketing
+4  | Riset</pre>
+      </div>
+      <div class="tbl">
+        <div class="name">karyawan</div>
+        <pre class="data-table">id | nama | divisi_id | gaji
+---+------+-----------+--------
+1  | Budi | 1         | 5000000
+2  | Sari | 1         | 6000000
+3  | Andi | 2         | 4500000
+4  | Dewi | 2         | 4500000
+5  | Rudi | 2         | 7000000
+6  | Lina | 3         | 5500000
+7  | Tono | NULL      | 4000000</pre>
+      </div>
+      <div class="tbl">
+        <div class="name">produk</div>
+        <pre class="data-table">id | nama_produk  | divisi_id | harga   | stok
+---+--------------+-----------+---------+-----
+1  | Kursi        | 1         | 500000  | 20
+2  | Meja         | 1         | 800000  | 0
+3  | Lemari       | 1         | 1500000 | 5
+4  | Rak Gudang   | 2         | 300000  | 15
+5  | Banner Promo | 3         | 100000  | 50</pre>
+      </div>
+      <div class="tbl">
+        <div class="name">transaksi</div>
+        <pre class="data-table">id | produk_id | karyawan_id | qty | tgl_transaksi
+---+-----------+-------------+-----+--------------
+1  | 1         | 1           | 3   | 2026-01-05
+2  | 1         | 2           | 5   | 2026-01-10
+3  | 3         | 1           | 1   | 2026-01-15
+4  | 4         | 3           | 10  | 2026-02-01
+5  | 4         | 4           | 8   | 2026-02-05
+6  | 1         | 3           | 2   | 2026-02-10
+7  | 3         | 2           | 4   | 2026-03-01
+8  | 4         | 3           | 6   | 2026-03-05</pre>
+      </div>
+    </div>
+  </details>
+
   <section class="lesson" id="l1">
     <div class="lesson-head"><span class="lesson-num">1</span><h2>JOIN</h2></div>
     <div class="analogy"><b>Analogi:</b> JOIN itu kayak nyambungin KTP-mu ke data Kartu Keluarga. KTP cuma punya "nomor KK", nggak punya nama kepala keluarga. Buat tau nama kepala keluargamu, kamu harus SAMBUNGIN nomor KK di KTP-mu ke tabel Kartu Keluarga.</div>
@@ -222,6 +290,14 @@
       <pre class="sql"><span class="kw">SELECT</span> p.nama_produk, d.nama_divisi
 <span class="kw">FROM</span> produk p
 <span class="kw">JOIN</span> divisi d <span class="kw">ON</span> p.divisi_id = d.id;</pre>
+      <div class="ans-label">Output</div>
+      <pre class="sql">nama_produk  | nama_divisi
+-------------+------------
+Kursi        | Produksi
+Meja         | Produksi
+Lemari       | Produksi
+Rak Gudang   | Gudang
+Banner Promo | Marketing</pre>
       <div class="soal-explain"><b>Penjelasan:</b> Pola persis sama seperti contoh karyawan-divisi di atas, cuma ganti tabel karyawan jadi produk. Kunci sambungnya tetap sama bentuknya: <code>kolom_id di tabel kiri = id di tabel kanan</code>.</div>
     </div>
 
@@ -250,6 +326,21 @@
       <pre class="sql"><span class="kw">SELECT</span> p.nama_produk, t.id <span class="kw">AS</span> id_transaksi
 <span class="kw">FROM</span> produk p
 <span class="kw">LEFT JOIN</span> transaksi t <span class="kw">ON</span> t.produk_id = p.id;</pre>
+      <div class="ans-label">Output</div>
+      <pre class="sql">nama_produk  | id_transaksi
+-------------+-------------
+Kursi        | 1
+Kursi        | 2
+Kursi        | 6
+Meja         | NULL
+Lemari       | 3
+Lemari       | 7
+Rak Gudang   | 4
+Rak Gudang   | 5
+Rak Gudang   | 8
+Banner Promo | NULL
+
+(Meja dan Banner Promo tetap muncul dengan id_transaksi NULL, meski belum pernah transaksi)</pre>
       <div class="soal-explain"><b>Penjelasan:</b> Kata "termasuk yang belum pernah" langsung nandain ini harus LEFT JOIN. Produk tanpa transaksi tetap muncul di hasil, dengan kolom id_transaksi kosong (NULL) karena memang tidak ada pasangannya di tabel transaksi.</div>
     </div>
 
@@ -292,6 +383,12 @@
 <span class="kw">FROM</span> divisi d
 <span class="kw">JOIN</span> karyawan k <span class="kw">ON</span> k.divisi_id = d.id
 <span class="kw">GROUP BY</span> d.nama_divisi;</pre>
+      <div class="ans-label">Output</div>
+      <pre class="sql">nama_divisi | rata_rata_gaji
+------------+---------------
+Produksi    | 5500000
+Gudang      | 5333333
+Marketing   | 5500000</pre>
       <div class="soal-explain"><b>Penjelasan:</b> Pola sama persis dengan contoh SUM tadi, cuma fungsinya diganti AVG. Selama kolom non-agregasi (nama_divisi) tetap ada di GROUP BY, tinggal ganti-ganti fungsi agregasinya sesuai kebutuhan (SUM, AVG, COUNT, MAX, MIN).</div>
     </div>
 
@@ -312,20 +409,26 @@
 <span class="kw">FROM</span> divisi d
 <span class="kw">JOIN</span> karyawan k <span class="kw">ON</span> k.divisi_id = d.id
 <span class="kw">GROUP BY</span> d.nama_divisi
-<span class="kw">HAVING</span> <span class="kw">SUM</span>(k.gaji) > 50000000;</pre>
+<span class="kw">HAVING</span> <span class="kw">SUM</span>(k.gaji) > 10000000;</pre>
     <div class="ingat"><span class="lbl">Cara Inget</span> <span>Satu kalimat: <b>"WHERE duluan, HAVING belakangan."</b> Urutan proses SQL selalu: FROM/JOIN → WHERE → GROUP BY → HAVING → SELECT.</span></div>
 
     <div class="soal-box">
       <div class="soal-label">Contoh Soal</div>
-      <div class="soal-q">Dari transaksi yang terjadi bulan Januari 2026 saja, tampilkan produk dengan total qty terjual lebih dari 20.</div>
+      <div class="soal-q">Dari transaksi yang terjadi bulan Januari 2026 saja, tampilkan produk dengan total qty terjual lebih dari 5.</div>
       <div class="ans-label">Jawaban</div>
       <pre class="sql"><span class="kw">SELECT</span> p.nama_produk, <span class="kw">SUM</span>(t.qty) <span class="kw">AS</span> total_qty
 <span class="kw">FROM</span> produk p
 <span class="kw">JOIN</span> transaksi t <span class="kw">ON</span> t.produk_id = p.id
 <span class="kw">WHERE</span> t.tgl_transaksi >= '2026-01-01' <span class="kw">AND</span> t.tgl_transaksi < '2026-02-01'
 <span class="kw">GROUP BY</span> p.nama_produk
-<span class="kw">HAVING</span> <span class="kw">SUM</span>(t.qty) > 20;</pre>
-      <div class="soal-explain"><b>Penjelasan:</b> Ada dua syarat penyaringan di sini. "Bulan Januari 2026" itu syarat data mentah (tanggal transaksi) → masuk WHERE. "Total qty lebih dari 20" itu syarat hasil SUM → masuk HAVING. Dua-duanya dipakai bareng, tinggal ingat urutan: WHERE dulu, baru HAVING.</div>
+<span class="kw">HAVING</span> <span class="kw">SUM</span>(t.qty) > 5;</pre>
+      <div class="ans-label">Output</div>
+      <pre class="sql">nama_produk | total_qty
+------------+----------
+Kursi       | 8
+
+(Kursi terjual 3+5=8 unit di Januari 2026; Lemari cuma 1 unit, tidak lolos syarat >5)</pre>
+      <div class="soal-explain"><b>Penjelasan:</b> Ada dua syarat penyaringan di sini. "Bulan Januari 2026" itu syarat data mentah (tanggal transaksi) → masuk WHERE. "Total qty lebih dari 5" itu syarat hasil SUM → masuk HAVING. Dua-duanya dipakai bareng, tinggal ingat urutan: WHERE dulu, baru HAVING.</div>
     </div>
 
     <a class="next-link" href="#l5">Lanjut: MAX/MIN per grup →</a>
@@ -356,6 +459,15 @@
   <span class="kw">FROM</span> karyawan k2
   <span class="kw">WHERE</span> k2.divisi_id = k.divisi_id
 );</pre>
+      <div class="ans-label">Output</div>
+      <pre class="sql">nama | divisi_id | gaji
+-----+-----------+--------
+Budi | 1         | 5000000
+Andi | 2         | 4500000
+Dewi | 2         | 4500000
+Lina | 3         | 5500000
+
+(Andi dan Dewi sama-sama gaji terendah di Gudang, 4.500.000 — keduanya tampil)</pre>
       <div class="soal-explain"><b>Penjelasan:</b> Polanya identik dengan contoh gaji tertinggi di atas — tinggal ganti MAX jadi MIN. Ini nunjukkin begitu kamu paham satu pola correlated subquery, semua variasi "tertinggi/terendah per grup" tinggal ganti fungsi agregasinya saja.</div>
     </div>
 
@@ -397,6 +509,14 @@
 <span class="kw">FROM</span> produk p
 <span class="kw">LEFT JOIN</span> transaksi t <span class="kw">ON</span> t.produk_id = p.id
 <span class="kw">GROUP BY</span> p.nama_produk;</pre>
+      <div class="ans-label">Output</div>
+      <pre class="sql">nama_produk  | total_qty
+-------------+----------
+Kursi        | 10
+Meja         | 0
+Lemari       | 5
+Rak Gudang   | 24
+Banner Promo | 0</pre>
       <div class="soal-explain"><b>Penjelasan:</b> Sama persis dengan contoh karyawan tadi, cuma konteksnya diganti produk. LEFT JOIN jaga semua produk tetap tampil, COALESCE ganti hasil SUM yang NULL (produk tanpa transaksi) jadi 0.</div>
     </div>
   </section>
@@ -415,12 +535,17 @@
     <div class="ingat"><span class="lbl">Cara Inget</span> <span>NULL = "tidak diketahui", bukan angka 0 atau string kosong. Selalu pakai <code>IS NULL</code> / <code>IS NOT NULL</code>, jangan pernah <code>= NULL</code>.</span></div>
     <div class="soal-box">
       <div class="soal-label">Contoh Soal</div>
-      <div class="soal-q">Tampilkan produk yang belum ditentukan divisinya (divisi_id kosong).</div>
+      <div class="soal-q">Tampilkan gaji rata-rata SEMUA karyawan, termasuk yang belum ditentukan divisinya — kali ini fokusnya ke kolom gaji, bukan divisi_id.</div>
       <div class="ans-label">Jawaban</div>
-      <pre class="sql"><span class="kw">SELECT</span> nama_produk
-<span class="kw">FROM</span> produk
-<span class="kw">WHERE</span> divisi_id <span class="kw">IS</span> <span class="kw">NULL</span>;</pre>
-      <div class="soal-explain"><b>Penjelasan:</b> Karena yang dicari adalah baris dengan nilai NULL, wajib pakai IS NULL. Kalau ditulis <code>WHERE divisi_id = NULL</code>, hasilnya akan selalu kosong meski datanya ada — ini jebakan klasik.</div>
+      <pre class="sql"><span class="kw">SELECT</span> <span class="kw">AVG</span>(gaji) <span class="kw">AS</span> rata_rata_gaji
+<span class="kw">FROM</span> karyawan;</pre>
+      <div class="ans-label">Output</div>
+      <pre class="sql">rata_rata_gaji
+---------------
+5214285.71
+
+(AVG menghitung SEMUA baris termasuk Tono yang divisi_id-nya NULL — NULL cuma masalah kalau dipakai di ekspresi matematika/perbandingan LANGSUNG pada kolom itu sendiri, bukan pada kolom lain seperti gaji di sini)</pre>
+      <div class="soal-explain"><b>Penjelasan:</b> Ini contoh kalau NULL di SATU kolom (divisi_id) tidak mengganggu perhitungan di KOLOM LAIN (gaji) — Tono tetap ikut dihitung AVG(gaji) meski divisi_id-nya NULL. NULL cuma "menular" kalau NULL itu sendiri yang dipakai langsung dalam operasi (misal SUM(divisi_id) baru akan terpengaruh).</div>
     </div>
     <a class="next-link" href="#l8">Lanjut: RIGHT &amp; FULL JOIN →</a>
   </section>
@@ -442,6 +567,13 @@
 <span class="kw">FROM</span> divisi d
 <span class="kw">FULL</span> <span class="kw">JOIN</span> karyawan k <span class="kw">ON</span> k.divisi_id = d.id
 <span class="kw">WHERE</span> d.id <span class="kw">IS</span> <span class="kw">NULL</span> <span class="kw">OR</span> k.id <span class="kw">IS</span> <span class="kw">NULL</span>;</pre>
+      <div class="ans-label">Output</div>
+      <pre class="sql">nama_divisi | nama
+------------+------
+Riset       | NULL
+NULL        | Tono
+
+('Riset' muncul karena tidak ada karyawannya; 'Tono' muncul karena divisi_id-nya NULL)</pre>
       <div class="soal-explain"><b>Penjelasan:</b> FULL JOIN menjaga baris dari kedua tabel meski tidak nyambung. Filter <code>d.id IS NULL OR k.id IS NULL</code> menyisakan cuma baris yang "pincang" — karyawan tanpa divisi valid, atau divisi tanpa karyawan.</div>
     </div>
     <a class="next-link" href="#l9">Lanjut: CASE WHEN →</a>
@@ -470,6 +602,18 @@
     <span class="kw">ELSE</span> 'Standar'
   <span class="kw">END</span> <span class="kw">AS</span> kategori_gaji
 <span class="kw">FROM</span> karyawan;</pre>
+      <div class="ans-label">Output</div>
+      <pre class="sql">nama | kategori_gaji
+-----+--------------
+Budi | Menengah
+Sari | Menengah
+Andi | Menengah
+Dewi | Menengah
+Rudi | Menengah
+Lina | Menengah
+Tono | Menengah
+
+(semua karyawan di data sampel ini gajinya masih antara 4-8 juta, jadi semua kena "Menengah" — belum ada yang tembus di atas 8 juta)</pre>
       <div class="soal-explain"><b>Penjelasan:</b> Urutan kondisi penting — dicek dari atas dulu. Karyawan gaji 9 juta kena kondisi pertama ("Tinggi") dan berhenti di situ, tidak lanjut dicek ke kondisi berikutnya.</div>
     </div>
     <a class="next-link" href="#l10">Lanjut: Subquery IN/EXISTS →</a>
@@ -494,6 +638,16 @@
 <span class="kw">WHERE</span> divisi_id <span class="kw">IN</span> (
   <span class="kw">SELECT</span> id <span class="kw">FROM</span> divisi <span class="kw">WHERE</span> nama_divisi <span class="kw">IN</span> ('Produksi', 'Gudang')
 );</pre>
+      <div class="ans-label">Output</div>
+      <pre class="sql">nama
+----
+Budi
+Sari
+Andi
+Dewi
+Rudi
+
+(Lina di Marketing dan Tono tanpa divisi tidak ikut)</pre>
       <div class="soal-explain"><b>Penjelasan:</b> Subquery dalam mencari id divisi Produksi dan Gudang dulu, hasilnya jadi "daftar id" yang dicocokkan ke divisi_id tiap karyawan pakai IN. Ini alternatif dari JOIN untuk kasus sederhana seperti ini.</div>
     </div>
     <a class="next-link" href="#l11">Lanjut: UNION →</a>
@@ -514,6 +668,22 @@
       <pre class="sql"><span class="kw">SELECT</span> nama <span class="kw">FROM</span> karyawan
 <span class="kw">UNION</span>
 <span class="kw">SELECT</span> nama_divisi <span class="kw">FROM</span> divisi;</pre>
+      <div class="ans-label">Output</div>
+      <pre class="sql">nama
+---------
+Andi
+Budi
+Dewi
+Gudang
+Lina
+Marketing
+Produksi
+Riset
+Rudi
+Sari
+Tono
+
+(11 baris: 7 nama karyawan + 4 nama divisi, tanpa ada yang dobel)</pre>
       <div class="soal-explain"><b>Penjelasan:</b> Dua SELECT ini masing-masing hasilkan satu kolom teks, jumlah kolomnya sama (satu-satu), jadi bisa di-UNION. Kalau jumlah kolom beda, SQL akan error.</div>
     </div>
     <a class="next-link" href="#l12">Lanjut: Window Function →</a>
@@ -537,6 +707,14 @@
   <span class="kw">FROM</span> karyawan
 ) sub
 <span class="kw">WHERE</span> ranking = 1;</pre>
+      <div class="ans-label">Output</div>
+      <pre class="sql">nama | divisi_id | gaji    | ranking
+-----+-----------+---------+--------
+Sari | 1         | 6000000 | 1
+Rudi | 2         | 7000000 | 1
+Lina | 3         | 5500000 | 1
+
+(hasilnya sama persis dengan correlated subquery MAX di Materi 5, cuma teknik berbeda)</pre>
       <div class="soal-explain"><b>Penjelasan:</b> Window function nggak bisa langsung difilter di WHERE (karena dihitung belakangan), jadi query-nya "dibungkus" jadi subquery dulu, baru difilter ranking = 1 di luar. Ini alternatif yang lebih modern dari correlated subquery MAX/MIN yang dipelajari di Materi 5.</div>
     </div>
     <a class="next-link" href="#l13">Lanjut: Normalisasi Database →</a>
@@ -573,6 +751,14 @@
 <span class="kw">FROM</span> divisi d
 <span class="kw">JOIN</span> karyawan k <span class="kw">ON</span> k.divisi_id = d.id
 <span class="kw">GROUP BY</span> d.nama_divisi;</pre>
+      <div class="ans-label">Output</div>
+      <pre class="sql">nama_divisi | jumlah_karyawan
+------------+----------------
+Produksi    | 2
+Gudang      | 3
+Marketing   | 1
+
+('Riset' belum muncul karena JOIN biasa masih membuang divisi tanpa karyawan)</pre>
       <div class="soal-explain"><b>Konsep dipakai:</b> JOIN + GROUP BY/COUNT. Ini fondasinya — semua level berikutnya nambah dari query ini.</div>
     </div>
 
@@ -585,6 +771,12 @@
 <span class="kw">JOIN</span> karyawan k <span class="kw">ON</span> k.divisi_id = d.id
 <span class="kw">GROUP BY</span> d.nama_divisi
 <span class="kw">HAVING</span> <span class="kw">COUNT</span>(k.id) > 2;</pre>
+      <div class="ans-label">Output</div>
+      <pre class="sql">nama_divisi | jumlah_karyawan
+------------+----------------
+Gudang      | 3
+
+(Produksi cuma 2 karyawan, Marketing cuma 1 — keduanya tidak lolos syarat >2)</pre>
       <div class="soal-explain"><b>Apa yang nambah:</b> cuma satu baris — <code>HAVING COUNT(k.id) > 2</code> ditempel di bawah GROUP BY. Query lainnya persis sama dengan Level 1.</div>
     </div>
 
@@ -596,6 +788,15 @@
 <span class="kw">FROM</span> divisi d
 <span class="kw">LEFT</span> <span class="kw">JOIN</span> karyawan k <span class="kw">ON</span> k.divisi_id = d.id
 <span class="kw">GROUP BY</span> d.nama_divisi;</pre>
+      <div class="ans-label">Output</div>
+      <pre class="sql">nama_divisi | jumlah_karyawan
+------------+----------------
+Produksi    | 2
+Gudang      | 3
+Marketing   | 1
+Riset       | 0
+
+('Riset' sekarang ikut tampil dengan 0 karyawan, beda dari Level 1-2 yang membuangnya)</pre>
       <div class="soal-explain"><b>Apa yang nambah:</b> JOIN diganti LEFT JOIN supaya divisi kosong tetap tampil. COALESCE ditambahkan di luar COUNT sebagai jaga-jaga — meski sebenarnya COUNT(k.id) sendiri sudah otomatis menghasilkan 0 (bukan NULL) untuk divisi kosong, karena COUNT selalu menghitung baris, bukan menjumlahkan nilai.</div>
     </div>
 
@@ -611,19 +812,28 @@
 <span class="kw">LEFT</span> <span class="kw">JOIN</span> karyawan k <span class="kw">ON</span> k.divisi_id = d.id
 <span class="kw">LEFT</span> <span class="kw">JOIN</span> transaksi t <span class="kw">ON</span> t.karyawan_id = k.id
 <span class="kw">GROUP BY</span> d.nama_divisi;</pre>
+      <div class="ans-label">Output</div>
+      <pre class="sql">nama_divisi | jumlah_karyawan | total_qty
+------------+-----------------+----------
+Produksi    | 2               | 13
+Gudang      | 3               | 26
+Marketing   | 1               | 0
+Riset       | 0               | 0
+
+(Marketing punya 1 karyawan tapi belum pernah transaksi, jadi total_qty tetap 0)</pre>
       <div class="soal-explain"><b>Apa yang nambah:</b> satu LEFT JOIN lagi ke tabel transaksi, plus SUM(t.qty) yang sekarang wajib dibungkus COALESCE (karena SUM, beda dari COUNT, betulan menghasilkan NULL kalau tidak ada baris untuk dijumlahkan). Perhatikan COUNT(k.id) berubah jadi <code>COUNT(DISTINCT k.id)</code> — karena dua LEFT JOIN sekaligus bikin baris karyawan "berlipat" ganda per transaksinya, DISTINCT mencegah karyawan kehitung berkali-kali.</div>
     </div>
 
     <div class="soal-box">
       <div class="soal-label">Level 5 — 6+ Konsep (+ CASE WHEN + ORDER BY + LIMIT)</div>
-      <div class="soal-q">Terakhir, tambahkan label "Produktif" (total qty di atas 100) atau "Kurang Produktif", lalu tampilkan cuma 3 divisi dengan total qty tertinggi.</div>
+      <div class="soal-q">Terakhir, tambahkan label "Produktif" (total qty di atas 20) atau "Kurang Produktif", lalu tampilkan cuma 3 divisi dengan total qty tertinggi.</div>
       <div class="ans-label">Jawaban</div>
       <pre class="sql"><span class="kw">SELECT</span>
   d.nama_divisi,
   <span class="kw">COUNT</span>(<span class="kw">DISTINCT</span> k.id) <span class="kw">AS</span> jumlah_karyawan,
   <span class="kw">COALESCE</span>(<span class="kw">SUM</span>(t.qty), 0) <span class="kw">AS</span> total_qty,
   <span class="kw">CASE</span>
-    <span class="kw">WHEN</span> <span class="kw">COALESCE</span>(<span class="kw">SUM</span>(t.qty), 0) > 100 <span class="kw">THEN</span> 'Produktif'
+    <span class="kw">WHEN</span> <span class="kw">COALESCE</span>(<span class="kw">SUM</span>(t.qty), 0) > 20 <span class="kw">THEN</span> 'Produktif'
     <span class="kw">ELSE</span> 'Kurang Produktif'
   <span class="kw">END</span> <span class="kw">AS</span> label
 <span class="kw">FROM</span> divisi d
@@ -632,6 +842,14 @@
 <span class="kw">GROUP BY</span> d.nama_divisi
 <span class="kw">ORDER BY</span> total_qty <span class="kw">DESC</span>
 <span class="kw">LIMIT</span> 3;</pre>
+      <div class="ans-label">Output</div>
+      <pre class="sql">nama_divisi | jumlah_karyawan | total_qty | label
+------------+-----------------+-----------+-----------------
+Gudang      | 3               | 26        | Produktif
+Produksi    | 2               | 13        | Kurang Produktif
+Marketing   | 1               | 0         | Kurang Produktif
+
+('Riset' tidak masuk 3 besar karena total_qty-nya paling kecil, kalah dari Marketing di urutan asli)</pre>
       <div class="soal-explain"><b>Apa yang nambah:</b> CASE WHEN dipasang di SELECT (pakai ekspresi COALESCE yang sama biar konsisten), lalu ORDER BY + LIMIT ditempel di paling bawah query. Query dari Level 4 sama sekali tidak diubah strukturnya — cuma ditambah di ujung.</div>
     </div>
 

@@ -20,6 +20,8 @@
     --accent-soft:#efdcce;
     --good:#4d7d58;
     --good-soft:#dfeae1;
+    --bad:#b0402f;
+    --bad-soft:#f3ddd6;
     --key:#3c6a8f;
     --key-soft:#e0e9f0;
     color-scheme: light;
@@ -38,6 +40,8 @@
       --accent-soft:#3c2618;
       --good:#83c095;
       --good-soft:#1e2f24;
+      --bad:#e08a72;
+      --bad-soft:#3a2119;
       --key:#8fbadf;
       --key-soft:#1c2a35;
       color-scheme: dark;
@@ -56,6 +60,8 @@
     --accent-soft:#3c2618;
     --good:#83c095;
     --good-soft:#1e2f24;
+    --bad:#e08a72;
+    --bad-soft:#3a2119;
     --key:#8fbadf;
     --key-soft:#1c2a35;
     color-scheme: dark;
@@ -90,12 +96,14 @@
   .schema summary::-webkit-details-marker{ display:none; }
   .schema summary::before{ content:"▸"; transition:transform .15s; }
   .schema[open] summary::before{ transform:rotate(90deg); }
-  .tables{ display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-top:12px; }
-  .tbl{ background:var(--surface-2); border-radius:8px; padding:10px 12px; }
-  .tbl .name{ font-weight:600; font-size:13px; color:var(--key); margin-bottom:4px; }
-  .tbl ul{ margin:0; padding-left:0; list-style:none; font-size:12px; color:var(--ink-soft); }
-  .tbl li{ padding:1.5px 0; }
-  .tbl li b{ color:var(--ink); font-weight:500; }
+  .schema-note{ font-size:12.5px; color:var(--ink-soft); margin:10px 0 0; line-height:1.5; }
+  .tables{ display:flex; flex-direction:column; gap:12px; margin-top:12px; }
+  .tbl{ background:var(--surface-2); border-radius:8px; padding:10px 12px; overflow-x:auto; }
+  .tbl .name{ font-weight:600; font-size:13px; color:var(--key); margin-bottom:6px; }
+  pre.data-table{
+    margin:0; font-family:'IBM Plex Mono',monospace; font-size:12px; line-height:1.6;
+    color:var(--ink-soft); white-space:pre; overflow-x:auto;
+  }
 
   .score-strip{
     display:flex; align-items:center; justify-content:space-between; gap:10px;
@@ -114,6 +122,13 @@
     font-size:10.5px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
     padding:3px 8px; border-radius:20px; background:var(--accent-soft); color:var(--accent);
   }
+  .level-badge{
+    font-size:10.5px; font-weight:700; letter-spacing:0.03em; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px; border:1px solid;
+  }
+  .level-Mudah{ background:var(--good-soft); color:var(--good); border-color:var(--good); }
+  .level-Menengah{ background:var(--accent-soft); color:var(--accent); border-color:var(--accent); }
+  .level-Sulit{ background:var(--bad-soft); color:var(--bad); border-color:var(--bad); }
   .qnum{ font-size:12px; color:var(--ink-faint); font-family:'IBM Plex Mono',monospace; }
 
   .story{
@@ -147,6 +162,15 @@
     padding:14px 16px; font-size:14px; line-height:1.7; overflow-x:auto; white-space:pre; margin:0; color:var(--ink);
   }
   pre.sql .kw{ color:var(--accent); font-weight:600; }
+  .output-label{
+    font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--key);
+    display:flex; align-items:center; gap:6px;
+  }
+  pre.output-block{
+    background:var(--key-soft); border:1px solid var(--key); border-radius:8px;
+    padding:12px 14px; font-size:13.5px; line-height:1.6; overflow-x:auto; white-space:pre-wrap; margin:0; color:var(--ink);
+    font-family:'IBM Plex Mono',monospace;
+  }
   .why{ font-size:14.5px; line-height:1.6; color:var(--ink-soft); background:var(--good-soft); border-left:3px solid var(--good); border-radius:0 6px 6px 0; padding:11px 14px; }
   .trap{ font-size:13.5px; line-height:1.6; color:var(--ink-soft); }
   .trap b{ color:var(--ink); }
@@ -173,23 +197,52 @@
   </header>
 
   <details class="schema">
-    <summary>Lihat skema tabel (dipakai di semua soal)</summary>
+    <summary>Lihat data sampel (dipakai di semua soal &amp; output di halaman ini)</summary>
+    <p class="schema-note">Semua "Output" di tiap soal dihitung dari data persis di bawah ini — coba jalankan query-mu sendiri di kepala/kertas pakai data ini, hasilnya harus sama.</p>
     <div class="tables">
       <div class="tbl">
-        <div class="name">karyawan</div>
-        <ul><li><b>id</b> (PK)</li><li>nama</li><li>divisi_id (FK)</li><li>gaji</li><li>tgl_masuk</li></ul>
+        <div class="name">divisi</div>
+        <pre class="data-table">id | nama_divisi
+---+------------
+1  | Produksi
+2  | Gudang
+3  | Marketing
+4  | Riset</pre>
       </div>
       <div class="tbl">
-        <div class="name">divisi</div>
-        <ul><li><b>id</b> (PK)</li><li>nama_divisi</li></ul>
+        <div class="name">karyawan</div>
+        <pre class="data-table">id | nama | divisi_id | gaji
+---+------+-----------+--------
+1  | Budi | 1         | 5000000
+2  | Sari | 1         | 6000000
+3  | Andi | 2         | 4500000
+4  | Dewi | 2         | 4500000
+5  | Rudi | 2         | 7000000
+6  | Lina | 3         | 5500000
+7  | Tono | NULL      | 4000000</pre>
       </div>
       <div class="tbl">
         <div class="name">produk</div>
-        <ul><li><b>id</b> (PK)</li><li>nama_produk</li><li>divisi_id (FK)</li><li>harga</li><li>stok</li></ul>
+        <pre class="data-table">id | nama_produk  | divisi_id | harga   | stok
+---+--------------+-----------+---------+-----
+1  | Kursi        | 1         | 500000  | 20
+2  | Meja         | 1         | 800000  | 0
+3  | Lemari       | 1         | 1500000 | 5
+4  | Rak Gudang   | 2         | 300000  | 15
+5  | Banner Promo | 3         | 100000  | 50</pre>
       </div>
       <div class="tbl">
         <div class="name">transaksi</div>
-        <ul><li><b>id</b> (PK)</li><li>produk_id (FK)</li><li>karyawan_id (FK)</li><li>qty</li><li>tgl_transaksi</li></ul>
+        <pre class="data-table">id | produk_id | karyawan_id | qty | tgl_transaksi
+---+-----------+-------------+-----+--------------
+1  | 1         | 1           | 3   | 2026-01-05
+2  | 1         | 2           | 5   | 2026-01-10
+3  | 3         | 1           | 1   | 2026-01-15
+4  | 4         | 3           | 10  | 2026-02-01
+5  | 4         | 4           | 8   | 2026-02-05
+6  | 1         | 3           | 2   | 2026-02-10
+7  | 3         | 2           | 4   | 2026-03-01
+8  | 4         | 3           | 6   | 2026-03-05</pre>
       </div>
     </div>
   </details>
@@ -215,186 +268,232 @@
 
   var CASES = [
     {
+      level:"Mudah",
       tags:["JOIN dasar"],
       story:'Manajer HRD minta daftar karyawan lengkap dengan nama divisinya masing-masing, karena data karyawan di sistem cuma nunjukkin kode divisi, bukan namanya.',
       ask:'Tulis query untuk menampilkan nama karyawan beserta nama divisinya.',
       sql:'SELECT k.nama, d.nama_divisi\nFROM karyawan k\nJOIN divisi d ON k.divisi_id = d.id;',
+      output:"nama | nama_divisi\n-----+------------\nBudi | Produksi\nSari | Produksi\nAndi | Gudang\nDewi | Gudang\nRudi | Gudang\nLina | Marketing\n\n(Tono tidak muncul karena divisi_id-nya NULL, dan JOIN biasa cuma menampilkan baris yang cocok di kedua tabel)",
       why:'JOIN menyambungkan karyawan.divisi_id ke divisi.id supaya nama divisi ikut tampil, bukan cuma kode angkanya.',
       trap:'Pastikan arah ON-nya benar: divisi_id (di tabel karyawan) = id (di tabel divisi), bukan sebaliknya.'
     },
     {
+      level:"Mudah",
       tags:["LEFT JOIN"],
       story:'Direktur mau evaluasi semua divisi yang ada di perusahaan, termasuk divisi baru yang belum sempat diisi karyawan sama sekali. Dia mau tau jumlah karyawan di tiap divisi, divisi kosong pun tetap harus kelihatan di laporan dengan angka 0.',
       ask:'Tulis query untuk menampilkan semua divisi beserta jumlah karyawannya, termasuk divisi yang belum punya karyawan.',
       sql:'SELECT d.nama_divisi, COUNT(k.id) AS jumlah_karyawan\nFROM divisi d\nLEFT JOIN karyawan k ON k.divisi_id = d.id\nGROUP BY d.nama_divisi;',
+      output:"nama_divisi | jumlah_karyawan\n------------+----------------\nProduksi    | 2\nGudang      | 3\nMarketing   | 1\nRiset       | 0\n\n(divisi 'Riset' tetap muncul dengan 0 karyawan berkat LEFT JOIN)",
       why:'LEFT JOIN mempertahankan semua divisi meski belum ada karyawannya. COUNT(k.id) otomatis jadi 0 untuk divisi kosong, karena COUNT mengabaikan baris NULL.',
       trap:'Kalau pakai JOIN biasa, divisi kosong akan hilang total dari hasil — itu yang bikin laporan direktur salah.'
     },
     {
+      level:"Mudah",
       tags:["GROUP BY + SUM"],
       story:'Bagian keuangan mau tau total pengeluaran gaji per divisi bulan ini, buat dibandingkan sama budget masing-masing divisi.',
       ask:'Tulis query untuk menampilkan tiap divisi beserta total gaji seluruh karyawannya.',
       sql:'SELECT d.nama_divisi, SUM(k.gaji) AS total_gaji\nFROM divisi d\nJOIN karyawan k ON k.divisi_id = d.id\nGROUP BY d.nama_divisi;',
+      output:"nama_divisi | total_gaji\n------------+-----------\nProduksi    | 11000000\nGudang      | 16000000\nMarketing   | 5500000\n\n('Riset' tidak muncul karena JOIN biasa membuang divisi tanpa karyawan)",
       why:'GROUP BY mengelompokkan karyawan per divisi, SUM menjumlahkan gaji dalam tiap kelompok.',
       trap:'Kolom nama_divisi di SELECT harus ikut ditulis di GROUP BY karena dia bukan hasil SUM.'
     },
     {
-      tags:["HAVING"],
-      story:'Direktur cuma mau lihat divisi-divisi yang pengeluaran gajinya sudah "berat", yaitu di atas 50 juta per bulan — divisi kecil nggak usah dilaporkan dulu.',
-      ask:'Tulis query untuk menampilkan divisi yang total gajinya lebih dari 50 juta.',
-      sql:'SELECT d.nama_divisi, SUM(k.gaji) AS total_gaji\nFROM divisi d\nJOIN karyawan k ON k.divisi_id = d.id\nGROUP BY d.nama_divisi\nHAVING SUM(k.gaji) > 50000000;',
-      why:'Syaratnya soal HASIL SUM (angka yang baru ada setelah dikelompokkan), jadi wajib HAVING, bukan WHERE.',
-      trap:'WHERE SUM(k.gaji) > 50000000 akan ERROR — WHERE tidak bisa dipakai untuk hasil agregasi.'
-    },
-    {
-      tags:["WHERE + HAVING"],
-      story:'Bagian penjualan mau laporan produk laris khusus di tahun 2026 — produk yang total qty terjualnya (dalam tahun itu saja) lebih dari 100 unit.',
-      ask:'Tulis query untuk menampilkan produk dengan total qty transaksi tahun 2026 lebih dari 100, hitung transaksi tahun 2026 saja.',
-      sql:"SELECT p.nama_produk, SUM(t.qty) AS total_qty\nFROM produk p\nJOIN transaksi t ON t.produk_id = p.id\nWHERE t.tgl_transaksi >= '2026-01-01' AND t.tgl_transaksi < '2027-01-01'\nGROUP BY p.nama_produk\nHAVING SUM(t.qty) > 100;",
-      why:'WHERE menyaring transaksi ke tahun 2026 dulu (data mentah), baru dikelompokkan per produk, baru HAVING menyaring hasil SUM per produk.',
-      trap:'Jangan taruh syarat tanggal di HAVING — tanggal bukan hasil agregasi, jadi harus di WHERE.'
-    },
-    {
-      tags:["MAX per grup"],
-      story:'HRD lagi review struktur gaji dan mau tau siapa karyawan dengan gaji tertinggi DI MASING-MASING divisi (bukan tertinggi se-perusahaan), buat jadi acuan benchmark tiap divisi.',
-      ask:'Tulis query untuk menampilkan karyawan dengan gaji tertinggi di setiap divisi.',
-      sql:'SELECT k.nama, k.divisi_id, k.gaji\nFROM karyawan k\nWHERE k.gaji = (\n  SELECT MAX(k2.gaji)\n  FROM karyawan k2\n  WHERE k2.divisi_id = k.divisi_id\n);',
-      why:'Correlated subquery membandingkan gaji tiap karyawan dengan MAX gaji di divisinya sendiri — bukan MAX gaji semua karyawan.',
-      trap:'Kalau lupa syarat "k2.divisi_id = k.divisi_id" di dalam subquery, hasilnya jadi cuma satu karyawan gaji tertinggi se-perusahaan, bukan per divisi.'
-    },
-    {
-      tags:["COALESCE"],
-      story:'Manajer sales mau lihat performa SEMUA karyawan sales, termasuk yang belum pernah closing transaksi sama sekali. Karyawan yang belum pernah transaksi harus tetap muncul dengan angka 0, jangan kosong, biar gampang dibaca di laporan Excel.',
-      ask:'Tulis query untuk menampilkan semua karyawan beserta total qty transaksinya, yang belum pernah transaksi tampil 0.',
-      sql:'SELECT k.nama, COALESCE(SUM(t.qty), 0) AS total_qty\nFROM karyawan k\nLEFT JOIN transaksi t ON t.karyawan_id = k.id\nGROUP BY k.nama;',
-      why:'LEFT JOIN menjaga semua karyawan tetap muncul; COALESCE mengganti hasil SUM yang NULL (karena tidak ada transaksi) menjadi 0.',
-      trap:'Tanpa COALESCE, karyawan tanpa transaksi akan tampil "kosong"/NULL di kolom total_qty, bukan 0 — kelihatan sepele tapi sering ditanya di tes.'
-    },
-    {
-      tags:["JOIN 3 tabel"],
-      story:'Tim audit internal mau menelusuri riwayat transaksi: siapa karyawannya, dari divisi mana, dan produk apa yang ditransaksikan — semua dalam satu laporan per baris transaksi.',
-      ask:'Tulis query untuk menampilkan nama karyawan, nama divisinya, dan nama produk untuk setiap transaksi.',
-      sql:'SELECT k.nama AS nama_karyawan, d.nama_divisi, p.nama_produk\nFROM transaksi t\nJOIN karyawan k ON t.karyawan_id = k.id\nJOIN divisi d ON k.divisi_id = d.id\nJOIN produk p ON t.produk_id = p.id;',
-      why:'Mulai dari tabel transaksi (paling banyak foreign key), sambungkan satu-satu ke karyawan, divisi, dan produk lewat kolom FK masing-masing.',
-      trap:'Kalau bingung urutan JOIN-nya, mulai dari tabel "pusat" yang paling banyak FK — biasanya tabel transaksi/pivot.'
-    },
-    {
+      level:"Mudah",
       tags:["HAVING + COUNT"],
-      story:'Direktur operasional mau tau divisi mana yang tergolong "besar", yaitu yang jumlah karyawannya lebih dari 3 orang, buat menentukan mana yang butuh supervisor tambahan.',
-      ask:'Tulis query untuk menampilkan divisi yang punya lebih dari 3 karyawan.',
-      sql:'SELECT d.nama_divisi, COUNT(k.id) AS jumlah_karyawan\nFROM divisi d\nJOIN karyawan k ON k.divisi_id = d.id\nGROUP BY d.nama_divisi\nHAVING COUNT(k.id) > 3;',
-      why:'Pola sama seperti soal total gaji, tapi agregasinya COUNT, bukan SUM — GROUP BY per divisi, HAVING menyaring hasil COUNT.',
-      trap:'COUNT(k.id) beda dengan COUNT(*) kalau pakai LEFT JOIN — di JOIN biasa (seperti soal ini) hasilnya sama saja.'
+      story:'Direktur operasional mau tau divisi mana yang tergolong "besar", yaitu yang jumlah karyawannya lebih dari 1 orang, buat menentukan mana yang butuh supervisor tambahan.',
+      ask:'Tulis query untuk menampilkan divisi yang punya lebih dari 1 karyawan.',
+      sql:'SELECT d.nama_divisi, COUNT(k.id) AS jumlah_karyawan\nFROM divisi d\nJOIN karyawan k ON k.divisi_id = d.id\nGROUP BY d.nama_divisi\nHAVING COUNT(k.id) > 1;',
+      output:"nama_divisi | jumlah_karyawan\n------------+----------------\nProduksi    | 2\nGudang      | 3\n\n('Marketing' cuma punya 1 karyawan jadi tidak lolos syarat HAVING)",
+      why:'Pola sama seperti soal total gaji, tapi agregasinya COUNT bukan SUM. Polanya selalu sama: GROUP BY buat kelompokkan, agregasi buat hitung per kelompok, HAVING buat filter hasil agregasi itu.',
+      trap:'COUNT(k.id) beda dengan COUNT(*) kalau ada LEFT JOIN — di JOIN biasa (seperti soal ini) hasilnya sama saja.'
     },
     {
-      tags:["Subquery + AVG"],
-      story:'Tim purchasing mau identifikasi produk-produk yang tergolong "mahal", yaitu harganya di atas rata-rata harga SEMUA produk di katalog.',
-      ask:'Tulis query untuk menampilkan produk yang harganya di atas rata-rata harga semua produk.',
-      sql:'SELECT nama_produk, harga\nFROM produk\nWHERE harga > (SELECT AVG(harga) FROM produk);',
-      why:'Subquery dihitung dulu untuk dapat satu angka (rata-rata harga semua produk), baru dibandingkan ke tiap baris produk.',
-      trap:'Ini bukan kasus GROUP BY — karena pembandingnya (rata-rata keseluruhan) sama untuk semua baris, jadi tidak perlu JOIN atau GROUP BY.'
-    },
-    {
-      tags:["LEFT JOIN + IS NULL"],
-      story:'Manajer gudang mau bersih-bersih katalog produk yang nggak laku sama sekali — produk yang belum pernah ada transaksinya dari dulu, biar bisa dipertimbangkan untuk dihentikan produksinya.',
-      ask:'Tulis query untuk menampilkan produk yang belum pernah punya transaksi sama sekali.',
-      sql:'SELECT p.nama_produk\nFROM produk p\nLEFT JOIN transaksi t ON t.produk_id = p.id\nWHERE t.id IS NULL;',
-      why:'LEFT JOIN membuat produk tanpa transaksi tetap muncul dengan kolom transaksi kosong (NULL). WHERE t.id IS NULL menyaring khusus baris yang memang tidak punya pasangan.',
-      trap:'Ini pola "anti-join": LEFT JOIN + WHERE kolom_kanan IS NULL. Sering bikin bingung karena kebalikan dari logika JOIN biasa.'
-    },
-    {
-      tags:["GROUP BY multi kolom"],
-      story:'Bagian produksi mau lihat tren penjualan tiap produk PER BULAN sepanjang tahun, buat lihat pola musiman — bukan cuma total setahun.',
-      ask:'Tulis query untuk menampilkan total qty transaksi per produk per bulan.',
-      sql:"SELECT p.nama_produk,\n  EXTRACT(MONTH FROM t.tgl_transaksi) AS bulan,\n  SUM(t.qty) AS total_qty\nFROM produk p\nJOIN transaksi t ON t.produk_id = p.id\nGROUP BY p.nama_produk, EXTRACT(MONTH FROM t.tgl_transaksi);",
-      why:'GROUP BY bisa pakai kombinasi lebih dari satu kolom/ekspresi — di sini dikelompokkan per (produk, bulan) sekaligus, bukan cuma per produk.',
-      trap:'Di MySQL fungsinya MONTH(t.tgl_transaksi), bukan EXTRACT(MONTH FROM ...) — sintaks fungsi tanggal beda antar database, tanyakan/cek dulu database yang dipakai saat tes.'
-    },
-    {
-      tags:["MAX per grup (varian)"],
-      story:'Bagian marketing mau bikin katalog highlight: satu produk unggulan (termahal) dari tiap divisi produksi, buat dipajang di brosur.',
-      ask:'Tulis query untuk menampilkan tiap divisi beserta produk termahalnya.',
-      sql:'SELECT d.nama_divisi, p.nama_produk, p.harga\nFROM divisi d\nJOIN produk p ON p.divisi_id = d.id\nWHERE p.harga = (\n  SELECT MAX(p2.harga)\n  FROM produk p2\n  WHERE p2.divisi_id = d.id\n);',
-      why:'Pola sama persis dengan "gaji tertinggi per divisi", cuma konteksnya diganti ke produk termahal per divisi.',
-      trap:'Kalau ada dua produk dengan harga sama-sama tertinggi di satu divisi, keduanya akan tampil — itu wajar secara logika query.'
-    },
-    {
-      tags:["COALESCE + CASE"],
-      story:'Manajer sales mau laporan status keaktifan tiap karyawan sales dalam bentuk label yang gampang dibaca orang non-teknis, bukan angka — cukup "Aktif Transaksi" atau "Belum Pernah".',
-      ask:'Tulis query untuk menampilkan nama karyawan dan status "Aktif Transaksi" (jika pernah transaksi) atau "Belum Pernah" (jika belum).',
-      sql:"SELECT k.nama,\n  CASE WHEN COUNT(t.id) > 0 THEN 'Aktif Transaksi' ELSE 'Belum Pernah' END AS status\nFROM karyawan k\nLEFT JOIN transaksi t ON t.karyawan_id = k.id\nGROUP BY k.nama;",
-      why:'LEFT JOIN + COUNT menghitung transaksi tiap karyawan (0 kalau belum pernah), CASE WHEN mengubah angka itu jadi label teks.',
-      trap:'CASE WHEN ... THEN ... ELSE ... END itu setara if/else di SQL — banyak yang lupa SQL bisa bikin logika kondisional sendiri tanpa perlu diproses lagi di aplikasi.'
-    },
-    {
-      tags:["Ringkasan semua konsep"],
-      story:'Direktur mau tau top 3 karyawan paling produktif berdasarkan total qty transaksi, lengkap dengan divisinya, diurutkan dari yang paling produktif. Karyawan yang belum pernah transaksi tidak perlu masuk daftar.',
-      ask:'Tulis query untuk menampilkan 3 karyawan dengan total qty transaksi terbanyak beserta nama divisinya, urut dari terbanyak.',
-      sql:'SELECT k.nama, d.nama_divisi, SUM(t.qty) AS total_qty\nFROM karyawan k\nJOIN divisi d ON k.divisi_id = d.id\nJOIN transaksi t ON t.karyawan_id = k.id\nGROUP BY k.nama, d.nama_divisi\nORDER BY total_qty DESC\nLIMIT 3;',
-      why:'Gabungan JOIN 2 tabel tambahan, GROUP BY multi-kolom, SUM, ORDER BY hasil agregasi, ditutup LIMIT untuk top-N. JOIN biasa (bukan LEFT) otomatis membuang karyawan tanpa transaksi.',
-      trap:'Soal ini SENGAJA tidak butuh LEFT JOIN, kebalikan dari soal COALESCE sebelumnya — selalu baca soal pelan-pelan sebelum memutuskan JOIN biasa atau LEFT JOIN.'
-    },
-    {
+      level:"Mudah",
       tags:["Konsep NULL"],
       story:'Tim data cleaning mau bersih-bersih database. Mereka curiga ada beberapa karyawan yang divisi_id-nya belum diisi sama sekali waktu input data dulu.',
       ask:'Tulis query untuk menampilkan karyawan yang divisi_id-nya kosong (belum ditentukan).',
       sql:'SELECT nama\nFROM karyawan\nWHERE divisi_id IS NULL;',
+      output:"nama\n----\nTono\n\n(cuma 'Tono' yang divisi_id-nya NULL di data sampel ini)",
       why:'NULL berarti "tidak ada nilai", bukan 0 atau string kosong. Untuk mengeceknya wajib pakai IS NULL, bukan tanda sama dengan (=).',
       trap:'WHERE divisi_id = NULL akan SELALU menghasilkan tabel kosong, walau datanya memang ada yang NULL — ini kesalahan yang sangat umum.'
     },
     {
-      tags:["RIGHT/FULL JOIN"],
-      story:'Tim audit sistem mau cek konsistensi data: cari SEMUA divisi yang belum punya karyawan, DAN semua karyawan yang divisi_id-nya rusak/tidak valid (tidak ada di tabel divisi) — ditampilkan dalam satu laporan sekaligus.',
-      ask:'Tulis query menggunakan FULL JOIN untuk menampilkan divisi tanpa karyawan dan karyawan dengan divisi tidak valid.',
-      sql:'SELECT d.nama_divisi, k.nama\nFROM divisi d\nFULL JOIN karyawan k ON k.divisi_id = d.id\nWHERE d.id IS NULL OR k.id IS NULL;',
-      why:'FULL JOIN mempertahankan baris dari kedua tabel meski tidak nyambung. Filter IS NULL di salah satu sisi menyisakan cuma baris yang "pincang" dari kedua arah.',
-      trap:'MySQL tidak mendukung FULL JOIN langsung (harus disimulasikan pakai UNION dari LEFT JOIN dan RIGHT JOIN) — PostgreSQL mendukungnya secara native.'
-    },
-    {
+      level:"Mudah",
       tags:["CASE WHEN"],
       story:'Bagian gudang mau dashboard sederhana yang langsung kasih label status stok tiap produk, biar staff gudang nggak perlu mikir angka — cukup baca label "Habis", "Menipis", atau "Aman".',
       ask:'Tulis query untuk menampilkan nama produk dan status stok: "Habis" (stok 0), "Menipis" (stok di bawah 10), "Aman" (selainnya).',
       sql:"SELECT nama_produk,\n  CASE\n    WHEN stok = 0 THEN 'Habis'\n    WHEN stok < 10 THEN 'Menipis'\n    ELSE 'Aman'\n  END AS status_stok\nFROM produk;",
+      output:"nama_produk  | status_stok\n-------------+------------\nKursi        | Aman\nMeja         | Habis\nLemari       | Menipis\nRak Gudang   | Aman\nBanner Promo | Aman\n\n(Meja stoknya 0 -> Habis, Lemari stoknya 5 -> Menipis)",
       why:'CASE WHEN dicek berurutan dari atas — begitu satu kondisi cocok, berhenti di situ dan tidak lanjut ke kondisi berikutnya.',
       trap:'Urutan kondisi penting: kalau WHEN stok < 10 ditaruh sebelum WHEN stok = 0, produk dengan stok 0 akan salah kena label "Menipis" karena 0 juga < 10.'
     },
     {
+      level:"Menengah",
+      tags:["HAVING (Agregasi)"],
+      story:'Direktur cuma mau lihat divisi-divisi yang pengeluaran gajinya sudah "berat", yaitu di atas 10 juta per bulan — divisi kecil nggak usah dilaporkan dulu.',
+      ask:'Tulis query untuk menampilkan divisi yang total gajinya lebih dari 10 juta.',
+      sql:'SELECT d.nama_divisi, SUM(k.gaji) AS total_gaji\nFROM divisi d\nJOIN karyawan k ON k.divisi_id = d.id\nGROUP BY d.nama_divisi\nHAVING SUM(k.gaji) > 10000000;',
+      output:"nama_divisi | total_gaji\n------------+-----------\nProduksi    | 11000000\nGudang      | 16000000\n\n('Marketing' total gajinya cuma 5.500.000, tidak lolos syarat)",
+      why:'Syaratnya soal HASIL SUM (angka yang baru ada setelah dikelompokkan), jadi wajib HAVING, bukan WHERE.',
+      trap:'WHERE SUM(k.gaji) > 10000000 akan ERROR — WHERE tidak bisa dipakai untuk hasil agregasi.'
+    },
+    {
+      level:"Menengah",
+      tags:["WHERE + HAVING"],
+      story:'Bagian penjualan mau laporan produk laris khusus di bulan Januari-Februari 2026 — produk yang total qty terjualnya (dalam periode itu saja) lebih dari 10 unit.',
+      ask:'Tulis query untuk menampilkan produk dengan total qty transaksi Januari-Februari 2026 lebih dari 10, hitung transaksi periode itu saja.',
+      sql:"SELECT p.nama_produk, SUM(t.qty) AS total_qty\nFROM produk p\nJOIN transaksi t ON t.produk_id = p.id\nWHERE t.tgl_transaksi >= '2026-01-01' AND t.tgl_transaksi < '2026-03-01'\nGROUP BY p.nama_produk\nHAVING SUM(t.qty) > 10;",
+      output:"nama_produk | total_qty\n------------+----------\nRak Gudang  | 18\n\n('Rak Gudang' terjual 10+8=18 unit di Jan-Feb; produk lain tidak sampai 10 di periode ini)",
+      why:'WHERE menyaring transaksi ke periode Jan-Feb dulu (data mentah), baru dikelompokkan per produk, baru HAVING menyaring hasil SUM per produk.',
+      trap:'Jangan taruh syarat tanggal di HAVING — tanggal bukan hasil agregasi, jadi harus di WHERE.'
+    },
+    {
+      level:"Menengah",
+      tags:["MAX per grup"],
+      story:'HRD lagi review struktur gaji dan mau tau siapa karyawan dengan gaji tertinggi DI MASING-MASING divisi (bukan tertinggi se-perusahaan), buat jadi acuan benchmark tiap divisi.',
+      ask:'Tulis query untuk menampilkan karyawan dengan gaji tertinggi di setiap divisi.',
+      sql:'SELECT k.nama, k.divisi_id, k.gaji\nFROM karyawan k\nWHERE k.gaji = (\n  SELECT MAX(k2.gaji)\n  FROM karyawan k2\n  WHERE k2.divisi_id = k.divisi_id\n);',
+      output:"nama | divisi_id | gaji\n-----+-----------+--------\nSari | 1         | 6000000\nRudi | 2         | 7000000\nLina | 3         | 5500000\n\n(satu karyawan tertinggi per divisi; Tono tidak muncul karena divisi_id-nya NULL)",
+      why:'Correlated subquery membandingkan gaji tiap karyawan dengan MAX gaji di divisinya sendiri — bukan MAX gaji semua karyawan.',
+      trap:'Kalau lupa syarat "k2.divisi_id = k.divisi_id" di dalam subquery, hasilnya jadi cuma satu karyawan gaji tertinggi se-perusahaan, bukan per divisi.'
+    },
+    {
+      level:"Menengah",
+      tags:["COALESCE"],
+      story:'Manajer sales mau lihat performa SEMUA karyawan sales, termasuk yang belum pernah closing transaksi sama sekali. Karyawan yang belum pernah transaksi harus tetap muncul dengan angka 0, jangan kosong, biar gampang dibaca di laporan Excel.',
+      ask:'Tulis query untuk menampilkan semua karyawan beserta total qty transaksinya, yang belum pernah transaksi tampil 0.',
+      sql:'SELECT k.nama, COALESCE(SUM(t.qty), 0) AS total_qty\nFROM karyawan k\nLEFT JOIN transaksi t ON t.karyawan_id = k.id\nGROUP BY k.nama;',
+      output:"nama | total_qty\n-----+----------\nBudi | 4\nSari | 9\nAndi | 18\nDewi | 8\nRudi | 0\nLina | 0\nTono | 0\n\n(Rudi, Lina, Tono belum pernah transaksi, tetap tampil dengan 0 berkat COALESCE)",
+      why:'LEFT JOIN menjaga semua karyawan tetap muncul; COALESCE mengganti hasil SUM yang NULL (karena tidak ada transaksi) menjadi 0.',
+      trap:'Tanpa COALESCE, karyawan tanpa transaksi akan tampil "kosong"/NULL di kolom total_qty, bukan 0 — kelihatan sepele tapi sering ditanya di tes.'
+    },
+    {
+      level:"Menengah",
+      tags:["JOIN 3 tabel"],
+      story:'Tim audit internal mau menelusuri riwayat transaksi: siapa karyawannya, dari divisi mana, dan produk apa yang ditransaksikan — semua dalam satu laporan per baris transaksi.',
+      ask:'Tulis query untuk menampilkan nama karyawan, nama divisinya, dan nama produk untuk setiap transaksi.',
+      sql:'SELECT k.nama AS nama_karyawan, d.nama_divisi, p.nama_produk\nFROM transaksi t\nJOIN karyawan k ON t.karyawan_id = k.id\nJOIN divisi d ON k.divisi_id = d.id\nJOIN produk p ON t.produk_id = p.id;',
+      output:"nama_karyawan | nama_divisi | nama_produk\n--------------+-------------+------------\nBudi          | Produksi    | Kursi\nSari          | Produksi    | Kursi\nBudi          | Produksi    | Lemari\nAndi          | Gudang      | Rak Gudang\nDewi          | Gudang      | Rak Gudang\nAndi          | Gudang      | Kursi\nSari          | Produksi    | Lemari\nAndi          | Gudang      | Rak Gudang\n\n(8 baris, satu per transaksi di tabel transaksi)",
+      why:'Mulai dari tabel transaksi (paling banyak foreign key), sambungkan satu-satu ke karyawan, divisi, dan produk lewat kolom FK masing-masing.',
+      trap:'Kalau bingung urutan JOIN-nya, mulai dari tabel "pusat" yang paling banyak FK — biasanya tabel transaksi/pivot.'
+    },
+    {
+      level:"Menengah",
+      tags:["Subquery + AVG"],
+      story:'Tim purchasing mau identifikasi produk-produk yang tergolong "mahal", yaitu harganya di atas rata-rata harga SEMUA produk di katalog.',
+      ask:'Tulis query untuk menampilkan produk yang harganya di atas rata-rata harga semua produk.',
+      sql:'SELECT nama_produk, harga\nFROM produk\nWHERE harga > (SELECT AVG(harga) FROM produk);',
+      output:"nama_produk | harga\n------------+--------\nMeja        | 800000\nLemari      | 1500000\n\n(rata-rata harga 5 produk = 640.000; cuma Meja dan Lemari yang di atas itu)",
+      why:'Subquery dihitung dulu untuk dapat satu angka (rata-rata harga semua produk), baru dibandingkan ke tiap baris produk.',
+      trap:'Ini bukan kasus GROUP BY — karena pembandingnya (rata-rata keseluruhan) sama untuk semua baris, jadi tidak perlu JOIN atau GROUP BY.'
+    },
+    {
+      level:"Menengah",
+      tags:["LEFT JOIN + IS NULL"],
+      story:'Manajer gudang mau bersih-bersih katalog produk yang nggak laku sama sekali — produk yang belum pernah ada transaksinya dari dulu, biar bisa dipertimbangkan untuk dihentikan produksinya.',
+      ask:'Tulis query untuk menampilkan produk yang belum pernah punya transaksi sama sekali.',
+      sql:'SELECT p.nama_produk\nFROM produk p\nLEFT JOIN transaksi t ON t.produk_id = p.id\nWHERE t.id IS NULL;',
+      output:"nama_produk\n------------\nMeja\nBanner Promo\n\n(kedua produk ini tidak pernah muncul di tabel transaksi)",
+      why:'LEFT JOIN membuat produk tanpa transaksi tetap muncul dengan kolom transaksi kosong (NULL). WHERE t.id IS NULL menyaring khusus baris yang memang tidak punya pasangan.',
+      trap:'Ini pola "anti-join": LEFT JOIN + WHERE kolom_kanan IS NULL. Sering bikin bingung karena kebalikan dari logika JOIN biasa.'
+    },
+    {
+      level:"Menengah",
       tags:["Subquery IN"],
       story:'HRD mau lihat daftar karyawan yang bekerja di dua divisi produksi utama saja, yaitu "Produksi" dan "Gudang" — divisi lain diabaikan dulu.',
       ask:'Tulis query menggunakan subquery IN untuk menampilkan karyawan yang divisinya "Produksi" atau "Gudang".',
       sql:"SELECT nama\nFROM karyawan\nWHERE divisi_id IN (\n  SELECT id FROM divisi WHERE nama_divisi IN ('Produksi', 'Gudang')\n);",
+      output:"nama\n----\nBudi\nSari\nAndi\nDewi\nRudi\n\n(Lina di Marketing dan Tono tanpa divisi tidak ikut)",
       why:'Subquery dalam kurung mencari dulu id dari dua divisi itu, hasilnya jadi daftar nilai yang dicocokkan lewat IN ke divisi_id tiap karyawan.',
       trap:'Ini soal yang sama juga bisa dijawab pakai JOIN + WHERE nama_divisi IN (...) — keduanya valid, tapi tes teknis kadang minta spesifik pakai subquery untuk uji pemahaman konsepnya.'
     },
     {
+      level:"Menengah",
       tags:["Subquery EXISTS"],
       story:'Tim marketing mau tau produk mana saja yang SUDAH PERNAH laku terjual minimal sekali, tanpa perlu tau berapa banyak — cukup ada/tidaknya transaksi.',
       ask:'Tulis query menggunakan EXISTS untuk menampilkan produk yang pernah punya minimal satu transaksi.',
       sql:'SELECT nama_produk\nFROM produk p\nWHERE EXISTS (\n  SELECT 1 FROM transaksi t WHERE t.produk_id = p.id\n);',
+      output:"nama_produk\n-----------\nKursi\nLemari\nRak Gudang\n\n(Meja dan Banner Promo tidak muncul karena belum pernah transaksi)",
       why:'EXISTS cuma mengecek "ada atau tidak" baris yang cocok di subquery, tanpa perlu menghitung atau mengambil nilai — biasanya lebih efisien daripada JOIN+GROUP BY kalau cuma butuh cek keberadaan.',
       trap:'Isi SELECT di dalam EXISTS (mis. SELECT 1) tidak berpengaruh ke hasil — EXISTS cuma peduli ada/tidak barisnya, bukan isinya.'
     },
     {
+      level:"Menengah",
       tags:["Subquery NOT EXISTS"],
       story:'Kebalikan dari soal sebelumnya — tim gudang sekarang mau tau produk yang BELUM PERNAH laku sama sekali, untuk dipertimbangkan dihentikan produksinya.',
       ask:'Tulis query menggunakan NOT EXISTS untuk menampilkan produk yang belum pernah ada transaksinya.',
       sql:'SELECT nama_produk\nFROM produk p\nWHERE NOT EXISTS (\n  SELECT 1 FROM transaksi t WHERE t.produk_id = p.id\n);',
+      output:"nama_produk\n------------\nMeja\nBanner Promo\n\n(hasilnya sama persis dengan soal LEFT JOIN + IS NULL sebelumnya — cuma beda pendekatan)",
       why:'NOT EXISTS adalah kebalikan dari EXISTS — mengambil baris yang TIDAK punya kecocokan sama sekali di subquery.',
       trap:'Ini soal yang sama persis dengan soal LEFT JOIN + IS NULL sebelumnya, cuma pendekatannya beda. Dua-duanya benar — di tes, kadang salah satu pendekatan diminta secara spesifik.'
     },
     {
+      level:"Menengah",
       tags:["UNION"],
       story:'Bagian umum mau bikin satu daftar "nama pihak internal" buat keperluan surat menyurat, gabungan dari nama semua karyawan dan nama semua divisi, tanpa ada nama yang dobel.',
       ask:'Tulis query menggunakan UNION untuk menggabungkan nama karyawan dan nama divisi jadi satu daftar tanpa duplikat.',
       sql:'SELECT nama FROM karyawan\nUNION\nSELECT nama_divisi FROM divisi;',
+      output:"nama\n---------\nAndi\nBudi\nDewi\nGudang\nLina\nMarketing\nProduksi\nRiset\nRudi\nSari\nTono\n\n(11 baris: 7 nama karyawan + 4 nama divisi, urutan hasil UNION bergantung database, biasanya otomatis terurut)",
       why:'UNION menggabungkan hasil dua SELECT ke bawah (menambah baris), bukan ke samping seperti JOIN. Duplikat otomatis dibuang.',
       trap:'Kalau butuh nama yang dobel tetap muncul dua kali (misal ada karyawan dan divisi kebetulan namanya sama), pakai UNION ALL, bukan UNION biasa.'
     },
     {
+      level:"Sulit",
+      tags:["GROUP BY multi kolom"],
+      story:'Bagian produksi mau lihat tren penjualan tiap produk PER BULAN sepanjang tahun, buat lihat pola musiman — bukan cuma total setahun.',
+      ask:'Tulis query untuk menampilkan total qty transaksi per produk per bulan.',
+      sql:"SELECT p.nama_produk,\n  EXTRACT(MONTH FROM t.tgl_transaksi) AS bulan,\n  SUM(t.qty) AS total_qty\nFROM produk p\nJOIN transaksi t ON t.produk_id = p.id\nGROUP BY p.nama_produk, EXTRACT(MONTH FROM t.tgl_transaksi);",
+      output:"nama_produk | bulan | total_qty\n------------+-------+----------\nKursi       | 1     | 8\nKursi       | 2     | 2\nLemari      | 1     | 1\nLemari      | 3     | 4\nRak Gudang  | 2     | 18\nRak Gudang  | 3     | 6\n\n(tiap kombinasi produk+bulan jadi satu baris tersendiri)",
+      why:'GROUP BY bisa pakai kombinasi lebih dari satu kolom/ekspresi — di sini dikelompokkan per (produk, bulan) sekaligus, bukan cuma per produk.',
+      trap:'Di MySQL fungsinya MONTH(t.tgl_transaksi), bukan EXTRACT(MONTH FROM ...) — sintaks fungsi tanggal beda antar database, tanyakan/cek dulu database yang dipakai saat tes.'
+    },
+    {
+      level:"Sulit",
+      tags:["MAX per grup (varian)"],
+      story:'Bagian marketing mau bikin katalog highlight: satu produk unggulan (termahal) dari tiap divisi produksi, buat dipajang di brosur.',
+      ask:'Tulis query untuk menampilkan tiap divisi beserta produk termahalnya.',
+      sql:'SELECT d.nama_divisi, p.nama_produk, p.harga\nFROM divisi d\nJOIN produk p ON p.divisi_id = d.id\nWHERE p.harga = (\n  SELECT MAX(p2.harga)\n  FROM produk p2\n  WHERE p2.divisi_id = d.id\n);',
+      output:"nama_divisi | nama_produk  | harga\n------------+--------------+--------\nProduksi    | Lemari       | 1500000\nGudang      | Rak Gudang   | 300000\nMarketing   | Banner Promo | 100000\n\n('Riset' tidak muncul karena tidak punya produk sama sekali)",
+      why:'Pola sama persis dengan "gaji tertinggi per divisi", cuma konteksnya diganti ke produk termahal per divisi.',
+      trap:'Kalau ada dua produk dengan harga sama-sama tertinggi di satu divisi, keduanya akan tampil — itu wajar secara logika query.'
+    },
+    {
+      level:"Sulit",
+      tags:["COALESCE + CASE"],
+      story:'Manajer sales mau laporan status keaktifan tiap karyawan sales dalam bentuk label yang gampang dibaca orang non-teknis, bukan angka — cukup "Aktif Transaksi" atau "Belum Pernah".',
+      ask:'Tulis query untuk menampilkan nama karyawan dan status "Aktif Transaksi" (jika pernah transaksi) atau "Belum Pernah" (jika belum).',
+      sql:"SELECT k.nama,\n  CASE WHEN COUNT(t.id) > 0 THEN 'Aktif Transaksi' ELSE 'Belum Pernah' END AS status\nFROM karyawan k\nLEFT JOIN transaksi t ON t.karyawan_id = k.id\nGROUP BY k.nama;",
+      output:"nama | status\n-----+----------------\nBudi | Aktif Transaksi\nSari | Aktif Transaksi\nAndi | Aktif Transaksi\nDewi | Aktif Transaksi\nRudi | Belum Pernah\nLina | Belum Pernah\nTono | Belum Pernah",
+      why:'LEFT JOIN + COUNT menghitung transaksi tiap karyawan (0 kalau belum pernah), CASE WHEN mengubah angka itu jadi label teks.',
+      trap:'CASE WHEN ... THEN ... ELSE ... END itu setara if/else di SQL — banyak yang lupa SQL bisa bikin logika kondisional sendiri tanpa perlu diproses lagi di aplikasi.'
+    },
+    {
+      level:"Sulit",
+      tags:["Ringkasan semua konsep"],
+      story:'Direktur mau tau top 3 karyawan paling produktif berdasarkan total qty transaksi, lengkap dengan divisinya, diurutkan dari yang paling produktif. Karyawan yang belum pernah transaksi tidak perlu masuk daftar.',
+      ask:'Tulis query untuk menampilkan 3 karyawan dengan total qty transaksi terbanyak beserta nama divisinya, urut dari terbanyak.',
+      sql:'SELECT k.nama, d.nama_divisi, SUM(t.qty) AS total_qty\nFROM karyawan k\nJOIN divisi d ON k.divisi_id = d.id\nJOIN transaksi t ON t.karyawan_id = k.id\nGROUP BY k.nama, d.nama_divisi\nORDER BY total_qty DESC\nLIMIT 3;',
+      output:"nama | nama_divisi | total_qty\n-----+-------------+----------\nAndi | Gudang      | 18\nSari | Produksi    | 9\nDewi | Gudang      | 8\n\n(Budi totalnya cuma 4, kalah dari 3 nama di atas, jadi tidak masuk top 3)",
+      why:'Gabungan JOIN 2 tabel tambahan, GROUP BY multi-kolom, SUM, ORDER BY hasil agregasi, ditutup LIMIT untuk top-N. JOIN biasa (bukan LEFT) otomatis membuang karyawan tanpa transaksi.',
+      trap:'Soal ini SENGAJA tidak butuh LEFT JOIN, kebalikan dari soal COALESCE sebelumnya — selalu baca soal pelan-pelan sebelum memutuskan JOIN biasa atau LEFT JOIN.'
+    },
+    {
+      level:"Sulit",
+      tags:["RIGHT/FULL JOIN"],
+      story:'Tim audit sistem mau cek konsistensi data: cari SEMUA divisi yang belum punya karyawan, DAN semua karyawan yang divisi_id-nya kosong/tidak valid — ditampilkan dalam satu laporan sekaligus.',
+      ask:'Tulis query menggunakan FULL JOIN untuk menampilkan divisi tanpa karyawan dan karyawan dengan divisi tidak valid.',
+      sql:'SELECT d.nama_divisi, k.nama\nFROM divisi d\nFULL JOIN karyawan k ON k.divisi_id = d.id\nWHERE d.id IS NULL OR k.id IS NULL;',
+      output:"nama_divisi | nama\n------------+------\nRiset       | (kosong/NULL)\n(kosong/NULL) | Tono\n\n('Riset' muncul karena tidak ada karyawannya; 'Tono' muncul karena divisi_id-nya NULL)",
+      why:'FULL JOIN mempertahankan baris dari kedua tabel meski tidak nyambung. Filter IS NULL di salah satu sisi menyisakan cuma baris yang "pincang" dari kedua arah.',
+      trap:'MySQL tidak mendukung FULL JOIN langsung (harus disimulasikan pakai UNION dari LEFT JOIN dan RIGHT JOIN) — PostgreSQL mendukungnya secara native.'
+    },
+    {
+      level:"Sulit",
       tags:["Window Function"],
       story:'HRD mau tau karyawan dengan gaji TERTINGGI di tiap divisi, tapi diminta pakai teknik yang lebih modern daripada subquery berlapis — sistem baru mereka mendukung window function.',
       ask:'Tulis query menggunakan RANK() OVER (PARTITION BY ...) untuk menampilkan karyawan dengan gaji tertinggi (ranking 1) di tiap divisi.',
       sql:'SELECT * FROM (\n  SELECT nama, divisi_id, gaji,\n    RANK() OVER (PARTITION BY divisi_id ORDER BY gaji DESC) AS ranking\n  FROM karyawan\n) sub\nWHERE ranking = 1;',
+      output:"nama | divisi_id | gaji    | ranking\n-----+-----------+---------+--------\nSari | 1         | 6000000 | 1\nRudi | 2         | 7000000 | 1\nLina | 3         | 5500000 | 1\n\n(hasilnya SAMA dengan pendekatan correlated subquery MAX di soal sebelumnya, cuma caranya beda)",
       why:'PARTITION BY divisi_id mengelompokkan ranking per divisi (mirip GROUP BY, tapi baris asli tetap utuh). Karena window function tidak bisa langsung difilter di WHERE, query dibungkus jadi subquery dulu baru difilter ranking = 1 di luar.',
       trap:'Kalau dua karyawan gaji sama-sama tertinggi di satu divisi, RANK() akan kasih ranking 1 ke keduanya (beda dengan ROW_NUMBER() yang selalu kasih angka unik meski nilainya sama).'
     }
@@ -426,6 +525,10 @@
     top.className = 'case-top';
     var tagRow = document.createElement('div');
     tagRow.className = 'tag-row';
+    var levelBadge = document.createElement('span');
+    levelBadge.className = 'level-badge level-' + c.level;
+    levelBadge.textContent = c.level;
+    tagRow.appendChild(levelBadge);
     c.tags.forEach(function(t){
       var tag = document.createElement('span');
       tag.className = 'tag';
@@ -490,6 +593,15 @@
     pre.className = 'sql';
     pre.innerHTML = hl(c.sql);
     reveal.appendChild(pre);
+
+    var outputLabel = document.createElement('div');
+    outputLabel.className = 'output-label';
+    outputLabel.textContent = 'Output';
+    reveal.appendChild(outputLabel);
+    var outputPre = document.createElement('pre');
+    outputPre.className = 'output-block';
+    outputPre.textContent = c.output;
+    reveal.appendChild(outputPre);
 
     var why = document.createElement('div');
     why.className = 'why';
