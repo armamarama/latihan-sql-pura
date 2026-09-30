@@ -6,51 +6,128 @@
 <title>Persiapan Tes Teknis</title>
 <style>
   :root{
-    --bg:#f3f1ea; --surface:#faf8f2; --ink:#33312a; --ink-soft:#65604f;
-    --rule:#e0dbc9; --accent:#ad5a37; --accent-ink:#fbf4ee; --key:#3c6a8f;
+    --bg:#f3f1ea; --surface:#faf8f2; --surface-2:#ece8dd; --ink:#33312a; --ink-soft:#65604f; --ink-faint:#8f8a76;
+    --rule:#e0dbc9; --accent:#ad5a37; --accent-ink:#fbf4ee; --accent-soft:#efdcce; --key:#3c6a8f; --key-soft:#e0e9f0;
+    --good:#4d7d58; --good-soft:#dfeae1;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
-    :root{ --bg:#1a1815; --surface:#232019; --ink:#e6e1d3; --ink-soft:#aca68f; --rule:#38332a; --accent:#dd8961; --accent-ink:#261407; --key:#8fbadf; color-scheme: dark; }
+    :root{
+      --bg:#1a1815; --surface:#232019; --surface-2:#2a261e; --ink:#e6e1d3; --ink-soft:#aca68f; --ink-faint:#78735f;
+      --rule:#38332a; --accent:#dd8961; --accent-ink:#261407; --accent-soft:#3c2618; --key:#8fbadf; --key-soft:#1c2a35;
+      --good:#83c095; --good-soft:#1e2f24;
+      color-scheme: dark;
+    }
   }
   *{box-sizing:border-box;}
   body{
     background:var(--bg); color:var(--ink); margin:0; min-height:100vh;
-    display:flex; align-items:center; justify-content:center;
-    font-family:-apple-system, system-ui, sans-serif; padding:24px;
+    font-family:-apple-system, system-ui, sans-serif; padding-inline:16px; padding-block:28px 48px;
   }
-  .wrap{ max-width:420px; width:100%; display:flex; flex-direction:column; gap:16px; }
-  h1{ font-size:22px; margin:0 0 4px; }
-  p.sub{ font-size:14px; color:var(--ink-soft); margin:0 0 8px; }
+  .wrap{ max-width:480px; width:100%; margin:0 auto; display:flex; flex-direction:column; gap:20px; }
+  h1{ font-size:23px; margin:0 0 4px; }
+  h2.section-title{ font-size:14px; font-weight:700; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.05em; margin:4px 0 0; }
+  p.sub{ font-size:14px; color:var(--ink-soft); margin:0 0 4px; line-height:1.5; }
+  .cards{ display:flex; flex-direction:column; gap:10px; }
   a.card{
     display:block; background:var(--surface); border:1px solid var(--rule); border-radius:12px;
-    padding:18px 20px; text-decoration:none; color:var(--ink);
+    padding:16px 18px; text-decoration:none; color:var(--ink);
   }
-  a.card .t{ font-weight:700; font-size:16px; color:var(--key); }
-  a.card .d{ font-size:13px; color:var(--ink-soft); margin-top:4px; }
-  footer{ font-size:11.5px; color:var(--ink-soft); text-align:center; margin-top:8px; }
+  a.card .t{ font-weight:700; font-size:15.5px; color:var(--key); }
+  a.card .d{ font-size:13px; color:var(--ink-soft); margin-top:4px; line-height:1.4; }
+
+  .plan{
+    background:var(--surface); border:1px solid var(--rule); border-radius:14px;
+    padding:18px 18px 16px; display:flex; flex-direction:column; gap:12px;
+  }
+  .plan-note{ font-size:13px; color:var(--ink-soft); line-height:1.55; margin:0; }
+  .day{
+    background:var(--surface-2); border-radius:10px; padding:12px 14px;
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .day-head{ display:flex; align-items:baseline; gap:8px; }
+  .day-num{
+    font-weight:800; font-size:13px; color:var(--accent-ink); background:var(--accent);
+    padding:2px 9px; border-radius:20px; flex:none;
+  }
+  .day-title{ font-weight:700; font-size:14px; color:var(--ink); }
+  .day-time{ font-size:11.5px; color:var(--ink-faint); margin-left:auto; }
+  .day ul{ margin:2px 0 0; padding-left:18px; font-size:13px; color:var(--ink-soft); line-height:1.6; }
+  .day li b{ color:var(--ink); }
+  .day-goal{ font-size:12px; color:var(--good); font-weight:600; margin-top:2px; }
+
+  footer{ font-size:11.5px; color:var(--ink-soft); text-align:center; margin-top:4px; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Persiapan Tes Teknis</h1>
-  <p class="sub">Latihan untuk tes teknis Programmer — SQL query dan studi kasus coding.</p>
-  <a class="card" href="materi.html">
-    <div class="t">📘 Materi Belajar SQL</div>
-    <div class="d">14 konsep SQL dengan analogi sederhana + contoh soal &amp; jawaban tiap bagian</div>
-  </a>
-  <a class="card" href="latihan.html">
-    <div class="t">📝 Latihan Soal SQL</div>
-    <div class="d">23 kasus cerita SQL — ketik jawabanmu sendiri, lalu cek ke kunci jawaban</div>
-  </a>
-  <a class="card" href="coding.html">
-    <div class="t">💻 Studi Kasus Coding</div>
-    <div class="d">10 kasus PHP/Laravel (validasi, array, OOP, Eloquent) — ketik jawabanmu sendiri, lalu cek ke kunci jawaban</div>
-  </a>
-  <a class="card" href="debug.html">
-    <div class="t">🐛 Cari &amp; Benerin Bug</div>
-    <div class="d">8 fungsi PHP/Laravel dengan bug tersembunyi — baca, cari, dan perbaiki</div>
-  </a>
+  <p class="sub">Latihan untuk tes teknis Programmer — SQL query, studi kasus coding, dan cari-benerin bug. Total 68 soal, dirancang bisa dikuasai dalam 3 hari fokus.</p>
+
+  <div class="cards">
+    <a class="card" href="materi.html">
+      <div class="t">📘 Materi Belajar SQL</div>
+      <div class="d">14 konsep SQL dengan analogi sederhana + contoh soal, jawaban, dan output nyata tiap bagian</div>
+    </a>
+    <a class="card" href="latihan.html">
+      <div class="t">📝 Latihan Soal SQL</div>
+      <div class="d">23 kasus cerita SQL (Mudah → Sulit) — ketik jawabanmu sendiri, cek ke kunci jawaban + output</div>
+    </a>
+    <a class="card" href="coding.html">
+      <div class="t">💻 Studi Kasus Coding</div>
+      <div class="d">16 kasus PHP/Laravel (Mudah → Sulit) — validasi, array, OOP, Eloquent, migration, hingga design pattern</div>
+    </a>
+    <a class="card" href="debug.html">
+      <div class="t">🐛 Cari &amp; Benerin Bug</div>
+      <div class="d">15 fungsi PHP/Laravel dengan bug tersembunyi (Mudah → Sulit) — baca, cari, dan perbaiki</div>
+    </a>
+  </div>
+
+  <h2 class="section-title">Jadwal 3 Hari</h2>
+  <div class="plan">
+    <p class="plan-note">Total sekitar 68 soal. Dipecah biar tiap hari tetap fokus dan nggak keburu-buru — kalau ada waktu lebih, hari terakhir dipakai buat ulang yang masih ragu.</p>
+
+    <div class="day">
+      <div class="day-head">
+        <span class="day-num">HARI 1</span>
+        <span class="day-title">Fondasi SQL</span>
+        <span class="day-time">~3-4 jam</span>
+      </div>
+      <ul>
+        <li>Baca <b>Materi Belajar SQL</b> bagian 1-14, pelan-pelan, kerjain tiap "Contoh Soal" di kepala sebelum lihat jawaban</li>
+        <li>Lanjut ke <b>Latihan Soal SQL</b> — kerjain semua yang badge <b>Mudah</b> (6 soal) dan <b>Menengah</b> (11 soal)</li>
+      </ul>
+      <div class="day-goal">Target akhir hari: paham JOIN, GROUP BY, HAVING, COALESCE, subquery luar kepala</div>
+    </div>
+
+    <div class="day">
+      <div class="day-head">
+        <span class="day-num">HARI 2</span>
+        <span class="day-title">SQL Lanjut + Coding Dasar</span>
+        <span class="day-time">~3-4 jam</span>
+      </div>
+      <ul>
+        <li>Selesaikan <b>Latihan Soal SQL</b> sisanya — badge <b>Sulit</b> (6 soal, termasuk Query Gabungan)</li>
+        <li>Mulai <b>Studi Kasus Coding</b> — kerjain <b>Mudah</b> (5 soal) dan <b>Menengah</b> (7 soal)</li>
+      </ul>
+      <div class="day-goal">Target akhir hari: SQL sudah lancar semua level, mulai terbiasa nulis fungsi PHP dari cerita</div>
+    </div>
+
+    <div class="day">
+      <div class="day-head">
+        <span class="day-num">HARI 3</span>
+        <span class="day-title">Coding Lanjut + Debug + Review</span>
+        <span class="day-time">~3-4 jam</span>
+      </div>
+      <ul>
+        <li>Selesaikan <b>Studi Kasus Coding</b> — badge <b>Sulit</b> (4 soal: migration, Eloquent lanjut, dsb)</li>
+        <li>Kerjain semua <b>Cari &amp; Benerin Bug</b> (15 soal) — ini paling mirip tipe soal tes beneran</li>
+        <li>Sisa waktu: buka lagi soal yang tadi kamu tandai "Masih Meleset", ulang sampai yakin</li>
+      </ul>
+      <div class="day-goal">Target akhir hari: siap tes — sudah pernah ketemu semua pola soal yang mungkin keluar</div>
+    </div>
+  </div>
+
   <footer>Materi belajar pribadi, tidak berafiliasi dengan Pura Group.</footer>
 </div>
 </body>
