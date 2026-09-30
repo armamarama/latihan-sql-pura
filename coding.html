@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Latihan Studi Kasus Coding</title>
+<title>Latihan Studi Kasus Coding</title>
+<style>
+  /* Layout: same story-case deck pattern as the SQL practice page, reused for visual consistency across the prep set */
+  :root{
+    --bg:#f3f1ea;
+    --surface:#faf8f2;
+    --surface-2:#ece8dd;
+    --ink:#33312a;
+    --ink-soft:#65604f;
+    --ink-faint:#8f8a76;
+    --rule:#e0dbc9;
+    --accent:#ad5a37;
+    --accent-ink:#fbf4ee;
+    --accent-soft:#efdcce;
+    --good:#4d7d58;
+    --good-soft:#dfeae1;
+    --key:#3c6a8f;
+    --key-soft:#e0e9f0;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#1a1815;
+      --surface:#232019;
+      --surface-2:#2a261e;
+      --ink:#e6e1d3;
+      --ink-soft:#aca68f;
+      --ink-faint:#78735f;
+      --rule:#38332a;
+      --accent:#dd8961;
+      --accent-ink:#261407;
+      --accent-soft:#3c2618;
+      --good:#83c095;
+      --good-soft:#1e2f24;
+      --key:#8fbadf;
+      --key-soft:#1c2a35;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#1a1815;
+    --surface:#232019;
+    --surface-2:#2a261e;
+    --ink:#e6e1d3;
+    --ink-soft:#aca68f;
+    --ink-faint:#78735f;
+    --rule:#38332a;
+    --accent:#dd8961;
+    --accent-ink:#261407;
+    --accent-soft:#3c2618;
+    --good:#83c095;
+    --good-soft:#1e2f24;
+    --key:#8fbadf;
+    --key-soft:#1c2a35;
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', -apple-system, system-ui, sans-serif;
+    margin:0;
+    padding-inline:16px;
+    padding-block:26px 60px;
+    line-height:1.6;
+    font-size:15.5px;
+  }
+  h1,h2,h3{ font-family:'Fraunces', Georgia, serif; text-wrap:balance; margin:0; }
+  code, pre, .mono{ font-family:'IBM Plex Mono', ui-monospace, monospace; }
+
+  .wrap{ max-width:700px; margin:0 auto; display:flex; flex-direction:column; gap:22px; }
+
+  header.page{ display:flex; flex-direction:column; gap:6px; }
+  .eyebrow{ font-size:11.5px; letter-spacing:0.09em; text-transform:uppercase; color:var(--accent); font-weight:600; }
+  h1{ font-size:25px; font-weight:600; }
+  .sub{ font-size:14px; color:var(--ink-soft); max-width:60ch; }
+
+  .info-box{
+    background:var(--surface); border:1px solid var(--rule); border-radius:12px;
+    padding:14px 16px; font-size:13.5px; color:var(--ink-soft); line-height:1.6;
+  }
+  .info-box b{ color:var(--ink); }
+
+  .score-strip{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--surface); border:1px solid var(--rule); border-radius:10px; padding:10px 14px;
+    font-size:12.5px; color:var(--ink-soft);
+  }
+  .score-strip b{ color:var(--ink); font-family:'IBM Plex Mono',monospace; }
+
+  .case-card{
+    background:var(--surface); border:1px solid var(--rule); border-radius:12px;
+    padding:18px 18px 16px; display:flex; flex-direction:column; gap:12px;
+  }
+  .case-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .tag-row{ display:flex; gap:6px; flex-wrap:wrap; }
+  .tag{
+    font-size:10.5px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
+    padding:3px 8px; border-radius:20px; background:var(--accent-soft); color:var(--accent);
+  }
+  .qnum{ font-size:12px; color:var(--ink-faint); font-family:'IBM Plex Mono',monospace; }
+
+  .story{
+    font-size:15.5px; line-height:1.6; background:var(--key-soft); border-left:3px solid var(--key);
+    border-radius:0 8px 8px 0; padding:14px 16px;
+  }
+  .story .ask{ margin-top:8px; font-weight:600; color:var(--key); }
+
+  textarea.answer-input{
+    width:100%; min-height:140px; resize:vertical;
+    background:var(--surface-2); border:1px solid var(--rule); border-radius:8px;
+    padding:12px 14px; font-family:'IBM Plex Mono',monospace; font-size:14px; line-height:1.6; color:var(--ink);
+  }
+  textarea.answer-input:focus{ outline:2px solid var(--key); outline-offset:1px; }
+  textarea.answer-input::placeholder{ color:var(--ink-faint); }
+
+  .btn-row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  button.check-btn{
+    font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;
+    border:none; border-radius:8px; padding:9px 16px;
+    background:var(--accent); color:var(--accent-ink);
+  }
+  button.check-btn:active{ transform:translateY(1px); }
+  .saved-note{ font-size:11.5px; color:var(--ink-faint); }
+
+  .reveal{ display:none; flex-direction:column; gap:10px; border-top:1px solid var(--rule); padding-top:12px; }
+  .reveal.shown{ display:flex; }
+  .reveal-label{ font-size:11.5px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--good); }
+  pre.code{
+    background:var(--surface-2); border:1px solid var(--rule); border-radius:8px;
+    padding:14px 16px; font-size:14px; line-height:1.7; overflow-x:auto; white-space:pre; margin:0; color:var(--ink);
+  }
+  pre.code .kw{ color:var(--accent); font-weight:600; }
+  pre.code .cm{ color:var(--ink-faint); font-style:italic; }
+  .why{ font-size:14.5px; line-height:1.6; color:var(--ink-soft); background:var(--good-soft); border-left:3px solid var(--good); border-radius:0 6px 6px 0; padding:11px 14px; }
+  .trap{ font-size:13.5px; line-height:1.6; color:var(--ink-soft); }
+  .trap b{ color:var(--ink); }
+
+  .self-rate{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .self-rate span{ font-size:12px; color:var(--ink-faint); }
+  .rate-btn{
+    font-family:inherit; font-size:12px; font-weight:600; cursor:pointer;
+    border:1px solid var(--rule); border-radius:20px; padding:5px 12px; background:var(--surface);
+    color:var(--ink-soft);
+  }
+  .rate-btn.sel-yes{ background:var(--good-soft); border-color:var(--good); color:var(--good); }
+  .rate-btn.sel-no{ background:var(--accent-soft); border-color:var(--accent); color:var(--accent); }
+
+  footer{ font-size:12px; color:var(--ink-faint); text-align:center; padding-top:6px; }
+</style>
+
+<div class="wrap">
+
+  <header class="page">
+    <span class="eyebrow">Latihan · Studi Kasus Coding</span>
+    <h1>Latihan Studi Kasus Coding</h1>
+    <p class="sub">10 studi kasus PHP/Laravel ala tes teknis programmer. Baca kasusnya, ketik kode kamu sendiri, baru klik "Cek Jawaban" buat cocokin ke kunci jawaban + penjelasan. Fokus ke pola yang sering keluar: validasi, looping/array, OOP dasar, dan Eloquent (Laravel).</p>
+  </header>
+
+  <div class="info-box">
+    <b>Catatan:</b> Kode kunci jawaban di sini salah satu cara yang benar, bukan satu-satunya. Yang dinilai di tes biasanya logikanya jalan dan bisa dijelaskan, bukan harus sama persis karakter per karakter dengan kunci jawaban.
+  </div>
+
+  <div class="score-strip">
+    <span>Progres kamu tersimpan otomatis di browser ini.</span>
+    <span>Sudah dicoba: <b id="progress-count">0</b> / 10</span>
+  </div>
+
+  <div id="deck"></div>
+
+  <footer>Latihan tidak resmi untuk persiapan tes teknis — bukan soal asli Pura Group.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  function hl(code){
+    return code
+      .replace(/(\/\/[^\n]*)/g, '<span class="cm">$1</span>')
+      .replace(/\b(function|if|else|elseif|foreach|for|while|return|class|public|private|protected|static|new|array|as|use|namespace|extends|implements|try|catch|true|false|null|echo|isset|empty)\b/g,
+        '<span class="kw">$1</span>');
+  }
+
+  var CASES = [
+    {
+      tags:["Validasi Dasar"],
+      story:'Ada form input data karyawan baru. Sebelum disimpan, sistem harus memastikan nama tidak boleh kosong dan email harus format yang valid.',
+      ask:'Tulis fungsi PHP validasiKaryawan($nama, $email) yang mengembalikan array pesan error (kosong kalau valid).',
+      code:"function validasiKaryawan($nama, $email) {\n    $errors = [];\n\n    if (empty(trim($nama))) {\n        $errors[] = 'Nama tidak boleh kosong';\n    }\n\n    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {\n        $errors[] = 'Format email tidak valid';\n    }\n\n    return $errors;\n}",
+      why:'trim() membuang spasi di awal/akhir sebelum dicek empty(), supaya input " " (spasi doang) juga ketangkep sebagai kosong. filter_var dengan FILTER_VALIDATE_EMAIL adalah cara standar PHP untuk validasi format email.',
+      trap:'Jangan cuma cek $nama == "" — kalau usernya cuma isi spasi, itu lolos validasi padahal seharusnya dianggap kosong. Selalu trim() dulu.'
+    },
+    {
+      tags:["Array & Looping"],
+      story:'Kamu punya array data transaksi harian (tiap item ada qty dan harga_satuan). Manajer minta total nilai semua transaksi hari ini.',
+      ask:'Tulis fungsi hitungTotalTransaksi($transaksi) yang menerima array transaksi dan mengembalikan total nilai (qty * harga_satuan dijumlahkan semua).',
+      code:"function hitungTotalTransaksi($transaksi) {\n    $total = 0;\n    foreach ($transaksi as $item) {\n        $total += $item['qty'] * $item['harga_satuan'];\n    }\n    return $total;\n}\n\n// Contoh pemakaian:\n$data = [\n    ['qty' => 2, 'harga_satuan' => 15000],\n    ['qty' => 5, 'harga_satuan' => 8000],\n];\necho hitungTotalTransaksi($data); // 70000",
+      why:'Loop foreach mengakses tiap baris transaksi, kalikan qty dengan harga_satuan, dan akumulasi ke variabel $total.',
+      trap:'Pastikan inisialisasi $total = 0 di LUAR loop, bukan di dalam — kalau di dalam, $total akan direset tiap iterasi dan hasil akhirnya salah.'
+    },
+    {
+      tags:["Array — Cari Duplikat"],
+      story:'Tim gudang curiga ada kode produk yang ke-input dobel di sistem lama. Kamu diminta bikin fungsi pengecekan cepat.',
+      ask:'Tulis fungsi cariDuplikat($kodeProduk) yang menerima array kode produk dan mengembalikan array berisi kode yang muncul lebih dari sekali.',
+      code:"function cariDuplikat($kodeProduk) {\n    $jumlah = array_count_values($kodeProduk);\n    $duplikat = [];\n\n    foreach ($jumlah as $kode => $count) {\n        if ($count > 1) {\n            $duplikat[] = $kode;\n        }\n    }\n\n    return $duplikat;\n}",
+      why:'array_count_values() adalah fungsi bawaan PHP yang menghitung berapa kali tiap nilai muncul dalam array, hasilnya array asosiatif [nilai => jumlah_muncul]. Tinggal filter yang jumlahnya lebih dari 1.',
+      trap:'Alternatif manual (nested loop bandingkan tiap elemen ke elemen lain) juga benar, tapi lebih lambat (O(n^2)) dibanding array_count_values (O(n)) — sebutkan ini kalau ditanya soal efisiensi di interview.'
+    },
+    {
+      tags:["Logika Bisnis Bertingkat"],
+      story:'Perusahaan mau kasih diskon bertingkat buat pembelian dalam jumlah besar: di bawah 10 unit tidak ada diskon, 10-49 unit diskon 5%, 50 unit ke atas diskon 10%.',
+      ask:'Tulis fungsi hitungHargaSetelahDiskon($qty, $hargaSatuan) yang mengembalikan total harga setelah diskon sesuai aturan itu.',
+      code:"function hitungHargaSetelahDiskon($qty, $hargaSatuan) {\n    $subtotal = $qty * $hargaSatuan;\n\n    if ($qty >= 50) {\n        $diskon = 0.10;\n    } elseif ($qty >= 10) {\n        $diskon = 0.05;\n    } else {\n        $diskon = 0;\n    }\n\n    return $subtotal - ($subtotal * $diskon);\n}",
+      why:'Urutan pengecekan penting: cek dari batas TERBESAR dulu (>= 50), baru batas lebih kecil (>= 10). Kalau dibalik, qty 60 akan salah kena diskon 5% karena kondisi >= 10 sudah dulu ketemu.',
+      trap:'Ini pola yang sama persis dengan CASE WHEN di SQL (dicek berurutan, berhenti di kondisi pertama yang cocok) — kalau kamu sudah paham CASE WHEN, logika if/elseif ini seharusnya kerasa familiar.'
+    },
+    {
+      tags:["OOP Dasar"],
+      story:'Sistem butuh representasi data Produk sebagai object, lengkap dengan method untuk hitung harga termasuk pajak 11%.',
+      ask:'Buat class Produk dengan properti nama dan harga, serta method hitungHargaDenganPajak().',
+      code:"class Produk {\n    public $nama;\n    public $harga;\n\n    public function __construct($nama, $harga) {\n        $this->nama = $nama;\n        $this->harga = $harga;\n    }\n\n    public function hitungHargaDenganPajak() {\n        $pajak = 0.11;\n        return $this->harga + ($this->harga * $pajak);\n    }\n}\n\n// Contoh pemakaian:\n$produk = new Produk('Meja Kayu', 500000);\necho $produk->hitungHargaDenganPajak(); // 555000",
+      why:'__construct() adalah method spesial yang otomatis jalan saat object dibuat (new Produk(...)), dipakai untuk mengisi properti awal. $this-> dipakai untuk mengakses properti/method milik object itu sendiri.',
+      trap:'Jangan lupa $this-> di dalam method — kalau ditulis $harga saja (tanpa $this->), PHP akan mencari variabel lokal $harga yang tidak ada, bukan properti object.'
+    },
+    {
+      tags:["Laravel — Route & Controller"],
+      story:'Butuh halaman yang menampilkan daftar semua karyawan dari database, diakses lewat URL /karyawan.',
+      ask:'Tulis route dan method controller sederhana (pakai Eloquent) untuk menampilkan semua data karyawan.',
+      code:"// routes/web.php\nRoute::get('/karyawan', [KaryawanController::class, 'index']);\n\n// app/Http/Controllers/KaryawanController.php\nclass KaryawanController extends Controller\n{\n    public function index()\n    {\n        $karyawan = Karyawan::all();\n        return view('karyawan.index', compact('karyawan'));\n    }\n}",
+      why:'Route::get() mendaftarkan URL /karyawan supaya dilayani oleh method index() di KaryawanController. Karyawan::all() adalah Eloquent, mengambil SEMUA baris dari tabel karyawan (setara SELECT * FROM karyawan). compact(\'karyawan\') mengirim variabel $karyawan ke file view.',
+      trap:'Karyawan::all() memuat SEMUA baris sekaligus ke memori — untuk tabel besar biasanya dipakai ->paginate(20) sebagai gantinya supaya tidak berat.'
+    },
+    {
+      tags:["Laravel Eloquent — Relasi (mirip JOIN)"],
+      story:'Halaman daftar karyawan tadi juga harus menampilkan nama divisi tiap karyawan — data divisi ada di tabel terpisah, terhubung lewat divisi_id.',
+      ask:'Tulis definisi relasi Eloquent di model Karyawan, dan cara mengambil data karyawan beserta nama divisinya sekaligus.',
+      code:"// app/Models/Karyawan.php\nclass Karyawan extends Model\n{\n    public function divisi()\n    {\n        return $this->belongsTo(Divisi::class);\n    }\n}\n\n// Di controller:\n$karyawan = Karyawan::with('divisi')->get();\n\n// Di view (Blade):\n// {{ $item->divisi->nama_divisi }}",
+      why:'belongsTo() mendefinisikan bahwa satu karyawan "milik" satu divisi (mirip JOIN pakai divisi_id = id). with(\'divisi\') melakukan eager loading — mengambil data divisi sekaligus dalam query yang efisien, bukan query terpisah per karyawan.',
+      trap:'Kalau lupa pakai with(\'divisi\') dan langsung akses $item->divisi->nama_divisi di loop view, Eloquent akan menjalankan query BARU untuk tiap karyawan (disebut masalah N+1 query) — sangat lambat untuk data banyak.'
+    },
+    {
+      tags:["Laravel — Validasi Request"],
+      story:'Form tambah karyawan baru perlu validasi sebelum data masuk database: nama wajib diisi, email wajib format valid dan belum terdaftar, gaji wajib angka.',
+      ask:'Tulis kode validasi di method store() controller Laravel menggunakan $request->validate().',
+      code:"public function store(Request \$request)\n{\n    \$validated = \$request->validate([\n        'nama' => 'required|string|max:255',\n        'email' => 'required|email|unique:karyawan,email',\n        'gaji' => 'required|numeric|min:0',\n    ]);\n\n    Karyawan::create(\$validated);\n\n    return redirect('/karyawan');\n}",
+      why:'$request->validate() otomatis memeriksa tiap aturan; kalau ada yang gagal, Laravel otomatis redirect balik dengan pesan error (tidak perlu ditulis manual). unique:karyawan,email mengecek email belum ada di tabel karyawan.',
+      trap:'Karyawan::create() cuma jalan kalau seluruh field yang dipakai ada di $fillable pada model Karyawan — kalau lupa set $fillable, Laravel akan menolak mass assignment demi keamanan.'
+    },
+    {
+      tags:["String Manipulation"],
+      story:'Data nomor telepon karyawan disimpan tanpa format konsisten (ada yang pakai spasi, strip, dll). Bagian admin mau tampilan yang rapi: 0877-6757-9000.',
+      ask:'Tulis fungsi formatNomorTelepon($nomor) yang membersihkan nomor dari karakter non-angka lalu format ulang jadi pola XXXX-XXXX-XXXX.',
+      code:"function formatNomorTelepon(\$nomor) {\n    // Buang semua karakter selain angka\n    \$bersih = preg_replace('/[^0-9]/', '', \$nomor);\n\n    // Format ulang jadi XXXX-XXXX-XXXX\n    return substr(\$bersih, 0, 4) . '-' . substr(\$bersih, 4, 4) . '-' . substr(\$bersih, 8);\n}\n\necho formatNomorTelepon('0877 6757 9000'); // 0877-6757-9000",
+      why:'preg_replace dengan pola /[^0-9]/ membuang semua karakter yang BUKAN angka (spasi, strip, dll), menyisakan angka murni. substr() lalu memotong string itu jadi 3 bagian dan disambung pakai strip.',
+      trap:'Fungsi ini asumsi nomor selalu 12 digit — kalau nomor bisa beda panjang (11 atau 13 digit), perlu penanganan tambahan atau validasi panjang dulu sebelum format.'
+    },
+    {
+      tags:["Sorting Array Asosiatif"],
+      story:'Manajer mau daftar produk diurutkan berdasarkan stok, dari yang paling sedikit (paling perlu segera di-restock) ke yang paling banyak.',
+      ask:'Tulis fungsi urutkanBerdasarkanStok($produk) yang mengurutkan array asosiatif produk berdasarkan key stok, ascending.',
+      code:"function urutkanBerdasarkanStok(\$produk) {\n    usort(\$produk, function (\$a, \$b) {\n        return \$a['stok'] <=> \$b['stok'];\n    });\n    return \$produk;\n}\n\n// Contoh:\n\$data = [\n    ['nama' => 'Kursi', 'stok' => 15],\n    ['nama' => 'Meja', 'stok' => 3],\n];\n\$hasil = urutkanBerdasarkanStok(\$data);\n// Meja (stok 3) akan muncul duluan",
+      why:'usort() mengurutkan array pakai fungsi pembanding custom. Operator <=> (spaceship operator) mengembalikan -1, 0, atau 1 tergantung mana yang lebih kecil — cara ringkas untuk sorting ascending.',
+      trap:'usort() mengubah array asli (pass by reference secara internal) dan me-reset key numeriknya jadi urut ulang dari 0 — kalau butuh key asli tetap, pakai uasort() sebagai gantinya.'
+    }
+  ];
+
+  var STORAGE_KEY = 'coding-latihan-progress-v1';
+  var progress = {};
+  try{
+    var saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) progress = JSON.parse(saved) || {};
+  }catch(e){ progress = {}; }
+
+  function saveProgress(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); }catch(e){}
+  }
+  function updateCounter(){
+    var n = Object.keys(progress).filter(function(k){ return progress[k] && progress[k].checked; }).length;
+    var el = document.getElementById('progress-count');
+    if (el) el.textContent = String(n);
+  }
+
+  var deck = document.getElementById('deck');
+  CASES.forEach(function(c, i){
+    var id = 'ccase-' + i;
+    var card = document.createElement('div');
+    card.className = 'case-card';
+
+    var top = document.createElement('div');
+    top.className = 'case-top';
+    var tagRow = document.createElement('div');
+    tagRow.className = 'tag-row';
+    c.tags.forEach(function(t){
+      var tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.textContent = t;
+      tagRow.appendChild(tag);
+    });
+    top.appendChild(tagRow);
+    var qn = document.createElement('span');
+    qn.className = 'qnum';
+    qn.textContent = 'KASUS ' + (i+1) + ' / ' + CASES.length;
+    top.appendChild(qn);
+    card.appendChild(top);
+
+    var story = document.createElement('div');
+    story.className = 'story';
+    var storyText = document.createElement('div');
+    storyText.textContent = c.story;
+    story.appendChild(storyText);
+    var ask = document.createElement('div');
+    ask.className = 'ask';
+    ask.textContent = c.ask;
+    story.appendChild(ask);
+    card.appendChild(story);
+
+    var textarea = document.createElement('textarea');
+    textarea.className = 'answer-input';
+    textarea.placeholder = 'Ketik kode PHP kamu di sini...';
+    textarea.id = id + '-input';
+    try{
+      if (progress[id] && progress[id].text) textarea.value = progress[id].text;
+    }catch(e){}
+    textarea.addEventListener('input', function(){
+      progress[id] = progress[id] || {};
+      progress[id].text = textarea.value;
+      saveProgress();
+    });
+    card.appendChild(textarea);
+
+    var btnRow = document.createElement('div');
+    btnRow.className = 'btn-row';
+    var checkBtn = document.createElement('button');
+    checkBtn.className = 'check-btn';
+    checkBtn.type = 'button';
+    checkBtn.textContent = 'Cek Jawaban';
+    btnRow.appendChild(checkBtn);
+    var note = document.createElement('span');
+    note.className = 'saved-note';
+    note.textContent = 'Tersimpan otomatis di browser ini';
+    btnRow.appendChild(note);
+    card.appendChild(btnRow);
+
+    var reveal = document.createElement('div');
+    reveal.className = 'reveal';
+    if (progress[id] && progress[id].checked) reveal.className += ' shown';
+
+    var label = document.createElement('div');
+    label.className = 'reveal-label';
+    label.textContent = 'Kunci Jawaban & Penjelasan';
+    reveal.appendChild(label);
+
+    var pre = document.createElement('pre');
+    pre.className = 'code';
+    pre.innerHTML = hl(c.code);
+    reveal.appendChild(pre);
+
+    var why = document.createElement('div');
+    why.className = 'why';
+    why.textContent = c.why;
+    reveal.appendChild(why);
+
+    var trap = document.createElement('div');
+    trap.className = 'trap';
+    trap.innerHTML = '<b>Yang sering keliru:</b> ' + c.trap;
+    reveal.appendChild(trap);
+
+    var rateRow = document.createElement('div');
+    rateRow.className = 'self-rate';
+    var rateLabel = document.createElement('span');
+    rateLabel.textContent = 'Jawabanmu tadi:';
+    rateRow.appendChild(rateLabel);
+    var yesBtn = document.createElement('button');
+    yesBtn.className = 'rate-btn';
+    yesBtn.type = 'button';
+    yesBtn.textContent = 'Benar / Mendekati';
+    var noBtn = document.createElement('button');
+    noBtn.className = 'rate-btn';
+    noBtn.type = 'button';
+    noBtn.textContent = 'Masih Meleset';
+    function applyRateState(){
+      yesBtn.className = 'rate-btn' + (progress[id] && progress[id].rate === 'yes' ? ' sel-yes' : '');
+      noBtn.className = 'rate-btn' + (progress[id] && progress[id].rate === 'no' ? ' sel-no' : '');
+    }
+    applyRateState();
+    yesBtn.addEventListener('click', function(){
+      progress[id] = progress[id] || {};
+      progress[id].rate = 'yes';
+      saveProgress();
+      applyRateState();
+    });
+    noBtn.addEventListener('click', function(){
+      progress[id] = progress[id] || {};
+      progress[id].rate = 'no';
+      saveProgress();
+      applyRateState();
+    });
+    rateRow.appendChild(yesBtn);
+    rateRow.appendChild(noBtn);
+    reveal.appendChild(rateRow);
+
+    card.appendChild(reveal);
+
+    checkBtn.addEventListener('click', function(){
+      reveal.classList.add('shown');
+      progress[id] = progress[id] || {};
+      progress[id].checked = true;
+      saveProgress();
+      updateCounter();
+    });
+
+    deck.appendChild(card);
+  });
+
+  updateCounter();
+})();
+</script>
+
+</html>

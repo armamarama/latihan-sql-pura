@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Latihan Cari & Benerin Bug</title>
+<title>Latihan Cari & Benerin Bug</title>
+<style>
+  /* Layout: bug-hunt deck — buggy snippet shown upfront (not hidden), input for the fix, reveal panel explains root cause vs the fix */
+  :root{
+    --bg:#f3f1ea;
+    --surface:#faf8f2;
+    --surface-2:#ece8dd;
+    --ink:#33312a;
+    --ink-soft:#65604f;
+    --ink-faint:#8f8a76;
+    --rule:#e0dbc9;
+    --accent:#ad5a37;
+    --accent-ink:#fbf4ee;
+    --accent-soft:#efdcce;
+    --good:#4d7d58;
+    --good-soft:#dfeae1;
+    --bad:#b0402f;
+    --bad-soft:#f3ddd6;
+    --key:#3c6a8f;
+    --key-soft:#e0e9f0;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#1a1815;
+      --surface:#232019;
+      --surface-2:#2a261e;
+      --ink:#e6e1d3;
+      --ink-soft:#aca68f;
+      --ink-faint:#78735f;
+      --rule:#38332a;
+      --accent:#dd8961;
+      --accent-ink:#261407;
+      --accent-soft:#3c2618;
+      --good:#83c095;
+      --good-soft:#1e2f24;
+      --bad:#e08a72;
+      --bad-soft:#3a2119;
+      --key:#8fbadf;
+      --key-soft:#1c2a35;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#1a1815;
+    --surface:#232019;
+    --surface-2:#2a261e;
+    --ink:#e6e1d3;
+    --ink-soft:#aca68f;
+    --ink-faint:#78735f;
+    --rule:#38332a;
+    --accent:#dd8961;
+    --accent-ink:#261407;
+    --accent-soft:#3c2618;
+    --good:#83c095;
+    --good-soft:#1e2f24;
+    --bad:#e08a72;
+    --bad-soft:#3a2119;
+    --key:#8fbadf;
+    --key-soft:#1c2a35;
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', -apple-system, system-ui, sans-serif;
+    margin:0;
+    padding-inline:16px;
+    padding-block:26px 60px;
+    line-height:1.6;
+    font-size:15.5px;
+  }
+  h1,h2,h3{ font-family:'Fraunces', Georgia, serif; text-wrap:balance; margin:0; }
+  code, pre, .mono{ font-family:'IBM Plex Mono', ui-monospace, monospace; }
+
+  .wrap{ max-width:700px; margin:0 auto; display:flex; flex-direction:column; gap:22px; }
+
+  header.page{ display:flex; flex-direction:column; gap:6px; }
+  .eyebrow{ font-size:11.5px; letter-spacing:0.09em; text-transform:uppercase; color:var(--accent); font-weight:600; }
+  h1{ font-size:25px; font-weight:600; }
+  .sub{ font-size:14px; color:var(--ink-soft); max-width:60ch; }
+
+  .info-box{
+    background:var(--surface); border:1px solid var(--rule); border-radius:12px;
+    padding:14px 16px; font-size:13.5px; color:var(--ink-soft); line-height:1.6;
+  }
+  .info-box b{ color:var(--ink); }
+
+  .score-strip{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--surface); border:1px solid var(--rule); border-radius:10px; padding:10px 14px;
+    font-size:12.5px; color:var(--ink-soft);
+  }
+  .score-strip b{ color:var(--ink); font-family:'IBM Plex Mono',monospace; }
+
+  .case-card{
+    background:var(--surface); border:1px solid var(--rule); border-radius:12px;
+    padding:18px 18px 16px; display:flex; flex-direction:column; gap:12px;
+  }
+  .case-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .tag-row{ display:flex; gap:6px; flex-wrap:wrap; }
+  .tag{
+    font-size:10.5px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
+    padding:3px 8px; border-radius:20px; background:var(--accent-soft); color:var(--accent);
+  }
+  .qnum{ font-size:12px; color:var(--ink-faint); font-family:'IBM Plex Mono',monospace; }
+
+  .story{
+    font-size:15px; line-height:1.6; background:var(--key-soft); border-left:3px solid var(--key);
+    border-radius:0 8px 8px 0; padding:12px 14px;
+  }
+
+  .bug-label{
+    font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--bad);
+    display:flex; align-items:center; gap:6px;
+  }
+  pre.code{
+    background:var(--surface-2); border:1px solid var(--rule); border-radius:8px;
+    padding:14px 16px; font-size:14px; line-height:1.7; overflow-x:auto; white-space:pre; margin:0; color:var(--ink);
+  }
+  pre.code.bug{ border-color:var(--bad); border-width:1.5px; }
+  pre.code .kw{ color:var(--accent); font-weight:600; }
+  pre.code .cm{ color:var(--ink-faint); font-style:italic; }
+
+  .ask{ font-size:14.5px; font-weight:600; color:var(--ink); }
+
+  textarea.answer-input{
+    width:100%; min-height:140px; resize:vertical;
+    background:var(--surface-2); border:1px solid var(--rule); border-radius:8px;
+    padding:12px 14px; font-family:'IBM Plex Mono',monospace; font-size:14px; line-height:1.6; color:var(--ink);
+  }
+  textarea.answer-input:focus{ outline:2px solid var(--key); outline-offset:1px; }
+  textarea.answer-input::placeholder{ color:var(--ink-faint); }
+
+  .btn-row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  button.check-btn{
+    font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;
+    border:none; border-radius:8px; padding:9px 16px;
+    background:var(--accent); color:var(--accent-ink);
+  }
+  button.check-btn:active{ transform:translateY(1px); }
+  .saved-note{ font-size:11.5px; color:var(--ink-faint); }
+
+  .reveal{ display:none; flex-direction:column; gap:10px; border-top:1px solid var(--rule); padding-top:12px; }
+  .reveal.shown{ display:flex; }
+  .reveal-label{ font-size:11.5px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--good); }
+  .bug-explain{ font-size:14px; line-height:1.6; color:var(--ink-soft); background:var(--bad-soft); border-left:3px solid var(--bad); border-radius:0 6px 6px 0; padding:10px 13px; }
+  .bug-explain b{ color:var(--ink); }
+  .why{ font-size:14.5px; line-height:1.6; color:var(--ink-soft); background:var(--good-soft); border-left:3px solid var(--good); border-radius:0 6px 6px 0; padding:11px 14px; }
+
+  .self-rate{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .self-rate span{ font-size:12px; color:var(--ink-faint); }
+  .rate-btn{
+    font-family:inherit; font-size:12px; font-weight:600; cursor:pointer;
+    border:1px solid var(--rule); border-radius:20px; padding:5px 12px; background:var(--surface);
+    color:var(--ink-soft);
+  }
+  .rate-btn.sel-yes{ background:var(--good-soft); border-color:var(--good); color:var(--good); }
+  .rate-btn.sel-no{ background:var(--accent-soft); border-color:var(--accent); color:var(--accent); }
+
+  footer{ font-size:12px; color:var(--ink-faint); text-align:center; padding-top:6px; }
+</style>
+
+<div class="wrap">
+
+  <header class="page">
+    <span class="eyebrow">Latihan · Cari &amp; Benerin Bug</span>
+    <h1>Latihan Cari &amp; Benerin Bug</h1>
+    <p class="sub">8 fungsi PHP yang SENGAJA ada bug-nya. Baca kodenya, cari letak salahnya, ketik versi perbaikanmu, baru klik "Cek Jawaban" buat cocokin. Ini tipe soal beda dari nulis kode dari nol — di sini fokus ke KETELITIAN membaca kode orang lain.</p>
+  </header>
+
+  <div class="info-box">
+    <b>Tips:</b> Baca kode pelan-pelan baris per baris, bayangkan jalanin di kepala pakai contoh data kecil. Bug yang sering keluar biasanya: salah operator, kondisi terbalik, variabel di-reset di tempat yang salah, atau lupa return.
+  </div>
+
+  <div class="score-strip">
+    <span>Progres kamu tersimpan otomatis di browser ini.</span>
+    <span>Sudah dicoba: <b id="progress-count">0</b> / 8</span>
+  </div>
+
+  <div id="deck"></div>
+
+  <footer>Latihan tidak resmi untuk persiapan tes teknis — bukan soal asli Pura Group.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  function hl(code){
+    return code
+      .replace(/(\/\/[^\n]*)/g, '<span class="cm">$1</span>')
+      .replace(/\b(function|if|else|elseif|foreach|for|while|return|class|public|private|protected|static|new|array|as|use|break|continue|true|false|null|echo|isset|empty)\b/g,
+        '<span class="kw">$1</span>');
+  }
+
+  var CASES = [
+    {
+      tags:["Bug: Accumulator"],
+      story:'Fungsi ini seharusnya menjumlahkan semua qty dalam array transaksi, tapi hasilnya selalu sama dengan qty item terakhir saja.',
+      buggy:"function totalQty(\$transaksi) {\n    foreach (\$transaksi as \$item) {\n        \$total = \$item['qty'];\n    }\n    return \$total;\n}",
+      ask:'Cari dan perbaiki bug-nya.',
+      fixed:"function totalQty(\$transaksi) {\n    \$total = 0;\n    foreach (\$transaksi as \$item) {\n        \$total += \$item['qty'];\n    }\n    return \$total;\n}",
+      bugExplain:'Bug: <code>$total = $item[\'qty\']</code> pakai tanda sama dengan (assignment) yang MENIMPA nilai tiap iterasi, bukan menjumlahkan. Jadi nilai akhir cuma qty dari item paling terakhir di loop.',
+      why:'Perbaikan: ganti jadi <code>$total += $item[\'qty\']</code> supaya nilai diakumulasi, dan inisialisasi <code>$total = 0</code> di LUAR loop supaya tidak ke-reset tiap iterasi.'
+    },
+    {
+      tags:["Bug: Operator Perbandingan"],
+      story:'Fungsi ini seharusnya mengecek apakah stok produk habis (0), tapi kode ini selalu meng-update stok jadi 0 setiap kali dipanggil, bahkan kalau stoknya sebenarnya bukan 0.',
+      buggy:"function cekStokHabis(&\$produk) {\n    if (\$produk['stok'] = 0) {\n        return true;\n    }\n    return false;\n}",
+      ask:'Cari dan perbaiki bug-nya.',
+      fixed:"function cekStokHabis(&\$produk) {\n    if (\$produk['stok'] == 0) {\n        return true;\n    }\n    return false;\n}",
+      bugExplain:'Bug: <code>$produk[\'stok\'] = 0</code> pakai SATU tanda sama dengan, itu operator ASSIGNMENT (mengisi nilai), bukan PERBANDINGAN. Jadi tiap fungsi ini dipanggil, stok produk beneran diubah jadi 0, dan kondisi if selalu bernilai true.',
+      why:'Perbaikan: ganti jadi <code>==</code> (atau lebih aman <code>===</code>) untuk perbandingan. Ini salah satu bug paling klasik dan paling berbahaya di banyak bahasa pemrograman, termasuk PHP.'
+    },
+    {
+      tags:["Bug: Lupa Return"],
+      story:'Fungsi ini seharusnya mengembalikan harga setelah diskon, tapi kalau dipanggil dan hasilnya di-echo, yang muncul selalu kosong/NULL.',
+      buggy:"function hargaSetelahDiskon(\$harga, \$persenDiskon) {\n    \$diskon = \$harga * (\$persenDiskon / 100);\n    \$hasil = \$harga - \$diskon;\n}",
+      ask:'Cari dan perbaiki bug-nya.',
+      fixed:"function hargaSetelahDiskon(\$harga, \$persenDiskon) {\n    \$diskon = \$harga * (\$persenDiskon / 100);\n    \$hasil = \$harga - \$diskon;\n    return \$hasil;\n}",
+      bugExplain:'Bug: fungsi menghitung <code>$hasil</code> tapi tidak pernah menge-return nilainya. Secara default, fungsi PHP tanpa <code>return</code> eksplisit akan mengembalikan NULL.',
+      why:'Perbaikan: tambahkan <code>return $hasil;</code> di baris terakhir. Ini bug yang gampang lolos saat nulis cepat karena kodenya "kelihatan lengkap" padahal belum benar-benar mengeluarkan hasil.'
+    },
+    {
+      tags:["Bug: Index Array"],
+      story:'Fungsi ini seharusnya menampilkan produk PERTAMA dari daftar, tapi malah selalu error "Undefined array key" ketika array-nya kosong.',
+      buggy:"function produkPertama(\$daftarProduk) {\n    return \$daftarProduk[0]['nama_produk'];\n}",
+      ask:'Cari dan perbaiki bug-nya supaya tidak error kalau array kosong (kembalikan null kalau kosong).',
+      fixed:"function produkPertama(\$daftarProduk) {\n    if (empty(\$daftarProduk)) {\n        return null;\n    }\n    return \$daftarProduk[0]['nama_produk'];\n}",
+      bugExplain:'Bug: kode langsung mengakses <code>$daftarProduk[0]</code> tanpa mengecek dulu apakah array-nya punya isi. Kalau array kosong, index 0 tidak ada dan PHP melempar warning/error "Undefined array key".',
+      why:'Perbaikan: tambahkan pengecekan <code>empty($daftarProduk)</code> di awal fungsi sebelum mengakses index manapun — pola defensif ini penting tiap kali kode mengakses data dari luar (input user, hasil query database, dll) yang bisa saja kosong.'
+    },
+    {
+      tags:["Bug: Kondisi Loop"],
+      story:'Fungsi ini seharusnya menampilkan nomor urut 1 sampai 5, tapi outputnya cuma 1 sampai 4 — angka 5 tidak pernah muncul.',
+      buggy:"function tampilkanNomor() {\n    \$hasil = [];\n    for (\$i = 1; \$i < 5; \$i++) {\n        \$hasil[] = \$i;\n    }\n    return \$hasil;\n}",
+      ask:'Cari dan perbaiki bug-nya.',
+      fixed:"function tampilkanNomor() {\n    \$hasil = [];\n    for (\$i = 1; \$i <= 5; \$i++) {\n        \$hasil[] = \$i;\n    }\n    return \$hasil;\n}",
+      bugExplain:'Bug: kondisi <code>$i < 5</code> membuat loop BERHENTI sebelum $i mencapai 5 (loop berhenti begitu $i = 5, karena 5 < 5 itu false). Ini disebut off-by-one error — kesalahan selisih satu yang sangat umum.',
+      why:'Perbaikan: ganti jadi <code>$i <= 5</code> supaya angka 5 ikut diproses sebelum loop berhenti. Selalu double-check batas loop: apakah batas atas/bawahnya termasuk (inclusive) atau tidak (exclusive) sesuai kebutuhan soal.'
+    },
+    {
+      tags:["Bug: Scope Variabel"],
+      story:'Fungsi ini seharusnya menambah nilai counter global setiap dipanggil, tapi nilainya nggak pernah berubah dari luar fungsi.',
+      buggy:"\$counter = 0;\n\nfunction tambahCounter() {\n    \$counter++;\n}\n\ntambahCounter();\ntambahCounter();\necho \$counter; // seharusnya 2, tapi hasilnya 0",
+      ask:'Cari dan perbaiki bug-nya (boleh pakai parameter reference atau ubah jadi return value).',
+      fixed:"\$counter = 0;\n\nfunction tambahCounter(&\$counter) {\n    \$counter++;\n}\n\ntambahCounter(\$counter);\ntambahCounter(\$counter);\necho \$counter; // 2",
+      bugExplain:'Bug: variabel di dalam fungsi PHP punya scope LOKAL sendiri secara default — <code>$counter</code> di dalam fungsi adalah variabel yang BEDA dari <code>$counter</code> di luar, meski namanya sama.',
+      why:'Perbaikan: tambahkan tanda <code>&</code> di parameter (<code>&$counter</code>) supaya fungsi menerima REFERENCE ke variabel asli, bukan salinannya, sehingga perubahan di dalam fungsi ikut mempengaruhi variabel di luar.'
+    },
+    {
+      tags:["Bug: Keamanan (SQL Injection)"],
+      story:'Kode ini berfungsi normal saat testing, tapi tim security bilang ini rawan disusupi lewat input pencarian nama karyawan.',
+      buggy:"function cariKaryawan(\$pdo, \$nama) {\n    \$query = \"SELECT * FROM karyawan WHERE nama = '\" . \$nama . \"'\";\n    return \$pdo->query(\$query)->fetchAll();\n}",
+      ask:'Cari dan perbaiki celah keamanannya menggunakan prepared statement.',
+      fixed:"function cariKaryawan(\$pdo, \$nama) {\n    \$stmt = \$pdo->prepare(\"SELECT * FROM karyawan WHERE nama = :nama\");\n    \$stmt->execute(['nama' => \$nama]);\n    return \$stmt->fetchAll();\n}",
+      bugExplain:'Bug: <code>$nama</code> dari input user langsung disambung (concatenate) ke dalam string query SQL. Kalau user memasukkan nilai seperti <code>\\' OR \\'1\\'=\\'1</code>, query bisa dimanipulasi untuk membocorkan SEMUA data karyawan (SQL Injection).',
+      why:'Perbaikan: pakai prepared statement (<code>$pdo->prepare()</code> + placeholder <code>:nama</code>). Nilai input dikirim TERPISAH dari struktur query, jadi tidak bisa dipakai untuk mengubah logika SQL-nya. Di Laravel Eloquent/Query Builder, ini otomatis aman selama tidak pakai raw query dengan concatenation manual.'
+    },
+    {
+      tags:["Bug: Laravel N+1 Query"],
+      story:'Halaman daftar karyawan berjalan, tapi tim monitoring lapor query database yang jalan jumlahnya ratusan padahal cuma tampilkan 50 karyawan — halaman jadi lambat.',
+      buggy:"public function index()\n{\n    \$karyawan = Karyawan::all();\n    return view('karyawan.index', compact('karyawan'));\n}\n\n// Di file Blade:\n// @foreach ($karyawan as $item)\n//     {{ $item->divisi->nama_divisi }}\n// @endforeach",
+      ask:'Cari dan perbaiki bug performa di controller-nya.',
+      fixed:"public function index()\n{\n    \$karyawan = Karyawan::with('divisi')->get();\n    return view('karyawan.index', compact('karyawan'));\n}",
+      bugExplain:'Bug: <code>Karyawan::all()</code> cuma ambil data karyawan, TANPA data divisinya. Begitu Blade mengakses <code>$item->divisi</code> di dalam loop, Eloquent menjalankan query BARU ke database untuk SETIAP karyawan satu-satu — kalau ada 50 karyawan, jadi 50 query tambahan (disebut masalah N+1 query).',
+      why:'Perbaikan: pakai <code>Karyawan::with(\'divisi\')->get()</code> — ini disebut eager loading, mengambil semua data divisi terkait dalam SATU query tambahan saja (bukan satu-satu per karyawan), jauh lebih efisien untuk data banyak.'
+    }
+  ];
+
+  var STORAGE_KEY = 'debug-latihan-progress-v1';
+  var progress = {};
+  try{
+    var saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) progress = JSON.parse(saved) || {};
+  }catch(e){ progress = {}; }
+
+  function saveProgress(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); }catch(e){}
+  }
+  function updateCounter(){
+    var n = Object.keys(progress).filter(function(k){ return progress[k] && progress[k].checked; }).length;
+    var el = document.getElementById('progress-count');
+    if (el) el.textContent = String(n);
+  }
+
+  var deck = document.getElementById('deck');
+  CASES.forEach(function(c, i){
+    var id = 'dcase-' + i;
+    var card = document.createElement('div');
+    card.className = 'case-card';
+
+    var top = document.createElement('div');
+    top.className = 'case-top';
+    var tagRow = document.createElement('div');
+    tagRow.className = 'tag-row';
+    c.tags.forEach(function(t){
+      var tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.textContent = t;
+      tagRow.appendChild(tag);
+    });
+    top.appendChild(tagRow);
+    var qn = document.createElement('span');
+    qn.className = 'qnum';
+    qn.textContent = 'KASUS ' + (i+1) + ' / ' + CASES.length;
+    top.appendChild(qn);
+    card.appendChild(top);
+
+    var story = document.createElement('div');
+    story.className = 'story';
+    story.textContent = c.story;
+    card.appendChild(story);
+
+    var bugLabel = document.createElement('div');
+    bugLabel.className = 'bug-label';
+    bugLabel.textContent = '⚠ Kode Bermasalah';
+    card.appendChild(bugLabel);
+
+    var bugPre = document.createElement('pre');
+    bugPre.className = 'code bug';
+    bugPre.innerHTML = hl(c.buggy);
+    card.appendChild(bugPre);
+
+    var ask = document.createElement('div');
+    ask.className = 'ask';
+    ask.textContent = c.ask;
+    card.appendChild(ask);
+
+    var textarea = document.createElement('textarea');
+    textarea.className = 'answer-input';
+    textarea.placeholder = 'Ketik versi perbaikanmu di sini...';
+    textarea.id = id + '-input';
+    try{
+      if (progress[id] && progress[id].text) textarea.value = progress[id].text;
+    }catch(e){}
+    textarea.addEventListener('input', function(){
+      progress[id] = progress[id] || {};
+      progress[id].text = textarea.value;
+      saveProgress();
+    });
+    card.appendChild(textarea);
+
+    var btnRow = document.createElement('div');
+    btnRow.className = 'btn-row';
+    var checkBtn = document.createElement('button');
+    checkBtn.className = 'check-btn';
+    checkBtn.type = 'button';
+    checkBtn.textContent = 'Cek Jawaban';
+    btnRow.appendChild(checkBtn);
+    var note = document.createElement('span');
+    note.className = 'saved-note';
+    note.textContent = 'Tersimpan otomatis di browser ini';
+    btnRow.appendChild(note);
+    card.appendChild(btnRow);
+
+    var reveal = document.createElement('div');
+    reveal.className = 'reveal';
+    if (progress[id] && progress[id].checked) reveal.className += ' shown';
+
+    var label = document.createElement('div');
+    label.className = 'reveal-label';
+    label.textContent = 'Bug & Kode Perbaikan';
+    reveal.appendChild(label);
+
+    var bugExplain = document.createElement('div');
+    bugExplain.className = 'bug-explain';
+    bugExplain.innerHTML = c.bugExplain;
+    reveal.appendChild(bugExplain);
+
+    var pre = document.createElement('pre');
+    pre.className = 'code';
+    pre.innerHTML = hl(c.fixed);
+    reveal.appendChild(pre);
+
+    var why = document.createElement('div');
+    why.className = 'why';
+    why.innerHTML = c.why;
+    reveal.appendChild(why);
+
+    var rateRow = document.createElement('div');
+    rateRow.className = 'self-rate';
+    var rateLabel = document.createElement('span');
+    rateLabel.textContent = 'Jawabanmu tadi:';
+    rateRow.appendChild(rateLabel);
+    var yesBtn = document.createElement('button');
+    yesBtn.className = 'rate-btn';
+    yesBtn.type = 'button';
+    yesBtn.textContent = 'Benar / Mendekati';
+    var noBtn = document.createElement('button');
+    noBtn.className = 'rate-btn';
+    noBtn.type = 'button';
+    noBtn.textContent = 'Masih Meleset';
+    function applyRateState(){
+      yesBtn.className = 'rate-btn' + (progress[id] && progress[id].rate === 'yes' ? ' sel-yes' : '');
+      noBtn.className = 'rate-btn' + (progress[id] && progress[id].rate === 'no' ? ' sel-no' : '');
+    }
+    applyRateState();
+    yesBtn.addEventListener('click', function(){
+      progress[id] = progress[id] || {};
+      progress[id].rate = 'yes';
+      saveProgress();
+      applyRateState();
+    });
+    noBtn.addEventListener('click', function(){
+      progress[id] = progress[id] || {};
+      progress[id].rate = 'no';
+      saveProgress();
+      applyRateState();
+    });
+    rateRow.appendChild(yesBtn);
+    rateRow.appendChild(noBtn);
+    reveal.appendChild(rateRow);
+
+    card.appendChild(reveal);
+
+    checkBtn.addEventListener('click', function(){
+      reveal.classList.add('shown');
+      progress[id] = progress[id] || {};
+      progress[id].checked = true;
+      saveProgress();
+      updateCounter();
+    });
+
+    deck.appendChild(card);
+  });
+
+  updateCounter();
+})();
+</script>
+
+</html>
