@@ -263,7 +263,7 @@
       buggy:"function cariKaryawan(\$pdo, \$nama) {\n    \$query = \"SELECT * FROM karyawan WHERE nama = '\" . \$nama . \"'\";\n    return \$pdo->query(\$query)->fetchAll();\n}",
       ask:'Cari dan perbaiki celah keamanannya menggunakan prepared statement.',
       fixed:"function cariKaryawan(\$pdo, \$nama) {\n    \$stmt = \$pdo->prepare(\"SELECT * FROM karyawan WHERE nama = :nama\");\n    \$stmt->execute(['nama' => \$nama]);\n    return \$stmt->fetchAll();\n}",
-      bugExplain:'Bug: <code>$nama</code> dari input user langsung disambung (concatenate) ke dalam string query SQL. Kalau user memasukkan nilai seperti <code>\\' OR \\'1\\'=\\'1</code>, query bisa dimanipulasi untuk membocorkan SEMUA data karyawan (SQL Injection).',
+      bugExplain:'Bug: <code>$nama</code> dari input user langsung disambung (concatenate) ke dalam string query SQL. Kalau user memasukkan nilai yang mengandung tanda kutip dan kata kunci SQL, query bisa dimanipulasi untuk membocorkan SEMUA data karyawan (SQL Injection).',
       why:'Perbaikan: pakai prepared statement (<code>$pdo->prepare()</code> + placeholder <code>:nama</code>). Nilai input dikirim TERPISAH dari struktur query, jadi tidak bisa dipakai untuk mengubah logika SQL-nya. Di Laravel Eloquent/Query Builder, ini otomatis aman selama tidak pakai raw query dengan concatenation manual.'
     },
     {
