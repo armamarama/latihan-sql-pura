@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Persiapan Tes Teknis SQL</title>
+<style>
+  :root{
+    --bg:#f5f3ee; --surface:#ffffff; --ink:#211f1a; --ink-soft:#5c584d;
+    --rule:#ddd8ca; --accent:#a34a28; --accent-ink:#fbf3ee; --key:#2c5f8a;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#181613; --surface:#211e19; --ink:#ede8dd; --ink-soft:#b3ac9b; --rule:#3a352a; --accent:#d9724a; --accent-ink:#241108; --key:#7fb3e0; color-scheme: dark; }
+  }
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg); color:var(--ink); margin:0; min-height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    font-family:-apple-system, system-ui, sans-serif; padding:24px;
+  }
+  .wrap{ max-width:420px; width:100%; display:flex; flex-direction:column; gap:16px; }
+  h1{ font-size:22px; margin:0 0 4px; }
+  p.sub{ font-size:14px; color:var(--ink-soft); margin:0 0 8px; }
+  a.card{
+    display:block; background:var(--surface); border:1px solid var(--rule); border-radius:12px;
+    padding:18px 20px; text-decoration:none; color:var(--ink);
+  }
+  a.card .t{ font-weight:700; font-size:16px; color:var(--key); }
+  a.card .d{ font-size:13px; color:var(--ink-soft); margin-top:4px; }
+  footer{ font-size:11.5px; color:var(--ink-soft); text-align:center; margin-top:8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Persiapan Tes Teknis SQL</h1>
+  <p class="sub">Latihan untuk tes teknis Programmer — SQL query dan studi kasus.</p>
+  <a class="card" href="materi.html">
+    <div class="t">📘 Materi Belajar</div>
+    <div class="d">14 konsep SQL dengan analogi sederhana + contoh soal &amp; jawaban tiap bagian</div>
+  </a>
+  <a class="card" href="latihan.html">
+    <div class="t">📝 Latihan Soal Cerita</div>
+    <div class="d">23 kasus cerita — ketik jawabanmu sendiri, lalu cek ke kunci jawaban</div>
+  </a>
+  <footer>Materi belajar pribadi, tidak berafiliasi dengan Pura Group.</footer>
+</div>
+</body>
+</html>

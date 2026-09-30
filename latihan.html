@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Latihan Soal Cerita SQL</title>
+<title>Latihan Soal Cerita SQL</title>
+<style>
+  /* Layout: story-case deck — narrative prompt, own textarea for typed answer, reveal panel for self-check against the model query */
+  :root{
+    --bg:#f5f3ee;
+    --surface:#ffffff;
+    --surface-2:#edeae1;
+    --ink:#211f1a;
+    --ink-soft:#5c584d;
+    --ink-faint:#8c8778;
+    --rule:#ddd8ca;
+    --accent:#a34a28;
+    --accent-ink:#fbf3ee;
+    --accent-soft:#f1ded3;
+    --good:#3f7d53;
+    --good-soft:#dfeee3;
+    --key:#2c5f8a;
+    --key-soft:#dfe9f1;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#181613;
+      --surface:#211e19;
+      --surface-2:#28241d;
+      --ink:#ede8dd;
+      --ink-soft:#b3ac9b;
+      --ink-faint:#7a7566;
+      --rule:#3a352a;
+      --accent:#d9724a;
+      --accent-ink:#241108;
+      --accent-soft:#3a2116;
+      --good:#6fbe8b;
+      --good-soft:#1c2e21;
+      --key:#7fb3e0;
+      --key-soft:#182734;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#181613;
+    --surface:#211e19;
+    --surface-2:#28241d;
+    --ink:#ede8dd;
+    --ink-soft:#b3ac9b;
+    --ink-faint:#7a7566;
+    --rule:#3a352a;
+    --accent:#d9724a;
+    --accent-ink:#241108;
+    --accent-soft:#3a2116;
+    --good:#6fbe8b;
+    --good-soft:#1c2e21;
+    --key:#7fb3e0;
+    --key-soft:#182734;
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', -apple-system, system-ui, sans-serif;
+    margin:0;
+    padding-inline:16px;
+    padding-block:26px 60px;
+    line-height:1.5;
+  }
+  h1,h2,h3{ font-family:'Fraunces', Georgia, serif; text-wrap:balance; margin:0; }
+  code, pre, .mono{ font-family:'IBM Plex Mono', ui-monospace, monospace; }
+
+  .wrap{ max-width:700px; margin:0 auto; display:flex; flex-direction:column; gap:22px; }
+
+  header.page{ display:flex; flex-direction:column; gap:6px; }
+  .eyebrow{ font-size:11.5px; letter-spacing:0.09em; text-transform:uppercase; color:var(--accent); font-weight:600; }
+  h1{ font-size:25px; font-weight:600; }
+  .sub{ font-size:13.5px; color:var(--ink-soft); max-width:58ch; }
+
+  .schema{
+    background:var(--surface); border:1px solid var(--rule); border-radius:12px;
+    padding:14px 16px;
+  }
+  .schema summary{ cursor:pointer; font-size:13px; font-weight:600; color:var(--key); list-style:none; display:flex; align-items:center; gap:6px; }
+  .schema summary::-webkit-details-marker{ display:none; }
+  .schema summary::before{ content:"▸"; transition:transform .15s; }
+  .schema[open] summary::before{ transform:rotate(90deg); }
+  .tables{ display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-top:12px; }
+  .tbl{ background:var(--surface-2); border-radius:8px; padding:10px 12px; }
+  .tbl .name{ font-weight:600; font-size:13px; color:var(--key); margin-bottom:4px; }
+  .tbl ul{ margin:0; padding-left:0; list-style:none; font-size:12px; color:var(--ink-soft); }
+  .tbl li{ padding:1.5px 0; }
+  .tbl li b{ color:var(--ink); font-weight:500; }
+
+  .score-strip{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--surface); border:1px solid var(--rule); border-radius:10px; padding:10px 14px;
+    font-size:12.5px; color:var(--ink-soft);
+  }
+  .score-strip b{ color:var(--ink); font-family:'IBM Plex Mono',monospace; }
+
+  .case-card{
+    background:var(--surface); border:1px solid var(--rule); border-radius:12px;
+    padding:18px 18px 16px; display:flex; flex-direction:column; gap:12px;
+  }
+  .case-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .tag-row{ display:flex; gap:6px; flex-wrap:wrap; }
+  .tag{
+    font-size:10.5px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
+    padding:3px 8px; border-radius:20px; background:var(--accent-soft); color:var(--accent);
+  }
+  .qnum{ font-size:12px; color:var(--ink-faint); font-family:'IBM Plex Mono',monospace; }
+
+  .story{
+    font-size:14.5px; background:var(--key-soft); border-left:3px solid var(--key);
+    border-radius:0 8px 8px 0; padding:12px 14px;
+  }
+  .story .ask{ margin-top:8px; font-weight:600; color:var(--key); }
+
+  textarea.answer-input{
+    width:100%; min-height:90px; resize:vertical;
+    background:var(--surface-2); border:1px solid var(--rule); border-radius:8px;
+    padding:10px 12px; font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--ink);
+  }
+  textarea.answer-input:focus{ outline:2px solid var(--key); outline-offset:1px; }
+  textarea.answer-input::placeholder{ color:var(--ink-faint); }
+
+  .btn-row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  button.check-btn{
+    font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;
+    border:none; border-radius:8px; padding:9px 16px;
+    background:var(--accent); color:var(--accent-ink);
+  }
+  button.check-btn:active{ transform:translateY(1px); }
+  .saved-note{ font-size:11.5px; color:var(--ink-faint); }
+
+  .reveal{ display:none; flex-direction:column; gap:10px; border-top:1px solid var(--rule); padding-top:12px; }
+  .reveal.shown{ display:flex; }
+  .reveal-label{ font-size:11.5px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--good); }
+  pre.sql{
+    background:var(--surface-2); border:1px solid var(--rule); border-radius:8px;
+    padding:12px 14px; font-size:12.5px; overflow-x:auto; white-space:pre; margin:0; color:var(--ink);
+  }
+  pre.sql .kw{ color:var(--accent); font-weight:600; }
+  .why{ font-size:13px; color:var(--ink-soft); background:var(--good-soft); border-left:3px solid var(--good); border-radius:0 6px 6px 0; padding:9px 12px; }
+  .trap{ font-size:12.5px; color:var(--ink-soft); }
+  .trap b{ color:var(--ink); }
+
+  .self-rate{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .self-rate span{ font-size:12px; color:var(--ink-faint); }
+  .rate-btn{
+    font-family:inherit; font-size:12px; font-weight:600; cursor:pointer;
+    border:1px solid var(--rule); border-radius:20px; padding:5px 12px; background:var(--surface);
+    color:var(--ink-soft);
+  }
+  .rate-btn.sel-yes{ background:var(--good-soft); border-color:var(--good); color:var(--good); }
+  .rate-btn.sel-no{ background:var(--accent-soft); border-color:var(--accent); color:var(--accent); }
+
+  footer{ font-size:12px; color:var(--ink-faint); text-align:center; padding-top:6px; }
+</style>
+
+<div class="wrap">
+
+  <header class="page">
+    <span class="eyebrow">Latihan · Soal Cerita SQL</span>
+    <h1>Latihan Soal Cerita SQL</h1>
+    <p class="sub">23 kasus cerita ala data operasional pabrik. Baca ceritanya, ketik query SQL kamu sendiri di kotak jawaban, baru klik "Cek Jawaban" buat cocokin sama kunci jawaban + penjelasannya. Mencakup JOIN, GROUP BY, HAVING, MAX/MIN per grup, COALESCE, NULL, RIGHT/FULL JOIN, CASE WHEN, subquery IN/EXISTS, UNION, dan window function — sesuai urutan di file Materi.</p>
+  </header>
+
+  <details class="schema">
+    <summary>Lihat skema tabel (dipakai di semua soal)</summary>
+    <div class="tables">
+      <div class="tbl">
+        <div class="name">karyawan</div>
+        <ul><li><b>id</b> (PK)</li><li>nama</li><li>divisi_id (FK)</li><li>gaji</li><li>tgl_masuk</li></ul>
+      </div>
+      <div class="tbl">
+        <div class="name">divisi</div>
+        <ul><li><b>id</b> (PK)</li><li>nama_divisi</li></ul>
+      </div>
+      <div class="tbl">
+        <div class="name">produk</div>
+        <ul><li><b>id</b> (PK)</li><li>nama_produk</li><li>divisi_id (FK)</li><li>harga</li><li>stok</li></ul>
+      </div>
+      <div class="tbl">
+        <div class="name">transaksi</div>
+        <ul><li><b>id</b> (PK)</li><li>produk_id (FK)</li><li>karyawan_id (FK)</li><li>qty</li><li>tgl_transaksi</li></ul>
+      </div>
+    </div>
+  </details>
+
+  <div class="score-strip">
+    <span>Progres kamu tersimpan otomatis di browser ini.</span>
+    <span>Sudah dicoba: <b id="progress-count">0</b> / 23</span>
+  </div>
+
+  <div id="deck"></div>
+
+  <footer>Latihan tidak resmi untuk persiapan tes teknis — bukan soal asli Pura Group. Skema fiktif mewakili pola umum perusahaan manufaktur.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  function hl(sql){
+    return sql.replace(/\b(SELECT|FROM|WHERE|JOIN|LEFT|RIGHT|INNER|ON|GROUP BY|HAVING|ORDER BY|AS|AND|OR|COALESCE|MAX|MIN|COUNT|SUM|AVG|DISTINCT|IS|NULL|LIMIT|DESC|ASC|CASE|WHEN|THEN|ELSE|END|EXTRACT)\b/g,
+      '<span class="kw">$1</span>');
+  }
+
+  var CASES = [
+    {
+      tags:["JOIN dasar"],
+      story:'Manajer HRD minta daftar karyawan lengkap dengan nama divisinya masing-masing, karena data karyawan di sistem cuma nunjukkin kode divisi, bukan namanya.',
+      ask:'Tulis query untuk menampilkan nama karyawan beserta nama divisinya.',
+      sql:'SELECT k.nama, d.nama_divisi\nFROM karyawan k\nJOIN divisi d ON k.divisi_id = d.id;',
+      why:'JOIN menyambungkan karyawan.divisi_id ke divisi.id supaya nama divisi ikut tampil, bukan cuma kode angkanya.',
+      trap:'Pastikan arah ON-nya benar: divisi_id (di tabel karyawan) = id (di tabel divisi), bukan sebaliknya.'
+    },
+    {
+      tags:["LEFT JOIN"],
+      story:'Direktur mau evaluasi semua divisi yang ada di perusahaan, termasuk divisi baru yang belum sempat diisi karyawan sama sekali. Dia mau tau jumlah karyawan di tiap divisi, divisi kosong pun tetap harus kelihatan di laporan dengan angka 0.',
+      ask:'Tulis query untuk menampilkan semua divisi beserta jumlah karyawannya, termasuk divisi yang belum punya karyawan.',
+      sql:'SELECT d.nama_divisi, COUNT(k.id) AS jumlah_karyawan\nFROM divisi d\nLEFT JOIN karyawan k ON k.divisi_id = d.id\nGROUP BY d.nama_divisi;',
+      why:'LEFT JOIN mempertahankan semua divisi meski belum ada karyawannya. COUNT(k.id) otomatis jadi 0 untuk divisi kosong, karena COUNT mengabaikan baris NULL.',
+      trap:'Kalau pakai JOIN biasa, divisi kosong akan hilang total dari hasil — itu yang bikin laporan direktur salah.'
+    },
+    {
+      tags:["GROUP BY + SUM"],
+      story:'Bagian keuangan mau tau total pengeluaran gaji per divisi bulan ini, buat dibandingkan sama budget masing-masing divisi.',
+      ask:'Tulis query untuk menampilkan tiap divisi beserta total gaji seluruh karyawannya.',
+      sql:'SELECT d.nama_divisi, SUM(k.gaji) AS total_gaji\nFROM divisi d\nJOIN karyawan k ON k.divisi_id = d.id\nGROUP BY d.nama_divisi;',
+      why:'GROUP BY mengelompokkan karyawan per divisi, SUM menjumlahkan gaji dalam tiap kelompok.',
+      trap:'Kolom nama_divisi di SELECT harus ikut ditulis di GROUP BY karena dia bukan hasil SUM.'
+    },
+    {
+      tags:["HAVING"],
+      story:'Direktur cuma mau lihat divisi-divisi yang pengeluaran gajinya sudah "berat", yaitu di atas 50 juta per bulan — divisi kecil nggak usah dilaporkan dulu.',
+      ask:'Tulis query untuk menampilkan divisi yang total gajinya lebih dari 50 juta.',
+      sql:'SELECT d.nama_divisi, SUM(k.gaji) AS total_gaji\nFROM divisi d\nJOIN karyawan k ON k.divisi_id = d.id\nGROUP BY d.nama_divisi\nHAVING SUM(k.gaji) > 50000000;',
+      why:'Syaratnya soal HASIL SUM (angka yang baru ada setelah dikelompokkan), jadi wajib HAVING, bukan WHERE.',
+      trap:'WHERE SUM(k.gaji) > 50000000 akan ERROR — WHERE tidak bisa dipakai untuk hasil agregasi.'
+    },
+    {
+      tags:["WHERE + HAVING"],
+      story:'Bagian penjualan mau laporan produk laris khusus di tahun 2026 — produk yang total qty terjualnya (dalam tahun itu saja) lebih dari 100 unit.',
+      ask:'Tulis query untuk menampilkan produk dengan total qty transaksi tahun 2026 lebih dari 100, hitung transaksi tahun 2026 saja.',
+      sql:"SELECT p.nama_produk, SUM(t.qty) AS total_qty\nFROM produk p\nJOIN transaksi t ON t.produk_id = p.id\nWHERE t.tgl_transaksi >= '2026-01-01' AND t.tgl_transaksi < '2027-01-01'\nGROUP BY p.nama_produk\nHAVING SUM(t.qty) > 100;",
+      why:'WHERE menyaring transaksi ke tahun 2026 dulu (data mentah), baru dikelompokkan per produk, baru HAVING menyaring hasil SUM per produk.',
+      trap:'Jangan taruh syarat tanggal di HAVING — tanggal bukan hasil agregasi, jadi harus di WHERE.'
+    },
+    {
+      tags:["MAX per grup"],
+      story:'HRD lagi review struktur gaji dan mau tau siapa karyawan dengan gaji tertinggi DI MASING-MASING divisi (bukan tertinggi se-perusahaan), buat jadi acuan benchmark tiap divisi.',
+      ask:'Tulis query untuk menampilkan karyawan dengan gaji tertinggi di setiap divisi.',
+      sql:'SELECT k.nama, k.divisi_id, k.gaji\nFROM karyawan k\nWHERE k.gaji = (\n  SELECT MAX(k2.gaji)\n  FROM karyawan k2\n  WHERE k2.divisi_id = k.divisi_id\n);',
+      why:'Correlated subquery membandingkan gaji tiap karyawan dengan MAX gaji di divisinya sendiri — bukan MAX gaji semua karyawan.',
+      trap:'Kalau lupa syarat "k2.divisi_id = k.divisi_id" di dalam subquery, hasilnya jadi cuma satu karyawan gaji tertinggi se-perusahaan, bukan per divisi.'
+    },
+    {
+      tags:["COALESCE"],
+      story:'Manajer sales mau lihat performa SEMUA karyawan sales, termasuk yang belum pernah closing transaksi sama sekali. Karyawan yang belum pernah transaksi harus tetap muncul dengan angka 0, jangan kosong, biar gampang dibaca di laporan Excel.',
+      ask:'Tulis query untuk menampilkan semua karyawan beserta total qty transaksinya, yang belum pernah transaksi tampil 0.',
+      sql:'SELECT k.nama, COALESCE(SUM(t.qty), 0) AS total_qty\nFROM karyawan k\nLEFT JOIN transaksi t ON t.karyawan_id = k.id\nGROUP BY k.nama;',
+      why:'LEFT JOIN menjaga semua karyawan tetap muncul; COALESCE mengganti hasil SUM yang NULL (karena tidak ada transaksi) menjadi 0.',
+      trap:'Tanpa COALESCE, karyawan tanpa transaksi akan tampil "kosong"/NULL di kolom total_qty, bukan 0 — kelihatan sepele tapi sering ditanya di tes.'
+    },
+    {
+      tags:["JOIN 3 tabel"],
+      story:'Tim audit internal mau menelusuri riwayat transaksi: siapa karyawannya, dari divisi mana, dan produk apa yang ditransaksikan — semua dalam satu laporan per baris transaksi.',
+      ask:'Tulis query untuk menampilkan nama karyawan, nama divisinya, dan nama produk untuk setiap transaksi.',
+      sql:'SELECT k.nama AS nama_karyawan, d.nama_divisi, p.nama_produk\nFROM transaksi t\nJOIN karyawan k ON t.karyawan_id = k.id\nJOIN divisi d ON k.divisi_id = d.id\nJOIN produk p ON t.produk_id = p.id;',
+      why:'Mulai dari tabel transaksi (paling banyak foreign key), sambungkan satu-satu ke karyawan, divisi, dan produk lewat kolom FK masing-masing.',
+      trap:'Kalau bingung urutan JOIN-nya, mulai dari tabel "pusat" yang paling banyak FK — biasanya tabel transaksi/pivot.'
+    },
+    {
+      tags:["HAVING + COUNT"],
+      story:'Direktur operasional mau tau divisi mana yang tergolong "besar", yaitu yang jumlah karyawannya lebih dari 3 orang, buat menentukan mana yang butuh supervisor tambahan.',
+      ask:'Tulis query untuk menampilkan divisi yang punya lebih dari 3 karyawan.',
+      sql:'SELECT d.nama_divisi, COUNT(k.id) AS jumlah_karyawan\nFROM divisi d\nJOIN karyawan k ON k.divisi_id = d.id\nGROUP BY d.nama_divisi\nHAVING COUNT(k.id) > 3;',
+      why:'Pola sama seperti soal total gaji, tapi agregasinya COUNT, bukan SUM — GROUP BY per divisi, HAVING menyaring hasil COUNT.',
+      trap:'COUNT(k.id) beda dengan COUNT(*) kalau pakai LEFT JOIN — di JOIN biasa (seperti soal ini) hasilnya sama saja.'
+    },
+    {
+      tags:["Subquery + AVG"],
+      story:'Tim purchasing mau identifikasi produk-produk yang tergolong "mahal", yaitu harganya di atas rata-rata harga SEMUA produk di katalog.',
+      ask:'Tulis query untuk menampilkan produk yang harganya di atas rata-rata harga semua produk.',
+      sql:'SELECT nama_produk, harga\nFROM produk\nWHERE harga > (SELECT AVG(harga) FROM produk);',
+      why:'Subquery dihitung dulu untuk dapat satu angka (rata-rata harga semua produk), baru dibandingkan ke tiap baris produk.',
+      trap:'Ini bukan kasus GROUP BY — karena pembandingnya (rata-rata keseluruhan) sama untuk semua baris, jadi tidak perlu JOIN atau GROUP BY.'
+    },
+    {
+      tags:["LEFT JOIN + IS NULL"],
+      story:'Manajer gudang mau bersih-bersih katalog produk yang nggak laku sama sekali — produk yang belum pernah ada transaksinya dari dulu, biar bisa dipertimbangkan untuk dihentikan produksinya.',
+      ask:'Tulis query untuk menampilkan produk yang belum pernah punya transaksi sama sekali.',
+      sql:'SELECT p.nama_produk\nFROM produk p\nLEFT JOIN transaksi t ON t.produk_id = p.id\nWHERE t.id IS NULL;',
+      why:'LEFT JOIN membuat produk tanpa transaksi tetap muncul dengan kolom transaksi kosong (NULL). WHERE t.id IS NULL menyaring khusus baris yang memang tidak punya pasangan.',
+      trap:'Ini pola "anti-join": LEFT JOIN + WHERE kolom_kanan IS NULL. Sering bikin bingung karena kebalikan dari logika JOIN biasa.'
+    },
+    {
+      tags:["GROUP BY multi kolom"],
+      story:'Bagian produksi mau lihat tren penjualan tiap produk PER BULAN sepanjang tahun, buat lihat pola musiman — bukan cuma total setahun.',
+      ask:'Tulis query untuk menampilkan total qty transaksi per produk per bulan.',
+      sql:"SELECT p.nama_produk,\n  EXTRACT(MONTH FROM t.tgl_transaksi) AS bulan,\n  SUM(t.qty) AS total_qty\nFROM produk p\nJOIN transaksi t ON t.produk_id = p.id\nGROUP BY p.nama_produk, EXTRACT(MONTH FROM t.tgl_transaksi);",
+      why:'GROUP BY bisa pakai kombinasi lebih dari satu kolom/ekspresi — di sini dikelompokkan per (produk, bulan) sekaligus, bukan cuma per produk.',
+      trap:'Di MySQL fungsinya MONTH(t.tgl_transaksi), bukan EXTRACT(MONTH FROM ...) — sintaks fungsi tanggal beda antar database, tanyakan/cek dulu database yang dipakai saat tes.'
+    },
+    {
+      tags:["MAX per grup (varian)"],
+      story:'Bagian marketing mau bikin katalog highlight: satu produk unggulan (termahal) dari tiap divisi produksi, buat dipajang di brosur.',
+      ask:'Tulis query untuk menampilkan tiap divisi beserta produk termahalnya.',
+      sql:'SELECT d.nama_divisi, p.nama_produk, p.harga\nFROM divisi d\nJOIN produk p ON p.divisi_id = d.id\nWHERE p.harga = (\n  SELECT MAX(p2.harga)\n  FROM produk p2\n  WHERE p2.divisi_id = d.id\n);',
+      why:'Pola sama persis dengan "gaji tertinggi per divisi", cuma konteksnya diganti ke produk termahal per divisi.',
+      trap:'Kalau ada dua produk dengan harga sama-sama tertinggi di satu divisi, keduanya akan tampil — itu wajar secara logika query.'
+    },
+    {
+      tags:["COALESCE + CASE"],
+      story:'Manajer sales mau laporan status keaktifan tiap karyawan sales dalam bentuk label yang gampang dibaca orang non-teknis, bukan angka — cukup "Aktif Transaksi" atau "Belum Pernah".',
+      ask:'Tulis query untuk menampilkan nama karyawan dan status "Aktif Transaksi" (jika pernah transaksi) atau "Belum Pernah" (jika belum).',
+      sql:"SELECT k.nama,\n  CASE WHEN COUNT(t.id) > 0 THEN 'Aktif Transaksi' ELSE 'Belum Pernah' END AS status\nFROM karyawan k\nLEFT JOIN transaksi t ON t.karyawan_id = k.id\nGROUP BY k.nama;",
+      why:'LEFT JOIN + COUNT menghitung transaksi tiap karyawan (0 kalau belum pernah), CASE WHEN mengubah angka itu jadi label teks.',
+      trap:'CASE WHEN ... THEN ... ELSE ... END itu setara if/else di SQL — banyak yang lupa SQL bisa bikin logika kondisional sendiri tanpa perlu diproses lagi di aplikasi.'
+    },
+    {
+      tags:["Ringkasan semua konsep"],
+      story:'Direktur mau tau top 3 karyawan paling produktif berdasarkan total qty transaksi, lengkap dengan divisinya, diurutkan dari yang paling produktif. Karyawan yang belum pernah transaksi tidak perlu masuk daftar.',
+      ask:'Tulis query untuk menampilkan 3 karyawan dengan total qty transaksi terbanyak beserta nama divisinya, urut dari terbanyak.',
+      sql:'SELECT k.nama, d.nama_divisi, SUM(t.qty) AS total_qty\nFROM karyawan k\nJOIN divisi d ON k.divisi_id = d.id\nJOIN transaksi t ON t.karyawan_id = k.id\nGROUP BY k.nama, d.nama_divisi\nORDER BY total_qty DESC\nLIMIT 3;',
+      why:'Gabungan JOIN 2 tabel tambahan, GROUP BY multi-kolom, SUM, ORDER BY hasil agregasi, ditutup LIMIT untuk top-N. JOIN biasa (bukan LEFT) otomatis membuang karyawan tanpa transaksi.',
+      trap:'Soal ini SENGAJA tidak butuh LEFT JOIN, kebalikan dari soal COALESCE sebelumnya — selalu baca soal pelan-pelan sebelum memutuskan JOIN biasa atau LEFT JOIN.'
+    },
+    {
+      tags:["Konsep NULL"],
+      story:'Tim data cleaning mau bersih-bersih database. Mereka curiga ada beberapa karyawan yang divisi_id-nya belum diisi sama sekali waktu input data dulu.',
+      ask:'Tulis query untuk menampilkan karyawan yang divisi_id-nya kosong (belum ditentukan).',
+      sql:'SELECT nama\nFROM karyawan\nWHERE divisi_id IS NULL;',
+      why:'NULL berarti "tidak ada nilai", bukan 0 atau string kosong. Untuk mengeceknya wajib pakai IS NULL, bukan tanda sama dengan (=).',
+      trap:'WHERE divisi_id = NULL akan SELALU menghasilkan tabel kosong, walau datanya memang ada yang NULL — ini kesalahan yang sangat umum.'
+    },
+    {
+      tags:["RIGHT/FULL JOIN"],
+      story:'Tim audit sistem mau cek konsistensi data: cari SEMUA divisi yang belum punya karyawan, DAN semua karyawan yang divisi_id-nya rusak/tidak valid (tidak ada di tabel divisi) — ditampilkan dalam satu laporan sekaligus.',
+      ask:'Tulis query menggunakan FULL JOIN untuk menampilkan divisi tanpa karyawan dan karyawan dengan divisi tidak valid.',
+      sql:'SELECT d.nama_divisi, k.nama\nFROM divisi d\nFULL JOIN karyawan k ON k.divisi_id = d.id\nWHERE d.id IS NULL OR k.id IS NULL;',
+      why:'FULL JOIN mempertahankan baris dari kedua tabel meski tidak nyambung. Filter IS NULL di salah satu sisi menyisakan cuma baris yang "pincang" dari kedua arah.',
+      trap:'MySQL tidak mendukung FULL JOIN langsung (harus disimulasikan pakai UNION dari LEFT JOIN dan RIGHT JOIN) — PostgreSQL mendukungnya secara native.'
+    },
+    {
+      tags:["CASE WHEN"],
+      story:'Bagian gudang mau dashboard sederhana yang langsung kasih label status stok tiap produk, biar staff gudang nggak perlu mikir angka — cukup baca label "Habis", "Menipis", atau "Aman".',
+      ask:'Tulis query untuk menampilkan nama produk dan status stok: "Habis" (stok 0), "Menipis" (stok di bawah 10), "Aman" (selainnya).',
+      sql:"SELECT nama_produk,\n  CASE\n    WHEN stok = 0 THEN 'Habis'\n    WHEN stok < 10 THEN 'Menipis'\n    ELSE 'Aman'\n  END AS status_stok\nFROM produk;",
+      why:'CASE WHEN dicek berurutan dari atas — begitu satu kondisi cocok, berhenti di situ dan tidak lanjut ke kondisi berikutnya.',
+      trap:'Urutan kondisi penting: kalau WHEN stok < 10 ditaruh sebelum WHEN stok = 0, produk dengan stok 0 akan salah kena label "Menipis" karena 0 juga < 10.'
+    },
+    {
+      tags:["Subquery IN"],
+      story:'HRD mau lihat daftar karyawan yang bekerja di dua divisi produksi utama saja, yaitu "Produksi" dan "Gudang" — divisi lain diabaikan dulu.',
+      ask:'Tulis query menggunakan subquery IN untuk menampilkan karyawan yang divisinya "Produksi" atau "Gudang".',
+      sql:"SELECT nama\nFROM karyawan\nWHERE divisi_id IN (\n  SELECT id FROM divisi WHERE nama_divisi IN ('Produksi', 'Gudang')\n);",
+      why:'Subquery dalam kurung mencari dulu id dari dua divisi itu, hasilnya jadi daftar nilai yang dicocokkan lewat IN ke divisi_id tiap karyawan.',
+      trap:'Ini soal yang sama juga bisa dijawab pakai JOIN + WHERE nama_divisi IN (...) — keduanya valid, tapi tes teknis kadang minta spesifik pakai subquery untuk uji pemahaman konsepnya.'
+    },
+    {
+      tags:["Subquery EXISTS"],
+      story:'Tim marketing mau tau produk mana saja yang SUDAH PERNAH laku terjual minimal sekali, tanpa perlu tau berapa banyak — cukup ada/tidaknya transaksi.',
+      ask:'Tulis query menggunakan EXISTS untuk menampilkan produk yang pernah punya minimal satu transaksi.',
+      sql:'SELECT nama_produk\nFROM produk p\nWHERE EXISTS (\n  SELECT 1 FROM transaksi t WHERE t.produk_id = p.id\n);',
+      why:'EXISTS cuma mengecek "ada atau tidak" baris yang cocok di subquery, tanpa perlu menghitung atau mengambil nilai — biasanya lebih efisien daripada JOIN+GROUP BY kalau cuma butuh cek keberadaan.',
+      trap:'Isi SELECT di dalam EXISTS (mis. SELECT 1) tidak berpengaruh ke hasil — EXISTS cuma peduli ada/tidak barisnya, bukan isinya.'
+    },
+    {
+      tags:["Subquery NOT EXISTS"],
+      story:'Kebalikan dari soal sebelumnya — tim gudang sekarang mau tau produk yang BELUM PERNAH laku sama sekali, untuk dipertimbangkan dihentikan produksinya.',
+      ask:'Tulis query menggunakan NOT EXISTS untuk menampilkan produk yang belum pernah ada transaksinya.',
+      sql:'SELECT nama_produk\nFROM produk p\nWHERE NOT EXISTS (\n  SELECT 1 FROM transaksi t WHERE t.produk_id = p.id\n);',
+      why:'NOT EXISTS adalah kebalikan dari EXISTS — mengambil baris yang TIDAK punya kecocokan sama sekali di subquery.',
+      trap:'Ini soal yang sama persis dengan soal LEFT JOIN + IS NULL sebelumnya, cuma pendekatannya beda. Dua-duanya benar — di tes, kadang salah satu pendekatan diminta secara spesifik.'
+    },
+    {
+      tags:["UNION"],
+      story:'Bagian umum mau bikin satu daftar "nama pihak internal" buat keperluan surat menyurat, gabungan dari nama semua karyawan dan nama semua divisi, tanpa ada nama yang dobel.',
+      ask:'Tulis query menggunakan UNION untuk menggabungkan nama karyawan dan nama divisi jadi satu daftar tanpa duplikat.',
+      sql:'SELECT nama FROM karyawan\nUNION\nSELECT nama_divisi FROM divisi;',
+      why:'UNION menggabungkan hasil dua SELECT ke bawah (menambah baris), bukan ke samping seperti JOIN. Duplikat otomatis dibuang.',
+      trap:'Kalau butuh nama yang dobel tetap muncul dua kali (misal ada karyawan dan divisi kebetulan namanya sama), pakai UNION ALL, bukan UNION biasa.'
+    },
+    {
+      tags:["Window Function"],
+      story:'HRD mau tau karyawan dengan gaji TERTINGGI di tiap divisi, tapi diminta pakai teknik yang lebih modern daripada subquery berlapis — sistem baru mereka mendukung window function.',
+      ask:'Tulis query menggunakan RANK() OVER (PARTITION BY ...) untuk menampilkan karyawan dengan gaji tertinggi (ranking 1) di tiap divisi.',
+      sql:'SELECT * FROM (\n  SELECT nama, divisi_id, gaji,\n    RANK() OVER (PARTITION BY divisi_id ORDER BY gaji DESC) AS ranking\n  FROM karyawan\n) sub\nWHERE ranking = 1;',
+      why:'PARTITION BY divisi_id mengelompokkan ranking per divisi (mirip GROUP BY, tapi baris asli tetap utuh). Karena window function tidak bisa langsung difilter di WHERE, query dibungkus jadi subquery dulu baru difilter ranking = 1 di luar.',
+      trap:'Kalau dua karyawan gaji sama-sama tertinggi di satu divisi, RANK() akan kasih ranking 1 ke keduanya (beda dengan ROW_NUMBER() yang selalu kasih angka unik meski nilainya sama).'
+    }
+  ];
+
+  var STORAGE_KEY = 'sql-latihan-progress-v1';
+  var progress = {};
+  try{
+    var saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) progress = JSON.parse(saved) || {};
+  }catch(e){ progress = {}; }
+
+  function saveProgress(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); }catch(e){}
+  }
+  function updateCounter(){
+    var n = Object.keys(progress).filter(function(k){ return progress[k] && progress[k].checked; }).length;
+    var el = document.getElementById('progress-count');
+    if (el) el.textContent = String(n);
+  }
+
+  var deck = document.getElementById('deck');
+  CASES.forEach(function(c, i){
+    var id = 'case-' + i;
+    var card = document.createElement('div');
+    card.className = 'case-card';
+
+    var top = document.createElement('div');
+    top.className = 'case-top';
+    var tagRow = document.createElement('div');
+    tagRow.className = 'tag-row';
+    c.tags.forEach(function(t){
+      var tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.textContent = t;
+      tagRow.appendChild(tag);
+    });
+    top.appendChild(tagRow);
+    var qn = document.createElement('span');
+    qn.className = 'qnum';
+    qn.textContent = 'KASUS ' + (i+1) + ' / ' + CASES.length;
+    top.appendChild(qn);
+    card.appendChild(top);
+
+    var story = document.createElement('div');
+    story.className = 'story';
+    var storyText = document.createElement('div');
+    storyText.textContent = c.story;
+    story.appendChild(storyText);
+    var ask = document.createElement('div');
+    ask.className = 'ask';
+    ask.textContent = c.ask;
+    story.appendChild(ask);
+    card.appendChild(story);
+
+    var textarea = document.createElement('textarea');
+    textarea.className = 'answer-input';
+    textarea.placeholder = 'Ketik query SQL kamu di sini...';
+    textarea.id = id + '-input';
+    try{
+      if (progress[id] && progress[id].text) textarea.value = progress[id].text;
+    }catch(e){}
+    textarea.addEventListener('input', function(){
+      progress[id] = progress[id] || {};
+      progress[id].text = textarea.value;
+      saveProgress();
+    });
+    card.appendChild(textarea);
+
+    var btnRow = document.createElement('div');
+    btnRow.className = 'btn-row';
+    var checkBtn = document.createElement('button');
+    checkBtn.className = 'check-btn';
+    checkBtn.type = 'button';
+    checkBtn.textContent = 'Cek Jawaban';
+    btnRow.appendChild(checkBtn);
+    var note = document.createElement('span');
+    note.className = 'saved-note';
+    note.textContent = 'Tersimpan otomatis di browser ini';
+    btnRow.appendChild(note);
+    card.appendChild(btnRow);
+
+    var reveal = document.createElement('div');
+    reveal.className = 'reveal';
+    if (progress[id] && progress[id].checked) reveal.className += ' shown';
+
+    var label = document.createElement('div');
+    label.className = 'reveal-label';
+    label.textContent = 'Kunci Jawaban & Penjelasan';
+    reveal.appendChild(label);
+
+    var pre = document.createElement('pre');
+    pre.className = 'sql';
+    pre.innerHTML = hl(c.sql);
+    reveal.appendChild(pre);
+
+    var why = document.createElement('div');
+    why.className = 'why';
+    why.textContent = c.why;
+    reveal.appendChild(why);
+
+    var trap = document.createElement('div');
+    trap.className = 'trap';
+    trap.innerHTML = '<b>Yang sering keliru:</b> ' + c.trap;
+    reveal.appendChild(trap);
+
+    var rateRow = document.createElement('div');
+    rateRow.className = 'self-rate';
+    var rateLabel = document.createElement('span');
+    rateLabel.textContent = 'Jawabanmu tadi:';
+    rateRow.appendChild(rateLabel);
+    var yesBtn = document.createElement('button');
+    yesBtn.className = 'rate-btn';
+    yesBtn.type = 'button';
+    yesBtn.textContent = 'Benar / Mendekati';
+    var noBtn = document.createElement('button');
+    noBtn.className = 'rate-btn';
+    noBtn.type = 'button';
+    noBtn.textContent = 'Masih Meleset';
+    function applyRateState(){
+      yesBtn.className = 'rate-btn' + (progress[id] && progress[id].rate === 'yes' ? ' sel-yes' : '');
+      noBtn.className = 'rate-btn' + (progress[id] && progress[id].rate === 'no' ? ' sel-no' : '');
+    }
+    applyRateState();
+    yesBtn.addEventListener('click', function(){
+      progress[id] = progress[id] || {};
+      progress[id].rate = 'yes';
+      saveProgress();
+      applyRateState();
+    });
+    noBtn.addEventListener('click', function(){
+      progress[id] = progress[id] || {};
+      progress[id].rate = 'no';
+      saveProgress();
+      applyRateState();
+    });
+    rateRow.appendChild(yesBtn);
+    rateRow.appendChild(noBtn);
+    reveal.appendChild(rateRow);
+
+    card.appendChild(reveal);
+
+    checkBtn.addEventListener('click', function(){
+      reveal.classList.add('shown');
+      progress[id] = progress[id] || {};
+      progress[id].checked = true;
+      saveProgress();
+      updateCounter();
+    });
+
+    deck.appendChild(card);
+  });
+
+  updateCounter();
+})();
+</script>
+
+</html>

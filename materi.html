@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Materi Lengkap SQL Teknis</title>
+<title>Materi Lengkap SQL Teknis</title>
+<style>
+  /* Layout: single scrolling lesson, one concept per section, each anchored by one plain-language analogy and a tiny before/after table */
+  :root{
+    --bg:#f5f3ee;
+    --surface:#ffffff;
+    --surface-2:#edeae1;
+    --ink:#211f1a;
+    --ink-soft:#5c584d;
+    --ink-faint:#8c8778;
+    --rule:#ddd8ca;
+    --accent:#a34a28;
+    --accent-ink:#fbf3ee;
+    --accent-soft:#f1ded3;
+    --good:#3f7d53;
+    --good-soft:#dfeee3;
+    --key:#2c5f8a;
+    --key-soft:#dfe9f1;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#181613;
+      --surface:#211e19;
+      --surface-2:#28241d;
+      --ink:#ede8dd;
+      --ink-soft:#b3ac9b;
+      --ink-faint:#7a7566;
+      --rule:#3a352a;
+      --accent:#d9724a;
+      --accent-ink:#241108;
+      --accent-soft:#3a2116;
+      --good:#6fbe8b;
+      --good-soft:#1c2e21;
+      --key:#7fb3e0;
+      --key-soft:#182734;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#181613;
+    --surface:#211e19;
+    --surface-2:#28241d;
+    --ink:#ede8dd;
+    --ink-soft:#b3ac9b;
+    --ink-faint:#7a7566;
+    --rule:#3a352a;
+    --accent:#d9724a;
+    --accent-ink:#241108;
+    --accent-soft:#3a2116;
+    --good:#6fbe8b;
+    --good-soft:#1c2e21;
+    --key:#7fb3e0;
+    --key-soft:#182734;
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', -apple-system, system-ui, sans-serif;
+    margin:0;
+    padding-inline:16px;
+    padding-block:26px 60px;
+    line-height:1.55;
+  }
+  h1,h2,h3{ font-family:'Fraunces', Georgia, serif; text-wrap:balance; margin:0; }
+  code, pre, .mono{ font-family:'IBM Plex Mono', ui-monospace, monospace; }
+
+  .wrap{ max-width:680px; margin:0 auto; display:flex; flex-direction:column; gap:26px; }
+
+  header.page{ display:flex; flex-direction:column; gap:6px; }
+  .eyebrow{ font-size:11.5px; letter-spacing:0.09em; text-transform:uppercase; color:var(--accent); font-weight:600; }
+  h1{ font-size:26px; font-weight:600; }
+  .sub{ font-size:13.5px; color:var(--ink-soft); max-width:56ch; }
+
+  nav.toc{
+    display:flex; flex-wrap:wrap; gap:8px;
+    background:var(--surface); border:1px solid var(--rule); border-radius:10px; padding:10px 12px;
+  }
+  nav.toc a{
+    font-size:12.5px; color:var(--key); text-decoration:none; font-weight:600;
+    background:var(--key-soft); padding:5px 10px; border-radius:20px;
+  }
+
+  section.lesson{
+    background:var(--surface); border:1px solid var(--rule); border-radius:14px;
+    padding:20px 20px 18px; scroll-margin-top:16px;
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .lesson-num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:26px; height:26px; border-radius:50%; background:var(--accent); color:var(--accent-ink);
+    font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:13px; flex:none;
+  }
+  .lesson-head{ display:flex; align-items:center; gap:10px; }
+  .lesson-head h2{ font-size:19px; font-weight:600; }
+
+  .analogy{
+    background:var(--key-soft); border-left:3px solid var(--key); border-radius:0 8px 8px 0;
+    padding:12px 14px; font-size:14px;
+  }
+  .analogy b{ color:var(--key); }
+
+  .ingat{
+    background:var(--good-soft); border:1px dashed var(--good); border-radius:8px;
+    padding:10px 14px; font-size:13.5px; font-weight:600; color:var(--good);
+    display:flex; align-items:baseline; gap:8px;
+  }
+  .ingat .lbl{ font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase; opacity:0.85; flex:none; }
+
+  p.body-text{ font-size:14.5px; color:var(--ink); margin:0; }
+
+  .tbl-pair{ display:flex; gap:14px; flex-wrap:wrap; }
+  .mini-tbl{ flex:1 1 160px; min-width:0; }
+  .mini-tbl .cap{ font-size:11.5px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.04em; font-weight:600; margin-bottom:4px; }
+  table.data{ width:100%; border-collapse:collapse; font-size:12.5px; background:var(--surface-2); border-radius:6px; overflow:hidden; }
+  table.data th, table.data td{ padding:6px 8px; text-align:left; border-bottom:1px solid var(--rule); }
+  table.data th{ color:var(--ink-faint); font-weight:600; font-size:10.5px; text-transform:uppercase; }
+  table.data tr:last-child td{ border-bottom:none; }
+  table.data td.num{ font-family:'IBM Plex Mono',monospace; }
+  .arrow-row{ display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--accent); flex:0 0 auto; align-self:center; }
+
+  pre.sql{
+    background:var(--surface-2); border:1px solid var(--rule); border-radius:8px;
+    padding:12px 14px; font-size:12.5px; overflow-x:auto; white-space:pre; margin:0; color:var(--ink);
+  }
+  pre.sql .kw{ color:var(--accent); font-weight:600; }
+
+  .compare{ display:flex; gap:10px; flex-wrap:wrap; }
+  .compare .box{ flex:1 1 200px; border-radius:8px; padding:10px 12px; font-size:13px; }
+  .compare .box.no{ background:var(--accent-soft); border:1px solid var(--accent); }
+  .compare .box.yes{ background:var(--good-soft); border:1px solid var(--good); }
+  .compare .box .h{ font-weight:700; font-size:11.5px; text-transform:uppercase; letter-spacing:0.03em; margin-bottom:3px; }
+  .compare .box.no .h{ color:var(--accent); }
+  .compare .box.yes .h{ color:var(--good); }
+
+  a.next-link{
+    align-self:flex-start; font-size:13px; font-weight:600; color:var(--accent); text-decoration:none;
+    border-bottom:1px solid var(--accent);
+  }
+
+  .soal-box{
+    background:var(--surface-2); border:1px solid var(--rule); border-radius:10px;
+    padding:14px 16px; display:flex; flex-direction:column; gap:10px;
+  }
+  .soal-label{
+    font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--accent);
+  }
+  .soal-q{ font-size:14px; }
+  .ans-label{
+    font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--good);
+    margin-top:2px;
+  }
+  .soal-explain{ font-size:13px; color:var(--ink-soft); }
+
+  footer{ font-size:12px; color:var(--ink-faint); text-align:center; padding-top:6px; }
+</style>
+
+<div class="wrap">
+
+  <header class="page">
+    <span class="eyebrow">Materi · Persiapan Tes Teknis</span>
+    <h1>Materi Lengkap SQL Teknis</h1>
+    <p class="sub">Kamu sudah lancar SELECT, WHERE, ORDER BY. Ini mulai dari 5 hal yang masih lemah (JOIN, GROUP BY, HAVING, MAX/MIN per grup, COALESCE), lanjut ke materi lain yang berpotensi keluar di tes teknis — semua dijelaskan pakai analogi, bukan istilah teknis. Setelah paham, buka file latihan soal buat praktik.</p>
+  </header>
+
+  <nav class="toc">
+    <a href="#l1">1. JOIN</a>
+    <a href="#l2">2. LEFT JOIN</a>
+    <a href="#l3">3. GROUP BY</a>
+    <a href="#l4">4. HAVING vs WHERE</a>
+    <a href="#l5">5. MAX/MIN per grup</a>
+    <a href="#l6">6. COALESCE</a>
+    <a href="#l7">7. Konsep NULL</a>
+    <a href="#l8">8. RIGHT &amp; FULL JOIN</a>
+    <a href="#l9">9. CASE WHEN</a>
+    <a href="#l10">10. Subquery IN/EXISTS</a>
+    <a href="#l11">11. UNION</a>
+    <a href="#l12">12. Window Function</a>
+    <a href="#l13">13. Normalisasi Database</a>
+    <a href="#l14">14. Query Gabungan</a>
+  </nav>
+
+  <section class="lesson" id="l1">
+    <div class="lesson-head"><span class="lesson-num">1</span><h2>JOIN</h2></div>
+    <div class="analogy"><b>Analogi:</b> JOIN itu kayak nyambungin KTP-mu ke data Kartu Keluarga. KTP cuma punya "nomor KK", nggak punya nama kepala keluarga. Buat tau nama kepala keluargamu, kamu harus SAMBUNGIN nomor KK di KTP-mu ke tabel Kartu Keluarga.</div>
+    <p class="body-text">Di database, tabel <code>karyawan</code> cuma nyimpen <code>divisi_id</code> (angka), bukan nama divisinya. Nama divisi ada di tabel <code>divisi</code> yang terpisah. JOIN nyambungin dua tabel itu lewat kolom yang jadi "kunci"-nya.</p>
+
+    <div class="tbl-pair">
+      <div class="mini-tbl">
+        <div class="cap">karyawan</div>
+        <table class="data"><tr><th>nama</th><th>divisi_id</th></tr>
+        <tr><td>Budi</td><td class="num">2</td></tr>
+        <tr><td>Sari</td><td class="num">1</td></tr></table>
+      </div>
+      <div class="arrow-row">+</div>
+      <div class="mini-tbl">
+        <div class="cap">divisi</div>
+        <table class="data"><tr><th>id</th><th>nama_divisi</th></tr>
+        <tr><td class="num">1</td><td>Produksi</td></tr>
+        <tr><td class="num">2</td><td>Gudang</td></tr></table>
+      </div>
+    </div>
+    <pre class="sql"><span class="kw">SELECT</span> k.nama, d.nama_divisi
+<span class="kw">FROM</span> karyawan k
+<span class="kw">JOIN</span> divisi d <span class="kw">ON</span> k.divisi_id = d.id;</pre>
+    <div class="ingat"><span class="lbl">Cara Inget</span> <span>JOIN = "sambungin dua tabel pakai kolom yang cocok". <code>ON</code> selalu diikuti "kolom_A = kolom_B" — kolom kunci di kedua tabel.</span></div>
+
+    <div class="soal-box">
+      <div class="soal-label">Contoh Soal</div>
+      <div class="soal-q">Tampilkan nama produk beserta nama divisi yang memproduksinya.</div>
+      <div class="ans-label">Jawaban</div>
+      <pre class="sql"><span class="kw">SELECT</span> p.nama_produk, d.nama_divisi
+<span class="kw">FROM</span> produk p
+<span class="kw">JOIN</span> divisi d <span class="kw">ON</span> p.divisi_id = d.id;</pre>
+      <div class="soal-explain"><b>Penjelasan:</b> Pola persis sama seperti contoh karyawan-divisi di atas, cuma ganti tabel karyawan jadi produk. Kunci sambungnya tetap sama bentuknya: <code>kolom_id di tabel kiri = id di tabel kanan</code>.</div>
+    </div>
+
+    <a class="next-link" href="#l2">Lanjut: LEFT JOIN →</a>
+  </section>
+
+  <section class="lesson" id="l2">
+    <div class="lesson-head"><span class="lesson-num">2</span><h2>LEFT JOIN</h2></div>
+    <div class="analogy"><b>Analogi:</b> JOIN biasa itu kayak absensi rapat — cuma yang HADIR yang ditulis. LEFT JOIN itu kayak daftar SEMUA karyawan, terus dicatat siapa yang hadir dan siapa yang nggak (kosong). Nggak ada yang hilang dari daftar.</div>
+    <p class="body-text">JOIN biasa cuma nampilin baris yang PUNYA pasangan di tabel satunya. Kalau ada divisi yang belum punya karyawan sama sekali, divisi itu HILANG dari hasil JOIN biasa. LEFT JOIN mempertahankan SEMUA baris dari tabel kiri, walau nggak ada pasangannya (jadi NULL/kosong).</p>
+
+    <div class="compare">
+      <div class="box no"><div class="h">JOIN biasa</div>Divisi tanpa karyawan → hilang dari hasil</div>
+      <div class="box yes"><div class="h">LEFT JOIN</div>Divisi tanpa karyawan → tetap muncul, kolom karyawan-nya kosong (NULL)</div>
+    </div>
+
+    <pre class="sql"><span class="kw">SELECT</span> d.nama_divisi, k.nama
+<span class="kw">FROM</span> divisi d
+<span class="kw">LEFT JOIN</span> karyawan k <span class="kw">ON</span> k.divisi_id = d.id;</pre>
+    <div class="ingat"><span class="lbl">Cara Inget</span> <span>Kalau soal bilang <b>"termasuk yang belum punya"</b> atau <b>"yang belum pernah"</b> → itu sinyal wajib pakai LEFT JOIN, bukan JOIN biasa.</span></div>
+
+    <div class="soal-box">
+      <div class="soal-label">Contoh Soal</div>
+      <div class="soal-q">Tampilkan semua produk, termasuk produk yang belum pernah ada transaksinya sama sekali.</div>
+      <div class="ans-label">Jawaban</div>
+      <pre class="sql"><span class="kw">SELECT</span> p.nama_produk, t.id <span class="kw">AS</span> id_transaksi
+<span class="kw">FROM</span> produk p
+<span class="kw">LEFT JOIN</span> transaksi t <span class="kw">ON</span> t.produk_id = p.id;</pre>
+      <div class="soal-explain"><b>Penjelasan:</b> Kata "termasuk yang belum pernah" langsung nandain ini harus LEFT JOIN. Produk tanpa transaksi tetap muncul di hasil, dengan kolom id_transaksi kosong (NULL) karena memang tidak ada pasangannya di tabel transaksi.</div>
+    </div>
+
+    <a class="next-link" href="#l3">Lanjut: GROUP BY →</a>
+  </section>
+
+  <section class="lesson" id="l3">
+    <div class="lesson-head"><span class="lesson-num">3</span><h2>GROUP BY</h2></div>
+    <div class="analogy"><b>Analogi:</b> Bayangin kamu punya tumpukan struk belanja, dan disuruh hitung total belanja PER TOKO. Langkah pertama pasti kamu pisah-pisah dulu struknya jadi beberapa tumpukan kecil per toko. Itulah GROUP BY — mengelompokkan baris jadi tumpukan-tumpukan kecil sebelum dihitung.</div>
+    <p class="body-text">Setelah dikelompokkan, kamu pakai fungsi "penghitung" (disebut fungsi agregasi) buat tiap tumpukan: <code>SUM</code> (jumlahkan), <code>COUNT</code> (hitung banyaknya), <code>AVG</code> (rata-rata), <code>MAX</code>/<code>MIN</code> (paling besar/kecil).</p>
+
+    <div class="tbl-pair">
+      <div class="mini-tbl">
+        <div class="cap">Sebelum (baris mentah)</div>
+        <table class="data"><tr><th>divisi</th><th>gaji</th></tr>
+        <tr><td>Gudang</td><td class="num">4jt</td></tr>
+        <tr><td>Gudang</td><td class="num">5jt</td></tr>
+        <tr><td>Produksi</td><td class="num">6jt</td></tr></table>
+      </div>
+      <div class="arrow-row">→</div>
+      <div class="mini-tbl">
+        <div class="cap">Setelah GROUP BY + SUM</div>
+        <table class="data"><tr><th>divisi</th><th>total_gaji</th></tr>
+        <tr><td>Gudang</td><td class="num">9jt</td></tr>
+        <tr><td>Produksi</td><td class="num">6jt</td></tr></table>
+      </div>
+    </div>
+
+    <pre class="sql"><span class="kw">SELECT</span> d.nama_divisi, <span class="kw">SUM</span>(k.gaji) <span class="kw">AS</span> total_gaji
+<span class="kw">FROM</span> divisi d
+<span class="kw">JOIN</span> karyawan k <span class="kw">ON</span> k.divisi_id = d.id
+<span class="kw">GROUP BY</span> d.nama_divisi;</pre>
+    <div class="ingat"><span class="lbl">Cara Inget</span> <span>Aturan besi: setiap kolom di SELECT yang BUKAN hasil SUM/COUNT/AVG/dll, WAJIB ikut ditulis di GROUP BY. Kalau lupa, query error (di PostgreSQL) atau hasilnya ngaco (di MySQL).</span></div>
+
+    <div class="soal-box">
+      <div class="soal-label">Contoh Soal</div>
+      <div class="soal-q">Hitung rata-rata gaji karyawan di tiap divisi.</div>
+      <div class="ans-label">Jawaban</div>
+      <pre class="sql"><span class="kw">SELECT</span> d.nama_divisi, <span class="kw">AVG</span>(k.gaji) <span class="kw">AS</span> rata_rata_gaji
+<span class="kw">FROM</span> divisi d
+<span class="kw">JOIN</span> karyawan k <span class="kw">ON</span> k.divisi_id = d.id
+<span class="kw">GROUP BY</span> d.nama_divisi;</pre>
+      <div class="soal-explain"><b>Penjelasan:</b> Pola sama persis dengan contoh SUM tadi, cuma fungsinya diganti AVG. Selama kolom non-agregasi (nama_divisi) tetap ada di GROUP BY, tinggal ganti-ganti fungsi agregasinya sesuai kebutuhan (SUM, AVG, COUNT, MAX, MIN).</div>
+    </div>
+
+    <a class="next-link" href="#l4">Lanjut: HAVING vs WHERE →</a>
+  </section>
+
+  <section class="lesson" id="l4">
+    <div class="lesson-head"><span class="lesson-num">4</span><h2>HAVING vs WHERE</h2></div>
+    <div class="analogy"><b>Analogi:</b> Balik ke contoh struk belanja tadi. WHERE itu kayak kamu MEMBUANG struk yang bukan bulan ini SEBELUM mulai mengelompokkan. HAVING itu kamu kelompokkan dulu semua per toko, hitung totalnya, BARU buang tumpukan yang totalnya kurang dari 100rb.</div>
+    <p class="body-text">Intinya cuma soal <b>KAPAN</b> penyaringan terjadi: WHERE menyaring baris SEBELUM dikelompokkan. HAVING menyaring hasil SETELAH dikelompokkan dan dihitung.</p>
+
+    <div class="compare">
+      <div class="box no"><div class="h">Pakai WHERE kalau...</div>Syaratnya soal data MENTAH sebelum dikelompokkan (misal: tanggal, nama, status)</div>
+      <div class="box yes"><div class="h">Pakai HAVING kalau...</div>Syaratnya soal HASIL agregasi (SUM, COUNT, AVG, MAX, MIN)</div>
+    </div>
+
+    <pre class="sql"><span class="kw">SELECT</span> d.nama_divisi, <span class="kw">SUM</span>(k.gaji) <span class="kw">AS</span> total_gaji
+<span class="kw">FROM</span> divisi d
+<span class="kw">JOIN</span> karyawan k <span class="kw">ON</span> k.divisi_id = d.id
+<span class="kw">GROUP BY</span> d.nama_divisi
+<span class="kw">HAVING</span> <span class="kw">SUM</span>(k.gaji) > 50000000;</pre>
+    <div class="ingat"><span class="lbl">Cara Inget</span> <span>Satu kalimat: <b>"WHERE duluan, HAVING belakangan."</b> Urutan proses SQL selalu: FROM/JOIN → WHERE → GROUP BY → HAVING → SELECT.</span></div>
+
+    <div class="soal-box">
+      <div class="soal-label">Contoh Soal</div>
+      <div class="soal-q">Dari transaksi yang terjadi bulan Januari 2026 saja, tampilkan produk dengan total qty terjual lebih dari 20.</div>
+      <div class="ans-label">Jawaban</div>
+      <pre class="sql"><span class="kw">SELECT</span> p.nama_produk, <span class="kw">SUM</span>(t.qty) <span class="kw">AS</span> total_qty
+<span class="kw">FROM</span> produk p
+<span class="kw">JOIN</span> transaksi t <span class="kw">ON</span> t.produk_id = p.id
+<span class="kw">WHERE</span> t.tgl_transaksi >= '2026-01-01' <span class="kw">AND</span> t.tgl_transaksi < '2026-02-01'
+<span class="kw">GROUP BY</span> p.nama_produk
+<span class="kw">HAVING</span> <span class="kw">SUM</span>(t.qty) > 20;</pre>
+      <div class="soal-explain"><b>Penjelasan:</b> Ada dua syarat penyaringan di sini. "Bulan Januari 2026" itu syarat data mentah (tanggal transaksi) → masuk WHERE. "Total qty lebih dari 20" itu syarat hasil SUM → masuk HAVING. Dua-duanya dipakai bareng, tinggal ingat urutan: WHERE dulu, baru HAVING.</div>
+    </div>
+
+    <a class="next-link" href="#l5">Lanjut: MAX/MIN per grup →</a>
+  </section>
+
+  <section class="lesson" id="l5">
+    <div class="lesson-head"><span class="lesson-num">5</span><h2>MAX / MIN per grup</h2></div>
+    <div class="analogy"><b>Analogi:</b> Ini beda dari "cari nilai tertinggi" biasa. Ini kayak nyari "siswa juara 1 DI SETIAP KELAS" — bukan juara 1 se-sekolah. Jadi kamu harus bandingin tiap siswa dengan nilai tertinggi DI KELASNYA SENDIRI, bukan nilai tertinggi keseluruhan.</div>
+    <p class="body-text">Polanya: cari MAX per grup dulu pakai subquery yang "terhubung" ke baris luar (disebut correlated subquery) — subquery itu dijalankan ulang untuk tiap baris, seolah nanya "berapa gaji tertinggi di divisi yang SAMA dengan baris ini?"</p>
+
+    <pre class="sql"><span class="kw">SELECT</span> k.nama, k.divisi_id, k.gaji
+<span class="kw">FROM</span> karyawan k
+<span class="kw">WHERE</span> k.gaji = (
+  <span class="kw">SELECT</span> <span class="kw">MAX</span>(k2.gaji)
+  <span class="kw">FROM</span> karyawan k2
+  <span class="kw">WHERE</span> k2.divisi_id = k.divisi_id
+);</pre>
+    <div class="ingat"><span class="lbl">Cara Inget</span> <span>Lihat baris <code>WHERE k2.divisi_id = k.divisi_id</code> — ini kuncinya. Subquery "dikunci" ke divisi baris yang sedang dicek, jadi MAX-nya cuma dihitung dalam divisi itu saja, bukan semua karyawan.</span></div>
+
+    <div class="soal-box">
+      <div class="soal-label">Contoh Soal</div>
+      <div class="soal-q">Tampilkan karyawan dengan gaji TERENDAH di setiap divisi.</div>
+      <div class="ans-label">Jawaban</div>
+      <pre class="sql"><span class="kw">SELECT</span> k.nama, k.divisi_id, k.gaji
+<span class="kw">FROM</span> karyawan k
+<span class="kw">WHERE</span> k.gaji = (
+  <span class="kw">SELECT</span> <span class="kw">MIN</span>(k2.gaji)
+  <span class="kw">FROM</span> karyawan k2
+  <span class="kw">WHERE</span> k2.divisi_id = k.divisi_id
+);</pre>
+      <div class="soal-explain"><b>Penjelasan:</b> Polanya identik dengan contoh gaji tertinggi di atas — tinggal ganti MAX jadi MIN. Ini nunjukkin begitu kamu paham satu pola correlated subquery, semua variasi "tertinggi/terendah per grup" tinggal ganti fungsi agregasinya saja.</div>
+    </div>
+
+    <a class="next-link" href="#l6">Lanjut: COALESCE →</a>
+  </section>
+
+  <section class="lesson" id="l6">
+    <div class="lesson-head"><span class="lesson-num">6</span><h2>COALESCE</h2></div>
+    <div class="analogy"><b>Analogi:</b> COALESCE itu kayak nanya ke temanmu, "Kamu punya pulpen nggak? Kalau nggak punya, aku pinjemin punyaku." COALESCE ngecek satu-satu nilai yang kamu kasih, dan pakai nilai PERTAMA yang nggak kosong (NULL).</div>
+    <p class="body-text">Paling sering dipakai bareng LEFT JOIN: kalau LEFT JOIN bikin suatu kolom jadi NULL (karena nggak ada pasangannya), COALESCE ganti NULL itu jadi nilai default biar rapi ditampilkan.</p>
+
+    <div class="tbl-pair">
+      <div class="mini-tbl">
+        <div class="cap">Tanpa COALESCE</div>
+        <table class="data"><tr><th>nama</th><th>total_qty</th></tr>
+        <tr><td>Budi</td><td class="num">50</td></tr>
+        <tr><td>Sari</td><td class="num"><i>NULL</i></td></tr></table>
+      </div>
+      <div class="arrow-row">→</div>
+      <div class="mini-tbl">
+        <div class="cap">Dengan COALESCE(x, 0)</div>
+        <table class="data"><tr><th>nama</th><th>total_qty</th></tr>
+        <tr><td>Budi</td><td class="num">50</td></tr>
+        <tr><td>Sari</td><td class="num">0</td></tr></table>
+      </div>
+    </div>
+
+    <pre class="sql"><span class="kw">SELECT</span> k.nama, <span class="kw">COALESCE</span>(<span class="kw">SUM</span>(t.qty), 0) <span class="kw">AS</span> total_qty
+<span class="kw">FROM</span> karyawan k
+<span class="kw">LEFT JOIN</span> transaksi t <span class="kw">ON</span> t.karyawan_id = k.id
+<span class="kw">GROUP BY</span> k.nama;</pre>
+    <div class="ingat"><span class="lbl">Cara Inget</span> <span>Baca <code>COALESCE(a, b)</code> sebagai: <b>"pakai a, kalau a kosong pakai b."</b> Bisa dirantai lebih panjang: COALESCE(a, b, c) = coba a, kalau kosong coba b, kalau kosong juga pakai c.</span></div>
+
+    <div class="soal-box">
+      <div class="soal-label">Contoh Soal</div>
+      <div class="soal-q">Tampilkan semua produk beserta total qty terjualnya. Produk yang belum pernah terjual harus tampil angka 0, bukan kosong.</div>
+      <div class="ans-label">Jawaban</div>
+      <pre class="sql"><span class="kw">SELECT</span> p.nama_produk, <span class="kw">COALESCE</span>(<span class="kw">SUM</span>(t.qty), 0) <span class="kw">AS</span> total_qty
+<span class="kw">FROM</span> produk p
+<span class="kw">LEFT JOIN</span> transaksi t <span class="kw">ON</span> t.produk_id = p.id
+<span class="kw">GROUP BY</span> p.nama_produk;</pre>
+      <div class="soal-explain"><b>Penjelasan:</b> Sama persis dengan contoh karyawan tadi, cuma konteksnya diganti produk. LEFT JOIN jaga semua produk tetap tampil, COALESCE ganti hasil SUM yang NULL (produk tanpa transaksi) jadi 0.</div>
+    </div>
+  </section>
+
+  <section class="lesson" id="l7">
+    <div class="lesson-head"><span class="lesson-num">7</span><h2>Konsep NULL</h2></div>
+    <div class="analogy"><b>Analogi:</b> NULL itu bukan "nol" dan bukan "kosong string" — NULL itu artinya <b>"nggak ada nilainya sama sekali, nggak diketahui."</b> Kayak kolom "tanggal resign" buat karyawan yang masih aktif kerja — bukan diisi 0 atau kosong, tapi memang belum ada nilainya.</div>
+    <p class="body-text">Aturan paling penting: NULL nggak bisa dibandingkan pakai <code>=</code> atau <code>!=</code>. <code>WHERE kolom = NULL</code> SELALU salah, walau kolomnya memang NULL. Harus pakai <code>IS NULL</code> atau <code>IS NOT NULL</code>. NULL juga "menular" — angka berapa pun ditambah/dikali NULL, hasilnya NULL.</p>
+    <div class="compare">
+      <div class="box no"><div class="h">Salah</div><code>WHERE tgl_resign = NULL</code> — ini tidak pernah cocok, walau kolomnya NULL</div>
+      <div class="box yes"><div class="h">Benar</div><code>WHERE tgl_resign IS NULL</code> — ini yang benar untuk cek NULL</div>
+    </div>
+    <pre class="sql"><span class="kw">SELECT</span> nama
+<span class="kw">FROM</span> karyawan
+<span class="kw">WHERE</span> divisi_id <span class="kw">IS</span> <span class="kw">NULL</span>;</pre>
+    <div class="ingat"><span class="lbl">Cara Inget</span> <span>NULL = "tidak diketahui", bukan angka 0 atau string kosong. Selalu pakai <code>IS NULL</code> / <code>IS NOT NULL</code>, jangan pernah <code>= NULL</code>.</span></div>
+    <div class="soal-box">
+      <div class="soal-label">Contoh Soal</div>
+      <div class="soal-q">Tampilkan produk yang belum ditentukan divisinya (divisi_id kosong).</div>
+      <div class="ans-label">Jawaban</div>
+      <pre class="sql"><span class="kw">SELECT</span> nama_produk
+<span class="kw">FROM</span> produk
+<span class="kw">WHERE</span> divisi_id <span class="kw">IS</span> <span class="kw">NULL</span>;</pre>
+      <div class="soal-explain"><b>Penjelasan:</b> Karena yang dicari adalah baris dengan nilai NULL, wajib pakai IS NULL. Kalau ditulis <code>WHERE divisi_id = NULL</code>, hasilnya akan selalu kosong meski datanya ada — ini jebakan klasik.</div>
+    </div>
+    <a class="next-link" href="#l8">Lanjut: RIGHT &amp; FULL JOIN →</a>
+  </section>
+
+  <section class="lesson" id="l8">
+    <div class="lesson-head"><span class="lesson-num">8</span><h2>RIGHT &amp; FULL JOIN</h2></div>
+    <div class="analogy"><b>Analogi:</b> Kalau LEFT JOIN itu "pertahankan semua dari tabel KIRI", RIGHT JOIN kebalikannya: "pertahankan semua dari tabel KANAN". FULL JOIN itu gabungan dua-duanya: "pertahankan semua dari kiri DAN kanan, cocokkan yang bisa dicocokkan."</div>
+    <p class="body-text">Di praktiknya, RIGHT JOIN jarang dipakai — orang lebih suka tukar urutan tabel dan pakai LEFT JOIN, karena lebih gampang dibaca. Tapi FULL JOIN penting dipahami: dipakai kalau kamu mau lihat data yang "tidak nyambung" dari DUA sisi sekaligus.</p>
+    <pre class="sql"><span class="kw">SELECT</span> d.nama_divisi, k.nama
+<span class="kw">FROM</span> divisi d
+<span class="kw">FULL</span> <span class="kw">JOIN</span> karyawan k <span class="kw">ON</span> k.divisi_id = d.id;
+<span class="mono">-- MySQL tidak punya FULL JOIN langsung; PostgreSQL punya.</span></pre>
+    <div class="ingat"><span class="lbl">Cara Inget</span> <span>LEFT = utamakan kiri. RIGHT = utamakan kanan. FULL = utamakan dua-duanya. INNER (JOIN biasa) = cuma yang cocok dua-duanya.</span></div>
+    <div class="soal-box">
+      <div class="soal-label">Contoh Soal</div>
+      <div class="soal-q">Kamu mau audit data: cari SEMUA divisi tanpa karyawan, DAN semua karyawan yang divisi_id-nya salah/tidak ada di tabel divisi (data rusak), dalam satu hasil.</div>
+      <div class="ans-label">Jawaban</div>
+      <pre class="sql"><span class="kw">SELECT</span> d.nama_divisi, k.nama
+<span class="kw">FROM</span> divisi d
+<span class="kw">FULL</span> <span class="kw">JOIN</span> karyawan k <span class="kw">ON</span> k.divisi_id = d.id
+<span class="kw">WHERE</span> d.id <span class="kw">IS</span> <span class="kw">NULL</span> <span class="kw">OR</span> k.id <span class="kw">IS</span> <span class="kw">NULL</span>;</pre>
+      <div class="soal-explain"><b>Penjelasan:</b> FULL JOIN menjaga baris dari kedua tabel meski tidak nyambung. Filter <code>d.id IS NULL OR k.id IS NULL</code> menyisakan cuma baris yang "pincang" — karyawan tanpa divisi valid, atau divisi tanpa karyawan.</div>
+    </div>
+    <a class="next-link" href="#l9">Lanjut: CASE WHEN →</a>
+  </section>
+
+  <section class="lesson" id="l9">
+    <div class="lesson-head"><span class="lesson-num">9</span><h2>CASE WHEN</h2></div>
+    <div class="analogy"><b>Analogi:</b> CASE WHEN itu if/else-nya SQL. Kayak satpam yang ngecek satu-satu kondisi: "kalau tamu bawa surat undangan, masuk VIP. Kalau nggak bawa tapi terdaftar, masuk biasa. Selain itu, tolak."</div>
+    <p class="body-text">Dipakai buat ubah data mentah jadi label/kategori yang gampang dibaca. Kondisi dicek DARI ATAS KE BAWAH, berhenti di kondisi pertama yang benar.</p>
+    <pre class="sql"><span class="kw">SELECT</span> nama_produk,
+  <span class="kw">CASE</span>
+    <span class="kw">WHEN</span> stok = 0 <span class="kw">THEN</span> 'Habis'
+    <span class="kw">WHEN</span> stok < 10 <span class="kw">THEN</span> 'Menipis'
+    <span class="kw">ELSE</span> 'Aman'
+  <span class="kw">END</span> <span class="kw">AS</span> status_stok
+<span class="kw">FROM</span> produk;</pre>
+    <div class="ingat"><span class="lbl">Cara Inget</span> <span>CASE WHEN kondisi1 THEN hasil1 WHEN kondisi2 THEN hasil2 ELSE hasil_default END — persis if/elseif/else, cuma sintaksnya beda.</span></div>
+    <div class="soal-box">
+      <div class="soal-label">Contoh Soal</div>
+      <div class="soal-q">Tampilkan nama karyawan dan kategori gaji: "Tinggi" (di atas 8 juta), "Menengah" (4-8 juta), "Standar" (di bawah 4 juta).</div>
+      <div class="ans-label">Jawaban</div>
+      <pre class="sql"><span class="kw">SELECT</span> nama,
+  <span class="kw">CASE</span>
+    <span class="kw">WHEN</span> gaji > 8000000 <span class="kw">THEN</span> 'Tinggi'
+    <span class="kw">WHEN</span> gaji >= 4000000 <span class="kw">THEN</span> 'Menengah'
+    <span class="kw">ELSE</span> 'Standar'
+  <span class="kw">END</span> <span class="kw">AS</span> kategori_gaji
+<span class="kw">FROM</span> karyawan;</pre>
+      <div class="soal-explain"><b>Penjelasan:</b> Urutan kondisi penting — dicek dari atas dulu. Karyawan gaji 9 juta kena kondisi pertama ("Tinggi") dan berhenti di situ, tidak lanjut dicek ke kondisi berikutnya.</div>
+    </div>
+    <a class="next-link" href="#l10">Lanjut: Subquery IN/EXISTS →</a>
+  </section>
+
+  <section class="lesson" id="l10">
+    <div class="lesson-head"><span class="lesson-num">10</span><h2>Subquery IN / EXISTS / NOT EXISTS</h2></div>
+    <div class="analogy"><b>Analogi:</b> IN itu kayak nanya "namamu ada di daftar tamu ini nggak?" — cocokkan ke SATU DAFTAR nilai. EXISTS itu beda: cuma nanya "ada nggak SATU AJA baris yang cocok?" — nggak peduli isinya, cuma peduli ada/tidaknya.</div>
+    <p class="body-text">IN dipakai kalau subquery-nya hasilkan daftar nilai sederhana (misal daftar id). EXISTS/NOT EXISTS dipakai kalau kamu cuma perlu tau "ada/tidak ada data terkait" — biasanya lebih cepat untuk data besar karena EXISTS berhenti begitu nemu satu kecocokan.</p>
+    <pre class="sql"><span class="kw">SELECT</span> nama_produk
+<span class="kw">FROM</span> produk p
+<span class="kw">WHERE</span> <span class="kw">EXISTS</span> (
+  <span class="kw">SELECT</span> 1 <span class="kw">FROM</span> transaksi t <span class="kw">WHERE</span> t.produk_id = p.id
+);</pre>
+    <div class="ingat"><span class="lbl">Cara Inget</span> <span>IN = "cocok ke salah satu nilai di daftar". EXISTS = "ada minimal satu baris terkait, ya/tidak". NOT EXISTS = kebalikannya, sering gantiin pola LEFT JOIN + IS NULL.</span></div>
+    <div class="soal-box">
+      <div class="soal-label">Contoh Soal</div>
+      <div class="soal-q">Tampilkan nama karyawan yang divisinya termasuk "Produksi" atau "Gudang" — pakai subquery IN.</div>
+      <div class="ans-label">Jawaban</div>
+      <pre class="sql"><span class="kw">SELECT</span> nama
+<span class="kw">FROM</span> karyawan
+<span class="kw">WHERE</span> divisi_id <span class="kw">IN</span> (
+  <span class="kw">SELECT</span> id <span class="kw">FROM</span> divisi <span class="kw">WHERE</span> nama_divisi <span class="kw">IN</span> ('Produksi', 'Gudang')
+);</pre>
+      <div class="soal-explain"><b>Penjelasan:</b> Subquery dalam mencari id divisi Produksi dan Gudang dulu, hasilnya jadi "daftar id" yang dicocokkan ke divisi_id tiap karyawan pakai IN. Ini alternatif dari JOIN untuk kasus sederhana seperti ini.</div>
+    </div>
+    <a class="next-link" href="#l11">Lanjut: UNION →</a>
+  </section>
+
+  <section class="lesson" id="l11">
+    <div class="lesson-head"><span class="lesson-num">11</span><h2>UNION</h2></div>
+    <div class="analogy"><b>Analogi:</b> UNION itu kayak nggabungin dua daftar undangan jadi satu daftar tamu, terus buang nama yang dobel. UNION ALL sama, tapi nama yang dobel tetap dibiarkan muncul dua kali.</div>
+    <p class="body-text">Dipakai buat menggabungkan HASIL dari dua query yang jumlah dan tipe kolomnya sama, jadi satu tabel hasil. Beda dengan JOIN yang nyambungin tabel ke SAMPING (nambah kolom), UNION nyambungin ke BAWAH (nambah baris).</p>
+    <pre class="sql"><span class="kw">SELECT</span> nama <span class="kw">AS</span> nama_orang, 'Karyawan' <span class="kw">AS</span> tipe <span class="kw">FROM</span> karyawan
+<span class="kw">UNION</span>
+<span class="kw">SELECT</span> nama_produk <span class="kw">AS</span> nama_orang, 'Produk' <span class="kw">AS</span> tipe <span class="kw">FROM</span> produk;</pre>
+    <div class="ingat"><span class="lbl">Cara Inget</span> <span>UNION = gabung ke bawah + buang duplikat. UNION ALL = gabung ke bawah + duplikat tetap ada (lebih cepat, karena nggak perlu cek duplikat).</span></div>
+    <div class="soal-box">
+      <div class="soal-label">Contoh Soal</div>
+      <div class="soal-q">Buat satu daftar nama semua "pihak terkait perusahaan": gabungkan nama karyawan dan nama divisi jadi satu kolom, tanpa duplikat.</div>
+      <div class="ans-label">Jawaban</div>
+      <pre class="sql"><span class="kw">SELECT</span> nama <span class="kw">FROM</span> karyawan
+<span class="kw">UNION</span>
+<span class="kw">SELECT</span> nama_divisi <span class="kw">FROM</span> divisi;</pre>
+      <div class="soal-explain"><b>Penjelasan:</b> Dua SELECT ini masing-masing hasilkan satu kolom teks, jumlah kolomnya sama (satu-satu), jadi bisa di-UNION. Kalau jumlah kolom beda, SQL akan error.</div>
+    </div>
+    <a class="next-link" href="#l12">Lanjut: Window Function →</a>
+  </section>
+
+  <section class="lesson" id="l12">
+    <div class="lesson-head"><span class="lesson-num">12</span><h2>Window Function (RANK, ROW_NUMBER)</h2></div>
+    <div class="analogy"><b>Analogi:</b> Kalau correlated subquery itu kayak nanya "siapa juara 1 di tiap kelas" satu-satu, window function itu kayak nyuruh SEMUA murid berbaris dan dikasih nomor urut ranking langsung, per kelas, dalam satu langkah.</div>
+    <p class="body-text">Window function ini cara MODERN buat gantiin correlated subquery di soal "top-N per grup" — lebih ringkas dan lebih cepat di database besar. <code>PARTITION BY</code> itu "per grup apa", <code>ORDER BY</code> di dalam OVER() itu "diurutkan berdasar apa".</p>
+    <pre class="sql"><span class="kw">SELECT</span> nama, divisi_id, gaji,
+  <span class="kw">RANK</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> divisi_id <span class="kw">ORDER BY</span> gaji <span class="kw">DESC</span>) <span class="kw">AS</span> ranking
+<span class="kw">FROM</span> karyawan;</pre>
+    <div class="ingat"><span class="lbl">Cara Inget</span> <span>PARTITION BY = "kelompokkan per apa" (mirip GROUP BY, tapi baris aslinya tetap utuh, cuma ditambah kolom ranking). Karyawan gaji tertinggi di divisinya dapat ranking = 1.</span></div>
+    <div class="soal-box">
+      <div class="soal-label">Contoh Soal</div>
+      <div class="soal-q">Tampilkan hanya karyawan dengan gaji tertinggi (ranking 1) di tiap divisi, pakai window function.</div>
+      <div class="ans-label">Jawaban</div>
+      <pre class="sql"><span class="kw">SELECT</span> * <span class="kw">FROM</span> (
+  <span class="kw">SELECT</span> nama, divisi_id, gaji,
+    <span class="kw">RANK</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> divisi_id <span class="kw">ORDER BY</span> gaji <span class="kw">DESC</span>) <span class="kw">AS</span> ranking
+  <span class="kw">FROM</span> karyawan
+) sub
+<span class="kw">WHERE</span> ranking = 1;</pre>
+      <div class="soal-explain"><b>Penjelasan:</b> Window function nggak bisa langsung difilter di WHERE (karena dihitung belakangan), jadi query-nya "dibungkus" jadi subquery dulu, baru difilter ranking = 1 di luar. Ini alternatif yang lebih modern dari correlated subquery MAX/MIN yang dipelajari di Materi 5.</div>
+    </div>
+    <a class="next-link" href="#l13">Lanjut: Normalisasi Database →</a>
+  </section>
+
+  <section class="lesson" id="l13">
+    <div class="lesson-head"><span class="lesson-num">13</span><h2>Normalisasi Database</h2></div>
+    <div class="analogy"><b>Analogi:</b> Normalisasi itu kayak beres-beres lemari — jangan simpan barang yang sama di banyak tempat sekaligus. Kalau nama divisi ditulis ULANG di setiap baris karyawan (bukan cuma disimpan sekali di tabel divisi), begitu nama divisi berubah, kamu harus edit RATUSAN baris. Itu masalah yang dihindari normalisasi.</div>
+    <p class="body-text">Ini yang bikin skema kita punya tabel <code>divisi</code> terpisah dari <code>karyawan</code> — bukan cuma gaya, tapi prinsip: <b>setiap data cuma disimpan di SATU tempat</b>, tabel lain cuma nyimpen REFERENSI (foreign key) ke situ. Level normalisasi (1NF, 2NF, 3NF) itu aturan bertahap buat mastiin ini, tapi intinya cukup diingat sebagai satu prinsip: <b>hindari data yang berulang/redundan.</b></p>
+    <div class="compare">
+      <div class="box no"><div class="h">Tidak Normal</div>Tabel karyawan punya kolom "nama_divisi" langsung (teks diulang di tiap baris)</div>
+      <div class="box yes"><div class="h">Normal</div>Tabel karyawan cuma punya "divisi_id", nama divisi disimpan sekali di tabel divisi</div>
+    </div>
+    <div class="ingat"><span class="lbl">Cara Inget</span> <span>Kalau ditanya soal normalisasi/flowchart di interview: jawab pakai skema yang sudah kamu pahami ini sebagai contoh nyata — tabel karyawan-divisi kita SUDAH ternormalisasi karena nama divisi cuma ada sekali di satu tabel.</span></div>
+    <div class="soal-box">
+      <div class="soal-label">Contoh Soal (Konsep, Bukan Query)</div>
+      <div class="soal-q">Kenapa harga produk disimpan di tabel produk, bukan ditulis ulang di setiap baris transaksi?</div>
+      <div class="ans-label">Jawaban</div>
+      <div class="soal-explain">Karena kalau harga berubah, cukup update SATU baris di tabel produk — semua transaksi yang mereferensikan produk itu otomatis "ikut" nilai terbaru lewat JOIN, tanpa perlu edit ribuan baris transaksi lama satu-satu. Ini contoh nyata kenapa normalisasi penting: mengurangi duplikasi data dan risiko data jadi tidak konsisten.</div>
+    </div>
+    <a class="next-link" href="#l14">Lanjut: Query Gabungan →</a>
+  </section>
+
+  <section class="lesson" id="l14">
+    <div class="lesson-head"><span class="lesson-num">14</span><h2>Query Gabungan — Naik Bertahap</h2></div>
+    <div class="analogy"><b>Analogi:</b> Di tes beneran, soal jarang minta satu konsep doang, tapi juga jarang langsung minta semua sekaligus. Biasanya soal-soal disusun makin lama makin berat — kayak naik tangga, bukan lompat ke lantai atas langsung. Di bawah ini 5 soal yang SALING NAMBAH dari soal sebelumnya, dari 2 konsep sampai 6 konsep.</div>
+    <p class="body-text">Perhatikan tiap soal cuma nambah SATU potongan baru dari query sebelumnya — bukan bikin ulang dari nol. Cara mikir kayak gini yang dipakai kalau ketemu soal panjang di tes: bangun dikit-dikit, jangan langsung nulis query final.</p>
+
+    <div class="soal-box">
+      <div class="soal-label">Level 1 — 2 Konsep (JOIN + GROUP BY)</div>
+      <div class="soal-q">Tampilkan tiap divisi beserta jumlah karyawannya.</div>
+      <div class="ans-label">Jawaban</div>
+      <pre class="sql"><span class="kw">SELECT</span> d.nama_divisi, <span class="kw">COUNT</span>(k.id) <span class="kw">AS</span> jumlah_karyawan
+<span class="kw">FROM</span> divisi d
+<span class="kw">JOIN</span> karyawan k <span class="kw">ON</span> k.divisi_id = d.id
+<span class="kw">GROUP BY</span> d.nama_divisi;</pre>
+      <div class="soal-explain"><b>Konsep dipakai:</b> JOIN + GROUP BY/COUNT. Ini fondasinya — semua level berikutnya nambah dari query ini.</div>
+    </div>
+
+    <div class="soal-box">
+      <div class="soal-label">Level 2 — 3 Konsep (+ HAVING)</div>
+      <div class="soal-q">Dari data yang sama, tampilkan cuma divisi yang jumlah karyawannya lebih dari 2 orang.</div>
+      <div class="ans-label">Jawaban</div>
+      <pre class="sql"><span class="kw">SELECT</span> d.nama_divisi, <span class="kw">COUNT</span>(k.id) <span class="kw">AS</span> jumlah_karyawan
+<span class="kw">FROM</span> divisi d
+<span class="kw">JOIN</span> karyawan k <span class="kw">ON</span> k.divisi_id = d.id
+<span class="kw">GROUP BY</span> d.nama_divisi
+<span class="kw">HAVING</span> <span class="kw">COUNT</span>(k.id) > 2;</pre>
+      <div class="soal-explain"><b>Apa yang nambah:</b> cuma satu baris — <code>HAVING COUNT(k.id) > 2</code> ditempel di bawah GROUP BY. Query lainnya persis sama dengan Level 1.</div>
+    </div>
+
+    <div class="soal-box">
+      <div class="soal-label">Level 3 — 4 Konsep (+ LEFT JOIN + COALESCE)</div>
+      <div class="soal-q">Sekarang direktur mau divisi yang BELUM punya karyawan juga tetap tampil (jumlah karyawan = 0) — bukan cuma divisi yang sudah ramai. Syarat "lebih dari 2 karyawan" tadi dihapus dulu.</div>
+      <div class="ans-label">Jawaban</div>
+      <pre class="sql"><span class="kw">SELECT</span> d.nama_divisi, <span class="kw">COALESCE</span>(<span class="kw">COUNT</span>(k.id), 0) <span class="kw">AS</span> jumlah_karyawan
+<span class="kw">FROM</span> divisi d
+<span class="kw">LEFT</span> <span class="kw">JOIN</span> karyawan k <span class="kw">ON</span> k.divisi_id = d.id
+<span class="kw">GROUP BY</span> d.nama_divisi;</pre>
+      <div class="soal-explain"><b>Apa yang nambah:</b> JOIN diganti LEFT JOIN supaya divisi kosong tetap tampil. COALESCE ditambahkan di luar COUNT sebagai jaga-jaga — meski sebenarnya COUNT(k.id) sendiri sudah otomatis menghasilkan 0 (bukan NULL) untuk divisi kosong, karena COUNT selalu menghitung baris, bukan menjumlahkan nilai.</div>
+    </div>
+
+    <div class="soal-box">
+      <div class="soal-label">Level 4 — 5 Konsep (+ tabel ketiga + SUM)</div>
+      <div class="soal-q">Tambahkan juga total qty transaksi seluruh karyawan di tiap divisi. Divisi/karyawan yang belum pernah transaksi tetap tampil dengan total qty = 0.</div>
+      <div class="ans-label">Jawaban</div>
+      <pre class="sql"><span class="kw">SELECT</span>
+  d.nama_divisi,
+  <span class="kw">COUNT</span>(<span class="kw">DISTINCT</span> k.id) <span class="kw">AS</span> jumlah_karyawan,
+  <span class="kw">COALESCE</span>(<span class="kw">SUM</span>(t.qty), 0) <span class="kw">AS</span> total_qty
+<span class="kw">FROM</span> divisi d
+<span class="kw">LEFT</span> <span class="kw">JOIN</span> karyawan k <span class="kw">ON</span> k.divisi_id = d.id
+<span class="kw">LEFT</span> <span class="kw">JOIN</span> transaksi t <span class="kw">ON</span> t.karyawan_id = k.id
+<span class="kw">GROUP BY</span> d.nama_divisi;</pre>
+      <div class="soal-explain"><b>Apa yang nambah:</b> satu LEFT JOIN lagi ke tabel transaksi, plus SUM(t.qty) yang sekarang wajib dibungkus COALESCE (karena SUM, beda dari COUNT, betulan menghasilkan NULL kalau tidak ada baris untuk dijumlahkan). Perhatikan COUNT(k.id) berubah jadi <code>COUNT(DISTINCT k.id)</code> — karena dua LEFT JOIN sekaligus bikin baris karyawan "berlipat" ganda per transaksinya, DISTINCT mencegah karyawan kehitung berkali-kali.</div>
+    </div>
+
+    <div class="soal-box">
+      <div class="soal-label">Level 5 — 6+ Konsep (+ CASE WHEN + ORDER BY + LIMIT)</div>
+      <div class="soal-q">Terakhir, tambahkan label "Produktif" (total qty di atas 100) atau "Kurang Produktif", lalu tampilkan cuma 3 divisi dengan total qty tertinggi.</div>
+      <div class="ans-label">Jawaban</div>
+      <pre class="sql"><span class="kw">SELECT</span>
+  d.nama_divisi,
+  <span class="kw">COUNT</span>(<span class="kw">DISTINCT</span> k.id) <span class="kw">AS</span> jumlah_karyawan,
+  <span class="kw">COALESCE</span>(<span class="kw">SUM</span>(t.qty), 0) <span class="kw">AS</span> total_qty,
+  <span class="kw">CASE</span>
+    <span class="kw">WHEN</span> <span class="kw">COALESCE</span>(<span class="kw">SUM</span>(t.qty), 0) > 100 <span class="kw">THEN</span> 'Produktif'
+    <span class="kw">ELSE</span> 'Kurang Produktif'
+  <span class="kw">END</span> <span class="kw">AS</span> label
+<span class="kw">FROM</span> divisi d
+<span class="kw">LEFT</span> <span class="kw">JOIN</span> karyawan k <span class="kw">ON</span> k.divisi_id = d.id
+<span class="kw">LEFT</span> <span class="kw">JOIN</span> transaksi t <span class="kw">ON</span> t.karyawan_id = k.id
+<span class="kw">GROUP BY</span> d.nama_divisi
+<span class="kw">ORDER BY</span> total_qty <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> 3;</pre>
+      <div class="soal-explain"><b>Apa yang nambah:</b> CASE WHEN dipasang di SELECT (pakai ekspresi COALESCE yang sama biar konsisten), lalu ORDER BY + LIMIT ditempel di paling bawah query. Query dari Level 4 sama sekali tidak diubah strukturnya — cuma ditambah di ujung.</div>
+    </div>
+
+    <div class="ingat"><span class="lbl">Cara Inget</span> <span>Query panjang bukan hafalan satu blok utuh. Itu hasil NAMBAH satu potongan demi satu potongan ke query yang lebih sederhana. Kalau bingung di tes, mulai dari versi paling sederhana dulu (kayak Level 1), baru tambahkan syarat satu-satu sampai memenuhi semua permintaan soal.</span></div>
+  </section>
+
+  <footer>Materi belajar tidak resmi untuk persiapan tes teknis. Lanjut ke file latihan soal buat praktik.</footer>
+</div>
+
+</html>
