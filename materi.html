@@ -151,6 +151,7 @@
     padding:14px 16px; font-size:14px; line-height:1.7; overflow-x:auto; white-space:pre; margin:0; color:var(--ink);
   }
   pre.sql .kw{ color:var(--accent); font-weight:600; }
+  pre.sql .cm{ color:var(--ink-faint); font-style:italic; }
 
   .compare{ display:flex; gap:10px; flex-wrap:wrap; }
   .compare .box{ flex:1 1 200px; border-radius:8px; padding:10px 12px; font-size:13px; }
@@ -257,6 +258,20 @@
       </div>
     </div>
   </details>
+
+  <div class="soal-box">
+    <div class="soal-label">Sebelum Mulai: Alias Tabel</div>
+    <div class="soal-q">Di semua contoh nanti kamu bakal sering lihat huruf tunggal kayak <code>k.nama</code> atau <code>p.harga</code>. Ini bukan singkatan aneh — ini <b>alias</b> (nama pendek buat tabel).</div>
+    <div class="soal-explain">Waktu nulis <code>FROM karyawan k</code>, huruf <b>k</b> setelah nama tabel itu ngasih nickname buat tabel <code>karyawan</code> — jadi buat sisa query, <b>k</b> = <code>karyawan</code>. Sama juga <b>d</b> = <code>divisi</code>, <b>p</b> = <code>produk</code>, <b>t</b> = <code>transaksi</code>. Jadi <code>k.nama</code> artinya "kolom nama dari tabel karyawan", dan <code>p.nama_produk</code> artinya "kolom nama_produk dari tabel produk".</div>
+    <pre class="sql"><span class="kw">SELECT</span> k.nama, d.nama_divisi
+<span class="kw">FROM</span> karyawan k
+<span class="kw">JOIN</span> divisi d <span class="kw">ON</span> k.divisi_id = d.id;
+<span class="cm">-- k.nama       = kolom "nama" dari tabel karyawan
+-- d.nama_divisi = kolom "nama_divisi" dari tabel divisi
+-- k.divisi_id   = kolom "divisi_id" milik karyawan
+-- d.id          = kolom "id" milik divisi</span></pre>
+    <div class="soal-explain"><b>Kenapa perlu alias:</b> (1) lebih pendek diketik daripada nulis <code>karyawan.nama</code> berkali-kali, (2) menghindari ambigu kalau dua tabel sama-sama punya kolom bernama <code>id</code> atau <code>nama</code>, (3) bikin JOIN gampang dibaca — <code>ON k.divisi_id = d.id</code> jelas artinya "divisi_id milik karyawan = id milik divisi".</div>
+  </div>
 
   <section class="lesson" id="l1">
     <div class="lesson-head"><span class="lesson-num">1</span><h2>JOIN</h2></div>
