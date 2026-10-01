@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Materi Lengkap SQL Teknis</title>
+</head>
+<body>
 <title>Materi Lengkap SQL Teknis</title>
 <style>
   /* Layout: single scrolling lesson, one concept per section, each anchored by one plain-language analogy and a tiny before/after table */
@@ -75,7 +77,12 @@
   h1,h2,h3{ font-family:'Fraunces', Georgia, serif; text-wrap:balance; margin:0; }
   code, pre, .mono{ font-family:'IBM Plex Mono', ui-monospace, monospace; }
 
-  .wrap{ max-width:680px; margin:0 auto; display:flex; flex-direction:column; gap:26px; }
+  .layout{ max-width:1040px; margin:0 auto; display:grid; grid-template-columns:260px 1fr; gap:20px; align-items:start; }
+  @media (max-width:860px){
+    .layout{ grid-template-columns:1fr; }
+  }
+
+  .wrap{ max-width:680px; margin:0; display:flex; flex-direction:column; gap:26px; min-width:0; }
 
   header.page{ display:flex; flex-direction:column; gap:6px; }
   .eyebrow{ font-size:11.5px; letter-spacing:0.09em; text-transform:uppercase; color:var(--accent); font-weight:600; }
@@ -94,12 +101,13 @@
   .schema{
     background:var(--surface); border:1px solid var(--rule); border-radius:12px;
     padding:14px 16px;
+    position:sticky; top:12px; max-height:calc(100vh - 24px); overflow-y:auto;
   }
-  .schema summary{ cursor:pointer; font-size:13px; font-weight:600; color:var(--key); list-style:none; display:flex; align-items:center; gap:6px; }
-  .schema summary::-webkit-details-marker{ display:none; }
-  .schema summary::before{ content:"▸"; transition:transform .15s; }
-  .schema[open] summary::before{ transform:rotate(90deg); }
-  .schema-note{ font-size:12.5px; color:var(--ink-soft); margin:10px 0 0; line-height:1.5; }
+  @media (max-width:860px){
+    .schema{ position:sticky; top:0; z-index:5; max-height:38vh; border-radius:0 0 12px 12px; box-shadow:0 4px 10px rgba(0,0,0,0.08); }
+  }
+  .schema-title{ font-size:12.5px; font-weight:700; color:var(--key); text-transform:uppercase; letter-spacing:0.04em; margin:0 0 4px; display:flex; align-items:center; gap:6px; }
+  .schema-note{ font-size:12.5px; color:var(--ink-soft); margin:0 0 10px; line-height:1.5; }
   .tables{ display:flex; flex-direction:column; gap:12px; margin-top:12px; }
   .tbl{ background:var(--surface-2); border-radius:8px; padding:10px 12px; overflow-x:auto; }
   .tbl .name{ font-weight:600; font-size:13px; color:var(--key); margin-bottom:6px; }
@@ -183,34 +191,11 @@
   footer{ font-size:12px; color:var(--ink-faint); text-align:center; padding-top:6px; }
 </style>
 
-<div class="wrap">
+<div class="layout">
 
-  <header class="page">
-    <span class="eyebrow">Materi · Persiapan Tes Teknis</span>
-    <h1>Materi Lengkap SQL Teknis</h1>
-    <p class="sub">Kamu sudah lancar SELECT, WHERE, ORDER BY. Ini mulai dari 5 hal yang masih lemah (JOIN, GROUP BY, HAVING, MAX/MIN per grup, COALESCE), lanjut ke materi lain yang berpotensi keluar di tes teknis — semua dijelaskan pakai analogi, bukan istilah teknis. Setelah paham, buka file latihan soal buat praktik.</p>
-  </header>
-
-  <nav class="toc">
-    <a href="#l1">1. JOIN</a>
-    <a href="#l2">2. LEFT JOIN</a>
-    <a href="#l3">3. GROUP BY</a>
-    <a href="#l4">4. HAVING vs WHERE</a>
-    <a href="#l5">5. MAX/MIN per grup</a>
-    <a href="#l6">6. COALESCE</a>
-    <a href="#l7">7. Konsep NULL</a>
-    <a href="#l8">8. RIGHT &amp; FULL JOIN</a>
-    <a href="#l9">9. CASE WHEN</a>
-    <a href="#l10">10. Subquery IN/EXISTS</a>
-    <a href="#l11">11. UNION</a>
-    <a href="#l12">12. Window Function</a>
-    <a href="#l13">13. Normalisasi Database</a>
-    <a href="#l14">14. Query Gabungan</a>
-  </nav>
-
-  <details class="schema">
-    <summary>Lihat data sampel (dipakai di semua Output di halaman ini)</summary>
-    <p class="schema-note">Semua "Output" di tiap Contoh Soal dihitung dari data persis di bawah ini — sama dengan data di file Latihan Soal.</p>
+  <aside class="schema">
+    <div class="schema-title">📋 Data Sampel</div>
+    <p class="schema-note">Nempel terus di sini biar nggak perlu scroll ke atas tiap mau cek data. Semua "Output" di tiap Contoh Soal dihitung dari data persis di bawah ini — sama dengan data di file Latihan Soal.</p>
     <div class="tables">
       <div class="tbl">
         <div class="name">divisi</div>
@@ -257,7 +242,32 @@
 8  | 4         | 3           | 6   | 2026-03-05</pre>
       </div>
     </div>
-  </details>
+  </aside>
+
+  <div class="wrap">
+
+  <header class="page">
+    <span class="eyebrow">Materi · Persiapan Tes Teknis</span>
+    <h1>Materi Lengkap SQL Teknis</h1>
+    <p class="sub">Kamu sudah lancar SELECT, WHERE, ORDER BY. Ini mulai dari 5 hal yang masih lemah (JOIN, GROUP BY, HAVING, MAX/MIN per grup, COALESCE), lanjut ke materi lain yang berpotensi keluar di tes teknis — semua dijelaskan pakai analogi, bukan istilah teknis. Setelah paham, buka file latihan soal buat praktik. Data sampel ada di panel sebelah (atau di atas kalau layar sempit).</p>
+  </header>
+
+  <nav class="toc">
+    <a href="#l1">1. JOIN</a>
+    <a href="#l2">2. LEFT JOIN</a>
+    <a href="#l3">3. GROUP BY</a>
+    <a href="#l4">4. HAVING vs WHERE</a>
+    <a href="#l5">5. MAX/MIN per grup</a>
+    <a href="#l6">6. COALESCE</a>
+    <a href="#l7">7. Konsep NULL</a>
+    <a href="#l8">8. RIGHT &amp; FULL JOIN</a>
+    <a href="#l9">9. CASE WHEN</a>
+    <a href="#l10">10. Subquery IN/EXISTS</a>
+    <a href="#l11">11. UNION</a>
+    <a href="#l12">12. Window Function</a>
+    <a href="#l13">13. Normalisasi Database</a>
+    <a href="#l14">14. Query Gabungan</a>
+  </nav>
 
   <div class="soal-box">
     <div class="soal-label">Sebelum Mulai: Alias Tabel</div>
@@ -874,4 +884,7 @@ Marketing   | 1               | 0         | Kurang Produktif
   <footer>Materi belajar tidak resmi untuk persiapan tes teknis. Lanjut ke file latihan soal buat praktik.</footer>
 </div>
 
+</div>
+
+</body>
 </html>
